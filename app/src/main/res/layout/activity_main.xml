@@ -20,6 +20,6 @@
         android:layout_below="@+id/press_button"
         custom:circleColor="#ff0099"
         custom:circleLabel="Hola"
-        custom:labelColor="#ffff66"/>
+        custom:labelColor="#440066"/>
 
 </RelativeLayout>

@@ -4,14 +4,20 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
 public class RainbowView extends View {
 
+    private static final float DEFAULT_START_ANGLE = 120;
+    private static final float DEFAULT_SWEEP_ANGLE = 300;
     private int circleColor, labelColor;
     private String circleText;
-    private Paint circlePaint;
+    private Paint paint;
+    private RectF rectF;
+    private float startAngle;
+    private float sweepAngle;
 
     public RainbowView(Context context) {
         super(context);
@@ -19,7 +25,11 @@ public class RainbowView extends View {
 
     public RainbowView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        circlePaint = new Paint();
+        paint = new Paint();
+        rectF = new RectF();
+        setStartAngle(DEFAULT_START_ANGLE);
+        setSweepAngle(DEFAULT_SWEEP_ANGLE);
+
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RainbowView, 0, 0);
 
         try {
@@ -29,6 +39,7 @@ public class RainbowView extends View {
         } finally {
             a.recycle();
         }
+
     }
 
     public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -50,19 +61,24 @@ public class RainbowView extends View {
             radius = viewWidthHalf - 10;
         }
 
-        circlePaint.setStyle(Paint.Style.FILL);
-        circlePaint.setAntiAlias(true);
+        rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
-        circlePaint.setColor(circleColor);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setAntiAlias(true);
+        paint.setStrokeWidth(20);
 
-        canvas.drawCircle(viewWidthHalf, viewHeightHalf, radius, circlePaint);
+        paint.setColor(circleColor);
 
-        //set text color, properties, then draw it
-        circlePaint.setColor(labelColor);
-        circlePaint.setTextAlign(Paint.Align.CENTER);
-        circlePaint.setTextSize(50);
+        canvas.drawArc(rectF, startAngle, sweepAngle, false, paint);
 
-        canvas.drawText(circleText, viewWidthHalf, viewHeightHalf, circlePaint);
+        //set text color, properties, then draw it with the same paint
+        paint.setColor(labelColor);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(50);
+        paint.setStrokeWidth(0);
+
+        canvas.drawText(circleText, viewWidthHalf, viewHeightHalf, paint);
     }
 
     public int getCircleColor() {
@@ -75,6 +91,14 @@ public class RainbowView extends View {
 
     public String getCircleText() {
         return circleText;
+    }
+
+    public static float getDefaultStartAngle() {
+        return DEFAULT_START_ANGLE;
+    }
+
+    public static float getDefaultSweepAngle() {
+        return DEFAULT_SWEEP_ANGLE;
     }
 
     public void setCircleColor(int circleColor) {
@@ -93,5 +117,13 @@ public class RainbowView extends View {
         this.circleText = circleText;
         invalidate();
         requestLayout();
+    }
+
+    public void setStartAngle(float startAngle) {
+        this.startAngle = startAngle;
+    }
+
+    public void setSweepAngle(float sweepAngle) {
+        this.sweepAngle = sweepAngle;
     }
 }
