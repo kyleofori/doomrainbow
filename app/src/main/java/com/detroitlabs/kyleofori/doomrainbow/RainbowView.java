@@ -1,8 +1,8 @@
 package com.detroitlabs.kyleofori.doomrainbow;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -20,6 +20,7 @@ public class RainbowView extends View {
     private float startAngle;
     private float sweepAngle;
 
+
     public RainbowView(Context context) {
         super(context);
     }
@@ -31,15 +32,9 @@ public class RainbowView extends View {
         setStartAngle(DEFAULT_START_ANGLE);
         setSweepAngle(DEFAULT_SWEEP_ANGLE);
 
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RainbowView, 0, 0);
-
-        try {
-            circleText = a.getString(R.styleable.RainbowView_circleLabel);
-            circleColor = a.getInteger(R.styleable.RainbowView_circleColor, 0);
-            labelColor = a.getInteger(R.styleable.RainbowView_labelColor, 0);
-        } finally {
-            a.recycle();
-        }
+        circleText = "Hola";
+        circleColor = Color.GRAY;
+        labelColor = Color.GRAY;
 
     }
 
