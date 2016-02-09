@@ -12,6 +12,7 @@ public class RainbowView extends View {
 
     private static final float DEFAULT_START_ANGLE = 120;
     private static final float DEFAULT_SWEEP_ANGLE = 300;
+    private static final int DEFAULT_ARC_WIDTH = 20;
     private int circleColor, labelColor;
     private String circleText;
     private Paint paint;
@@ -66,8 +67,7 @@ public class RainbowView extends View {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(20);
-
+        paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
         paint.setColor(circleColor);
 
         canvas.drawArc(rectF, startAngle, sweepAngle, false, paint);
@@ -91,6 +91,10 @@ public class RainbowView extends View {
 
     public String getCircleText() {
         return circleText;
+    }
+
+    public static int getDefaultArcWidth() {
+        return DEFAULT_ARC_WIDTH;
     }
 
     public static float getDefaultStartAngle() {
