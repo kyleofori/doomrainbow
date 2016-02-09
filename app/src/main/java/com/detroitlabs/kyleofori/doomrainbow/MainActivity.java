@@ -1,16 +1,25 @@
 package com.detroitlabs.kyleofori.doomrainbow;
 
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private RainbowView rainbowView;
+    private Button pressButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
+        pressButton = (Button) findViewById(R.id.press_button);
+        pressButton.setOnClickListener(this);
     }
 
 
@@ -34,5 +43,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        rainbowView.setCircleColor(Color.GREEN);
+        rainbowView.setLabelColor(Color.MAGENTA);
+        rainbowView.setCircleText("¡Escuchalo!");
     }
 }
