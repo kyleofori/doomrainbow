@@ -19,7 +19,7 @@ public class RainbowView extends View {
     private static final int DEFAULT_LABEL_COLOR = Color.GRAY;
     private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
     private int circleColor, labelColor;
-    private String circleText;
+    private String centerText;
     private String minValue, maxValue;
     private Paint paint;
     private RectF rectF;
@@ -39,7 +39,7 @@ public class RainbowView extends View {
         setSweepAngle(DEFAULT_SWEEP_ANGLE);
         setMinValue(DEFAULT_MIN_VALUE);
         setMaxValue(DEFAULT_MAX_VALUE);
-        setCircleText(DEFAULT_CIRCLE_TEXT);
+        setCenterText(DEFAULT_CIRCLE_TEXT);
         setCircleColor(DEFAULT_CIRCLE_COLOR);
         setLabelColor(DEFAULT_LABEL_COLOR);
     }
@@ -69,27 +69,15 @@ public class RainbowView extends View {
 
         rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
-        paint.setColor(circleColor);
+        initBackgroundArcPaint();
 
         canvas.drawArc(rectF, startAngle, sweepAngle, false, paint);
 
-        //set text color, properties, then draw it with the same paint
-        paint.setColor(labelColor);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(50);
-        paint.setStrokeWidth(0);
+        initCenterTextPaint();
 
-        canvas.drawText(circleText, viewWidthHalf, viewHeightHalf, paint);
+        canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
-        //set text at location of minimum and maximum values
-
-        paint.setTextSize(textSizeValue);
-        paint.setColor(Color.BLACK);
-        paint.setFakeBoldText(true);
+        initValuePaint(textSizeValue);
 
         float floatViewWidthHalf = (float) viewWidthHalf;
         float floatViewHeightHalf = (float) viewHeightHalf;
@@ -113,6 +101,27 @@ public class RainbowView extends View {
         canvas.drawText(maxValue, xCoordMaxText, yCoordText, paint);
     }
 
+    private void initValuePaint(float textSizeValue) {
+        paint.setTextSize(textSizeValue);
+        paint.setColor(Color.BLACK);
+        paint.setFakeBoldText(true);
+    }
+
+    private void initCenterTextPaint() {
+        paint.setColor(labelColor);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(50);
+        paint.setStrokeWidth(0);
+    }
+
+    private void initBackgroundArcPaint() {
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setAntiAlias(true);
+        paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
+        paint.setColor(circleColor);
+    }
+
     public int getCircleColor() {
         return circleColor;
     }
@@ -121,8 +130,8 @@ public class RainbowView extends View {
         return labelColor;
     }
 
-    public String getCircleText() {
-        return circleText;
+    public String getCenterText() {
+        return centerText;
     }
 
     public static int getDefaultArcWidth() {
@@ -156,8 +165,8 @@ public class RainbowView extends View {
 
     }
 
-    public void setCircleText(String circleText) {
-        this.circleText = circleText;
+    public void setCenterText(String centerText) {
+        this.centerText = centerText;
         invalidateAndRequestLayout();
 
     }

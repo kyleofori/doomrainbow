@@ -50,6 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         rainbowView.setCircleColor(Color.GREEN);
         rainbowView.setLabelColor(Color.MAGENTA);
-        rainbowView.setCircleText("¡Orale!");
+        rainbowView.setCenterText("¡Orale!");
     }
 }
