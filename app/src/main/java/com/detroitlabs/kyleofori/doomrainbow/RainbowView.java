@@ -10,11 +10,13 @@ import android.view.View;
 
 public class RainbowView extends View {
 
-    private static final float DEFAULT_START_ANGLE = 135;
-    private static final float DEFAULT_SWEEP_ANGLE = 270;
+    private static final float DEFAULT_BACKGROUND_START_ANGLE = 135;
+    private static final float DEFAULT_BACKGROUND_SWEEP_ANGLE = 270;
     private static final float DEFAULT_OPTIONAL_GOAL_ANGLE = 220;
+    private static final float DEFAULT_CURRENT_LEVEL_ANGLE = 160;
     private static final float DEFAULT_GOAL_ARC_LENGTH_DEGREES = 20;
-    private static final String DEFAULT_CIRCLE_TEXT = "¡Hola!";
+    private static final String DEFAULT_CENTER_TEXT = "¡Hola!";
+    private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
     private static final int DEFAULT_ARC_WIDTH = 20;
     private static final String DEFAULT_MIN_VALUE = "E";
     private static final String DEFAULT_MAX_VALUE = "F";
@@ -22,11 +24,11 @@ public class RainbowView extends View {
     private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
     private static final int DEFAULT_GOAL_ARC_COLOR = Color.GREEN;
     private int circleColor, labelColor;
-    private String centerText;
+    private String centerText, currentLevelText;
     private String minValue, maxValue;
     private Paint paint;
     private RectF rectF;
-    private float startAngle, sweepAngle, goalAngle;
+    private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
 
 
@@ -38,12 +40,14 @@ public class RainbowView extends View {
         super(context, attrs);
         paint = new Paint();
         rectF = new RectF();
-        setStartAngle(DEFAULT_START_ANGLE);
-        setSweepAngle(DEFAULT_SWEEP_ANGLE);
+        setStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
+        setSweepAngle(DEFAULT_BACKGROUND_SWEEP_ANGLE);
         setGoalAngle(DEFAULT_OPTIONAL_GOAL_ANGLE);
         setMinValue(DEFAULT_MIN_VALUE);
         setMaxValue(DEFAULT_MAX_VALUE);
-        setCenterText(DEFAULT_CIRCLE_TEXT);
+        setCenterText(DEFAULT_CENTER_TEXT);
+        setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
+        setCurrentLevelAngle(DEFAULT_CURRENT_LEVEL_ANGLE);
         setCircleColor(DEFAULT_CIRCLE_COLOR);
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
@@ -65,10 +69,10 @@ public class RainbowView extends View {
         int radius;
         float textSizeValue;
         if(viewHeightHalf > viewWidthHalf) {
-            radius = viewWidthHalf - 10;
+            radius = viewWidthHalf - 70;
             textSizeValue = 50;
         } else {
-            radius = viewHeightHalf - 10;
+            radius = viewHeightHalf - 70;
             textSizeValue = 40;
         }
 
@@ -81,6 +85,17 @@ public class RainbowView extends View {
         initCenterTextPaint();
 
         canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
+
+        initCurrentLevelTextPaint();
+
+        double doubleCurrentLevelAngle = (double) currentLevelAngle;
+        double currentLevelAngleRadians = AngleUtils.convertToRadians(doubleCurrentLevelAngle);
+        float currentLevelCosCoefficient = (float) Math.cos(currentLevelAngleRadians);
+        float currentLevelSinCoefficient = (float) Math.sin(currentLevelAngleRadians);
+
+
+        canvas.drawText(currentLevelText,viewWidthHalf + currentLevelCosCoefficient * radius * 1.25f,
+                viewHeightHalf + currentLevelSinCoefficient * radius * 1.25f, paint);
 
         initValuePaint(textSizeValue);
 
@@ -134,6 +149,12 @@ public class RainbowView extends View {
         paint.setStrokeWidth(0);
     }
 
+    private void initCurrentLevelTextPaint() {
+        paint.setColor(Color.BLACK);
+        paint.setFakeBoldText(false);
+        paint.setTextSize(25);
+    }
+
     private void initValuePaint(float textSizeValue) {
         paint.setTextSize(textSizeValue);
         paint.setColor(Color.BLACK);
@@ -160,16 +181,24 @@ public class RainbowView extends View {
         return centerText;
     }
 
+    public String getCurrentLevelText() {
+        return currentLevelText;
+    }
+
+    public float getCurrentLevelAngle() {
+        return currentLevelAngle;
+    }
+
     public static int getDefaultArcWidth() {
         return DEFAULT_ARC_WIDTH;
     }
 
-    public static float getDefaultStartAngle() {
-        return DEFAULT_START_ANGLE;
+    public static float getDefaultBackgroundStartAngle() {
+        return DEFAULT_BACKGROUND_START_ANGLE;
     }
 
-    public static float getDefaultSweepAngle() {
-        return DEFAULT_SWEEP_ANGLE;
+    public static float getDefaultBackgroundSweepAngle() {
+        return DEFAULT_BACKGROUND_SWEEP_ANGLE;
     }
 
     public static float getDefaultOptionalGoalAngle() {
@@ -202,6 +231,17 @@ public class RainbowView extends View {
         this.centerText = centerText;
         invalidateAndRequestLayout();
     }
+
+    public void setCurrentLevelText(String currentLevelText) {
+        this.currentLevelText = currentLevelText;
+        invalidateAndRequestLayout();
+    }
+
+    public void setCurrentLevelAngle(float currentLevelAngle) {
+        this.currentLevelAngle = currentLevelAngle;
+        invalidateAndRequestLayout();
+    }
+
 
     public void setStartAngle(float startAngle) {
         this.startAngle = startAngle;

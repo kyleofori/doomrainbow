@@ -51,5 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rainbowView.setCircleColor(Color.GREEN);
         rainbowView.setLabelColor(Color.MAGENTA);
         rainbowView.setCenterText("¡Orale!");
+        float angle = rainbowView.getCurrentLevelAngle();
+        angle += 30;
+        rainbowView.setCurrentLevelAngle(angle);
     }
 }
