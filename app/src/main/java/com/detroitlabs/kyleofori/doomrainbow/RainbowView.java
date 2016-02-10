@@ -12,9 +12,12 @@ public class RainbowView extends View {
 
     private static final float DEFAULT_START_ANGLE = 135;
     private static final float DEFAULT_SWEEP_ANGLE = 270;
+    private static final String DEFAULT_CIRCLE_TEXT = "¡Hola!";
     private static final int DEFAULT_ARC_WIDTH = 20;
     private static final String DEFAULT_MIN_VALUE = "E";
-    public static final String DEFAULT_MAX_VALUE = "F";
+    private static final String DEFAULT_MAX_VALUE = "F";
+    private static final int DEFAULT_LABEL_COLOR = Color.GRAY;
+    private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
     private int circleColor, labelColor;
     private String circleText;
     private String minValue, maxValue;
@@ -36,11 +39,9 @@ public class RainbowView extends View {
         setSweepAngle(DEFAULT_SWEEP_ANGLE);
         setMinValue(DEFAULT_MIN_VALUE);
         setMaxValue(DEFAULT_MAX_VALUE);
-
-
-        circleText = "Hola";
-        circleColor = Color.GRAY;
-        labelColor = Color.GRAY;
+        setCircleText(DEFAULT_CIRCLE_TEXT);
+        setCircleColor(DEFAULT_CIRCLE_COLOR);
+        setLabelColor(DEFAULT_LABEL_COLOR);
     }
 
     public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -97,8 +98,9 @@ public class RainbowView extends View {
         double minValuePositionRadians = AngleUtils.convertToRadians(minValuePositionDegrees);
         float radiusCosCoefficient = (float) Math.cos(minValuePositionRadians);
 
-        float xCoordMinText = floatViewWidthHalf + radiusCosCoefficient * floatRadius;
         float yCoordText = floatViewHeightHalf + floatRadius;
+
+        float xCoordMinText = floatViewWidthHalf + radiusCosCoefficient * floatRadius;
 
         canvas.drawText(minValue, xCoordMinText, yCoordText, paint);
 
@@ -145,35 +147,46 @@ public class RainbowView extends View {
 
     public void setCircleColor(int circleColor) {
         this.circleColor = circleColor;
-        invalidate();
-        requestLayout();
+        invalidateAndRequestLayout();
     }
 
     public void setLabelColor(int labelColor) {
         this.labelColor = labelColor;
-        invalidate();
-        requestLayout();
+        invalidateAndRequestLayout();
+
     }
 
     public void setCircleText(String circleText) {
         this.circleText = circleText;
-        invalidate();
-        requestLayout();
+        invalidateAndRequestLayout();
+
     }
 
     public void setStartAngle(float startAngle) {
         this.startAngle = startAngle;
+        invalidateAndRequestLayout();
+
     }
 
     public void setSweepAngle(float sweepAngle) {
         this.sweepAngle = sweepAngle;
+        invalidateAndRequestLayout();
+
     }
 
     public void setMaxValue(String maxValue) {
         this.maxValue = maxValue;
+        invalidateAndRequestLayout();
+
     }
 
     public void setMinValue(String minValue) {
         this.minValue = minValue;
+        invalidateAndRequestLayout();
+    }
+
+    public void invalidateAndRequestLayout() {
+        invalidate();
+        requestLayout();
     }
 }
