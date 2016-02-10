@@ -10,11 +10,14 @@ import android.view.View;
 
 public class RainbowView extends View {
 
-    private static final float DEFAULT_START_ANGLE = 120;
-    private static final float DEFAULT_SWEEP_ANGLE = 300;
+    private static final float DEFAULT_START_ANGLE = 135;
+    private static final float DEFAULT_SWEEP_ANGLE = 270;
     private static final int DEFAULT_ARC_WIDTH = 20;
+    private static final String DEFAULT_MIN_VALUE = "E";
+    public static final String DEFAULT_MAX_VALUE = "F";
     private int circleColor, labelColor;
     private String circleText;
+    private String minValue, maxValue;
     private Paint paint;
     private RectF rectF;
     private float startAngle;
@@ -31,11 +34,13 @@ public class RainbowView extends View {
         rectF = new RectF();
         setStartAngle(DEFAULT_START_ANGLE);
         setSweepAngle(DEFAULT_SWEEP_ANGLE);
+        setMinValue(DEFAULT_MIN_VALUE);
+        setMaxValue(DEFAULT_MAX_VALUE);
+
 
         circleText = "Hola";
         circleColor = Color.GRAY;
         labelColor = Color.GRAY;
-
     }
 
     public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -50,11 +55,15 @@ public class RainbowView extends View {
         int viewHeightHalf = this.getMeasuredHeight()/2;
 
         //set radius to be a little smaller than half of whatever side of display is shorter
+        //and set text size
         int radius;
-        if(viewWidthHalf > viewHeightHalf) {
-            radius = viewHeightHalf - 10;
-        } else {
+        float textSizeValue;
+        if(viewHeightHalf > viewWidthHalf) {
             radius = viewWidthHalf - 10;
+            textSizeValue = 50;
+        } else {
+            radius = viewHeightHalf - 10;
+            textSizeValue = 40;
         }
 
         rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
@@ -74,6 +83,32 @@ public class RainbowView extends View {
         paint.setStrokeWidth(0);
 
         canvas.drawText(circleText, viewWidthHalf, viewHeightHalf, paint);
+
+        //set text at location of minimum and maximum values
+
+        paint.setTextSize(textSizeValue);
+        paint.setColor(Color.BLACK);
+        paint.setFakeBoldText(true);
+
+        float floatViewWidthHalf = (float) viewWidthHalf;
+        float floatViewHeightHalf = (float) viewHeightHalf;
+        float floatRadius = (float) radius;
+        double minValuePositionDegrees = (double) startAngle - 15;
+        double minValuePositionRadians = AngleUtils.convertToRadians(minValuePositionDegrees);
+        float radiusCosCoefficient = (float) Math.cos(minValuePositionRadians);
+
+        float xCoordMinText = floatViewWidthHalf + radiusCosCoefficient * floatRadius;
+        float yCoordText = floatViewHeightHalf + floatRadius;
+
+        canvas.drawText(minValue, xCoordMinText, yCoordText, paint);
+
+        double maxValuePositionDegrees = (double) startAngle + sweepAngle + 15;
+        double maxValuePositionRadians = AngleUtils.convertToRadians(maxValuePositionDegrees);
+        float maxValRadiusCosCoefficient = (float) Math.cos(maxValuePositionRadians);
+
+        float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * floatRadius;
+
+        canvas.drawText(maxValue, xCoordMaxText, yCoordText, paint);
     }
 
     public int getCircleColor() {
@@ -100,6 +135,14 @@ public class RainbowView extends View {
         return DEFAULT_SWEEP_ANGLE;
     }
 
+    public String getMinValue() {
+        return minValue;
+    }
+
+    public String getMaxValue() {
+        return maxValue;
+    }
+
     public void setCircleColor(int circleColor) {
         this.circleColor = circleColor;
         invalidate();
@@ -124,5 +167,13 @@ public class RainbowView extends View {
 
     public void setSweepAngle(float sweepAngle) {
         this.sweepAngle = sweepAngle;
+    }
+
+    public void setMaxValue(String maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public void setMinValue(String minValue) {
+        this.minValue = minValue;
     }
 }
