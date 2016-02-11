@@ -1,7 +1,11 @@
 .gradle
 /local.properties
 /.idea/workspace.xml
+/.idea/modules.xml
 /.idea/libraries
 .DS_Store
 /build
 /captures
+*.iml
+
+## 2016-02-11 ignoring iml files and /.idea/modules.xml
