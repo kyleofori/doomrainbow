@@ -187,6 +187,14 @@ public class RainbowView extends View {
         setHasCurrentLevelText(true);
     }
 
+    public void increaseGoal() {
+        setGoalAngle(goalAngle + 30);
+    }
+
+    public void decreaseGoal() {
+        setGoalAngle(goalAngle - 30);
+    }
+
     public int getCircleColor() {
         return circleColor;
     }
@@ -225,6 +233,22 @@ public class RainbowView extends View {
 
     public static float getDefaultGoalArcLengthDegrees() {
         return DEFAULT_GOAL_ARC_LENGTH_DEGREES;
+    }
+
+    public float getGoalArcSweepAngle() {
+        return goalArcSweepAngle;
+    }
+
+    public float getGoalAngle() {
+        return goalAngle;
+    }
+
+    public float getSweepAngle() {
+        return sweepAngle;
+    }
+
+    public float getStartAngle() {
+        return startAngle;
     }
 
     public String getMinValue() {
