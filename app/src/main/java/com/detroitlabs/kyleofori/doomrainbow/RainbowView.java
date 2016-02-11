@@ -30,6 +30,10 @@ public class RainbowView extends View {
     private RectF rectF;
     private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
+    private boolean hasMinAndMaxValue;
+    private boolean hasUpAndDownButtons;
+    private boolean hasGoalIndicator;
+    private boolean hasCurrentLevelText;
 
 
     public RainbowView(Context context) {
@@ -51,6 +55,7 @@ public class RainbowView extends View {
         setCircleColor(DEFAULT_CIRCLE_COLOR);
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
+        initDefaultValues();
     }
 
     public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -86,51 +91,57 @@ public class RainbowView extends View {
 
         canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
-        initCurrentLevelTextPaint();
+        if(hasCurrentLevelText) {
+            initCurrentLevelTextPaint();
 
-        double doubleCurrentLevelAngle = (double) currentLevelAngle;
-        double currentLevelAngleRadians = AngleUtils.convertToRadians(doubleCurrentLevelAngle);
-        float currentLevelCosCoefficient = (float) Math.cos(currentLevelAngleRadians);
-        float currentLevelSinCoefficient = (float) Math.sin(currentLevelAngleRadians);
+            double doubleCurrentLevelAngle = (double) currentLevelAngle;
+            double currentLevelAngleRadians = AngleUtils.convertToRadians(doubleCurrentLevelAngle);
+            float currentLevelCosCoefficient = (float) Math.cos(currentLevelAngleRadians);
+            float currentLevelSinCoefficient = (float) Math.sin(currentLevelAngleRadians);
 
 
-        canvas.drawText(currentLevelText,viewWidthHalf + currentLevelCosCoefficient * radius * 1.25f,
-                viewHeightHalf + currentLevelSinCoefficient * radius * 1.25f, paint);
+            canvas.drawText(currentLevelText,viewWidthHalf + currentLevelCosCoefficient * radius * 1.25f,
+                    viewHeightHalf + currentLevelSinCoefficient * radius * 1.25f, paint);
+        }
 
-        initValuePaint(textSizeValue);
+        if(hasMinAndMaxValue) {
+            initValuePaint(textSizeValue);
 
-        float floatViewWidthHalf = (float) viewWidthHalf;
-        float floatViewHeightHalf = (float) viewHeightHalf;
-        float floatRadius = (float) radius;
-        double minValuePositionDegrees = (double) startAngle - 15;
-        double minValuePositionRadians = AngleUtils.convertToRadians(minValuePositionDegrees);
-        float radiusCosCoefficient = (float) Math.cos(minValuePositionRadians);
+            float floatViewWidthHalf = (float) viewWidthHalf;
+            float floatViewHeightHalf = (float) viewHeightHalf;
+            float floatRadius = (float) radius;
+            double minValuePositionDegrees = (double) startAngle - 15;
+            double minValuePositionRadians = AngleUtils.convertToRadians(minValuePositionDegrees);
+            float radiusCosCoefficient = (float) Math.cos(minValuePositionRadians);
 
-        float yCoordText = floatViewHeightHalf + floatRadius;
+            float yCoordText = floatViewHeightHalf + floatRadius;
 
-        float xCoordMinText = floatViewWidthHalf + radiusCosCoefficient * floatRadius;
+            float xCoordMinText = floatViewWidthHalf + radiusCosCoefficient * floatRadius;
 
-        canvas.drawText(minValue, xCoordMinText, yCoordText, paint);
+            canvas.drawText(minValue, xCoordMinText, yCoordText, paint);
 
-        double maxValuePositionDegrees = (double) startAngle + sweepAngle + 15;
-        double maxValuePositionRadians = AngleUtils.convertToRadians(maxValuePositionDegrees);
-        float maxValRadiusCosCoefficient = (float) Math.cos(maxValuePositionRadians);
+            double maxValuePositionDegrees = (double) startAngle + sweepAngle + 15;
+            double maxValuePositionRadians = AngleUtils.convertToRadians(maxValuePositionDegrees);
+            float maxValRadiusCosCoefficient = (float) Math.cos(maxValuePositionRadians);
 
-        float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * floatRadius;
+            float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * floatRadius;
 
-        canvas.drawText(maxValue, xCoordMaxText, yCoordText, paint);
+            canvas.drawText(maxValue, xCoordMaxText, yCoordText, paint);
+        }
 
-        initGoalPaint();
+        if(hasGoalIndicator) {
+            initGoalPaint();
 
-        double doubleGoalAngle = (double) goalAngle;
-        double goalAngleRadians = AngleUtils.convertToRadians(doubleGoalAngle);
-        float goalCosCoefficient = (float) Math.cos(goalAngleRadians);
-        float goalSinCoefficient = (float) Math.sin(goalAngleRadians);
+            double doubleGoalAngle = (double) goalAngle;
+            double goalAngleRadians = AngleUtils.convertToRadians(doubleGoalAngle);
+            float goalCosCoefficient = (float) Math.cos(goalAngleRadians);
+            float goalSinCoefficient = (float) Math.sin(goalAngleRadians);
 
-        if(goalArcSweepAngle == 0) {
-            canvas.drawPoint(viewWidthHalf + goalCosCoefficient * radius, viewHeightHalf + goalSinCoefficient * radius, paint);
-        } else if (goalArcSweepAngle > 0) {
-            canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, paint);
+            if(goalArcSweepAngle == 0) {
+                canvas.drawPoint(viewWidthHalf + goalCosCoefficient * radius, viewHeightHalf + goalSinCoefficient * radius, paint);
+            } else if (goalArcSweepAngle > 0) {
+                canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, paint);
+            }
         }
     }
 
@@ -167,6 +178,13 @@ public class RainbowView extends View {
         paint.setAntiAlias(true);
         paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
         paint.setColor(DEFAULT_GOAL_ARC_COLOR);
+    }
+
+    public void initDefaultValues() {
+        setHasMinAndMaxValue(true);
+        setHasUpAndDownButtons(true);
+        setHasGoalIndicator(true);
+        setHasCurrentLevelText(true);
     }
 
     public int getCircleColor() {
@@ -217,6 +235,22 @@ public class RainbowView extends View {
         return maxValue;
     }
 
+    public void setHasMinAndMaxValue(boolean hasMinAndMaxValue) {
+        this.hasMinAndMaxValue = hasMinAndMaxValue;
+    }
+
+    public void setHasUpAndDownButtons(boolean hasUpAndDownButtons) {
+        this.hasUpAndDownButtons = hasUpAndDownButtons;
+    }
+
+    public void setHasGoalIndicator(boolean hasGoalIndicator) {
+        this.hasGoalIndicator = hasGoalIndicator;
+    }
+
+    public void setHasCurrentLevelText(boolean hasCurrentLevelText) {
+        this.hasCurrentLevelText = hasCurrentLevelText;
+    }
+
     public void setCircleColor(int circleColor) {
         this.circleColor = circleColor;
         invalidateAndRequestLayout();
@@ -242,7 +276,6 @@ public class RainbowView extends View {
         invalidateAndRequestLayout();
     }
 
-
     public void setStartAngle(float startAngle) {
         this.startAngle = startAngle;
         invalidateAndRequestLayout();
@@ -266,7 +299,6 @@ public class RainbowView extends View {
     public void setMaxValue(String maxValue) {
         this.maxValue = maxValue;
         invalidateAndRequestLayout();
-
     }
 
     public void setMinValue(String minValue) {
