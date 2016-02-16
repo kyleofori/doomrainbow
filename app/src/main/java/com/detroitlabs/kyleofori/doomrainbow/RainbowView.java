@@ -28,9 +28,10 @@ public class RainbowView extends View {
     private String minString, maxString;
     private Paint paint;
     private RectF rectF;
+    private ExtremeValue minValue, maxValue;
     private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
-    private boolean hasMinAndMaxValue;
+    private boolean hasExtremeValues;
     private boolean hasUpAndDownButtons;
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
@@ -44,6 +45,8 @@ public class RainbowView extends View {
         super(context, attrs);
         paint = new Paint();
         rectF = new RectF();
+        minValue = new ExtremeValue();
+        maxValue = new ExtremeValue();
         setStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
         setSweepAngle(DEFAULT_BACKGROUND_SWEEP_ANGLE);
         setGoalAngle(DEFAULT_OPTIONAL_GOAL_ANGLE);
@@ -83,7 +86,6 @@ public class RainbowView extends View {
 
         rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
-        float floatViewWidthHalf = (float) viewWidthHalf;
         float floatViewHeightHalf = (float) viewHeightHalf;
         float floatRadius = (float) radius;
         float yCoordText = floatViewHeightHalf + floatRadius;
@@ -110,24 +112,13 @@ public class RainbowView extends View {
                     viewHeightHalf + currentLevelSinCoefficient * radius * 1.25f, paint);
         }
 
-        if(hasMinAndMaxValue) {
+        if(hasExtremeValues) {
             initValuePaint(textSizeValue);
-            double minValuePositionDegrees = (double) startAngle - 15;
-            double minValuePositionRadians = AngleUtils.convertToRadians(minValuePositionDegrees);
-            float minValRadiusCosCoefficient = (float) Math.cos(minValuePositionRadians);
 
-            float xCoordMinText = floatViewWidthHalf + minValRadiusCosCoefficient * floatRadius;
-            ExtremeValue minValue = new ExtremeValue(xCoordMinText, yCoordText, minString);
-
+            initMinValue(radius, yCoordText);
             drawValue(canvas, minValue);
 
-            double maxValuePositionDegrees = (double) startAngle + sweepAngle + 15;
-            double maxValuePositionRadians = AngleUtils.convertToRadians(maxValuePositionDegrees);
-            float maxValRadiusCosCoefficient = (float) Math.cos(maxValuePositionRadians);
-
-            float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * floatRadius;
-            ExtremeValue maxValue = new ExtremeValue(xCoordMaxText, yCoordText, maxString);
-
+            initMaxValue(radius, yCoordText);
             drawValue(canvas, maxValue);
         }
 
@@ -149,6 +140,25 @@ public class RainbowView extends View {
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
         canvas.drawText(value.getText(), value.getXCoordinate(), value.getYCoordinate(), paint);
+    }
+
+    private void initMinValue(int radius, float yCoordText) {
+        float minValRadiusCosCoefficient = getRadiusCosineCoefficient(startAngle - 15);
+        float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
+        float xCoordMinText = floatViewWidthHalf + minValRadiusCosCoefficient * (float) radius;
+        minValue.set(xCoordMinText, yCoordText, minString);
+    }
+
+    private void initMaxValue(int radius, float yCoordText) {
+        float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(startAngle + sweepAngle + 15);
+        float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
+        float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * (float) radius;
+        maxValue.set(xCoordMaxText, yCoordText, maxString);
+    }
+
+    private float getRadiusCosineCoefficient(float valuePositionInDegrees) {
+        double valuePositionInRadians = AngleUtils.convertToRadians((double) valuePositionInDegrees);
+        return (float) Math.cos(valuePositionInRadians);
     }
 
     private void initBackgroundArcPaint() {
@@ -187,7 +197,7 @@ public class RainbowView extends View {
     }
 
     public void initDefaultValues() {
-        setHasMinAndMaxValue(true);
+        setHasExtremeValues(true);
         setHasUpAndDownButtons(true);
         setHasGoalIndicator(true);
         setHasCurrentLevelText(true);
@@ -265,8 +275,8 @@ public class RainbowView extends View {
         return maxString;
     }
 
-    public void setHasMinAndMaxValue(boolean hasMinAndMaxValue) {
-        this.hasMinAndMaxValue = hasMinAndMaxValue;
+    public void setHasExtremeValues(boolean hasExtremeValues) {
+        this.hasExtremeValues = hasExtremeValues;
     }
 
     public void setHasUpAndDownButtons(boolean hasUpAndDownButtons) {
