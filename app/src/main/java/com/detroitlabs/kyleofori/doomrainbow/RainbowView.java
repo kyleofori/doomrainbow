@@ -32,7 +32,7 @@ public class RainbowView extends View {
     private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
     private boolean hasExtremeValues;
-    private boolean hasUpAndDownButtons;
+    private boolean hasChangeButtons;
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
 
@@ -136,6 +136,31 @@ public class RainbowView extends View {
                 canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, paint);
             }
         }
+
+        if(hasChangeButtons) {
+            initButtonsPaint();
+
+            //draw the increase button circle...but is it a pressable object?????!!!
+            drawIncreaseButtonCircle(canvas, viewWidthHalf + 2*radius/3, viewHeightHalf);
+            //draw the decrease button circle
+
+            //when up button is pressed, increase goal indicator
+            //when down button is pressed, decrease goal indicator
+            //if goal indicator is at high point, disable increase button
+                //change its color
+                //prevent it from having any effect
+            //v.v.
+
+
+
+        }
+    }
+
+    private void drawIncreaseButtonCircle(Canvas canvas, float buttonCenterXCoord, float buttonCenterYCoord) {
+        canvas.drawCircle(buttonCenterXCoord, buttonCenterYCoord, DEFAULT_ARC_WIDTH, paint);
+        paint.setColor(Color.WHITE);
+        canvas.drawText("+", buttonCenterXCoord - 1, buttonCenterYCoord + DEFAULT_ARC_WIDTH - 2, paint);
+
     }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
@@ -196,9 +221,14 @@ public class RainbowView extends View {
         paint.setColor(DEFAULT_GOAL_ARC_COLOR);
     }
 
+    private void initButtonsPaint() {
+        paint.setColor(0xFFEEEEEE);
+        paint.setStyle(Paint.Style.FILL);
+    }
+
     public void initDefaultValues() {
         setHasExtremeValues(true);
-        setHasUpAndDownButtons(true);
+        setHasChangeButtons(true);
         setHasGoalIndicator(true);
         setHasCurrentLevelText(true);
     }
@@ -279,8 +309,8 @@ public class RainbowView extends View {
         this.hasExtremeValues = hasExtremeValues;
     }
 
-    public void setHasUpAndDownButtons(boolean hasUpAndDownButtons) {
-        this.hasUpAndDownButtons = hasUpAndDownButtons;
+    public void setHasChangeButtons(boolean hasChangeButtons) {
+        this.hasChangeButtons = hasChangeButtons;
     }
 
     public void setHasGoalIndicator(boolean hasGoalIndicator) {
