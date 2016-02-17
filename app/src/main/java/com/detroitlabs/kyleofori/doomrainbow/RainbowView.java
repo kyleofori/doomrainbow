@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 
 public class RainbowView extends FrameLayout {
@@ -43,6 +44,14 @@ public class RainbowView extends FrameLayout {
 
     public RainbowView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    private void init() {
         this.setWillNotDraw(false);
         paint = new Paint();
         rectF = new RectF();
@@ -62,8 +71,85 @@ public class RainbowView extends FrameLayout {
         initDefaultValues();
     }
 
-    public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        //The tutorial is not calling super.
+        super.onLayout(changed, left, top, right, bottom);
+
+        //There should be two children; think I need to specify this in XML.
+        final int count = getChildCount();
+        System.out.println("onLayout() " + count);
+        int curWidth, curHeight, curLeft, curTop, maxHeight;
+
+        //This was for finding out what the dimensions of the space where children could go should be.
+        final int childLeft = this.getPaddingLeft();
+        final int childTop = this.getPaddingTop();
+        final int childRight = this.getPaddingRight();
+        final int childBottom = this.getPaddingBottom();
+        final int childWidth = childRight - childLeft;
+        final int childHeight = childBottom - childTop;
+
+        maxHeight = 0;
+        curLeft = childLeft;
+        curTop = childTop;
+
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+
+            if(child.getVisibility() == GONE) {
+                return;
+            }
+
+            child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.AT_MOST));
+            curWidth = child.getMeasuredWidth();
+            curHeight = child.getMeasuredHeight();
+
+            //The following is specific to the example where tags are supposed to stack on each other.
+            //It will not be relevant to what I am doing.
+            if(curLeft + curWidth >= childRight) {
+                curLeft = childLeft;
+                curTop += maxHeight;
+                maxHeight = 0;
+            }
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        //The tutorial is not calling super.
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        int count = getChildCount();
+        System.out.println("onMeasure() " + count);
+
+        int maxHeight = 0;
+        int maxWidth = 0;
+        int childState = 0;
+        int leftWidth = 0;
+        int rowCount = 0;
+
+        for (int i = 0; i < count; i++) {
+            //This is similar to what's in onLayout()
+            final View child = getChildAt(i);
+
+            if (child.getVisibility() == GONE) {
+                continue;
+            }
+
+            measureChild(child, widthMeasureSpec, heightMeasureSpec);
+            maxWidth += Math.max(maxWidth, child.getMeasuredWidth());
+            leftWidth += child.getMeasuredWidth();
+
+            //Code in tutorial below this, an if-else statement, has to do with bumping objects
+            //down to the next row. That's not what I need, so I'm not including it.
+        }
+
+        maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
+        maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
+
+        setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
+                resolveSizeAndState(maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
     }
 
     @Override
