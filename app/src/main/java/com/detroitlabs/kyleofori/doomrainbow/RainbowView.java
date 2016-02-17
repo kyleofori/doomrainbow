@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 public class RainbowView extends FrameLayout {
@@ -36,6 +39,7 @@ public class RainbowView extends FrameLayout {
     private boolean hasChangeButtons;
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
+    int deviceWidth;
 
 
     public RainbowView(Context context) {
@@ -69,6 +73,11 @@ public class RainbowView extends FrameLayout {
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
         initDefaultValues();
+
+        final Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Point deviceDisplay = new Point();
+        display.getSize(deviceDisplay);
+        deviceWidth = deviceDisplay.x;
     }
 
     @Override
@@ -76,7 +85,7 @@ public class RainbowView extends FrameLayout {
         //The tutorial is not calling super.
         super.onLayout(changed, left, top, right, bottom);
 
-        //There should be two children; think I need to specify this in XML.
+        //There should be two children; I need to specify this in Java, in MainActivity.
         final int count = getChildCount();
         System.out.println("onLayout() " + count);
         int curWidth, curHeight, curLeft, curTop, maxHeight;
@@ -84,8 +93,8 @@ public class RainbowView extends FrameLayout {
         //This was for finding out what the dimensions of the space where children could go should be.
         final int childLeft = this.getPaddingLeft();
         final int childTop = this.getPaddingTop();
-        final int childRight = this.getPaddingRight();
-        final int childBottom = this.getPaddingBottom();
+        final int childRight = this.getMeasuredWidth() - this.getPaddingRight();
+        final int childBottom = this.getMeasuredHeight() - this.getPaddingBottom();
         final int childWidth = childRight - childLeft;
         final int childHeight = childBottom - childTop;
 
@@ -112,6 +121,14 @@ public class RainbowView extends FrameLayout {
                 curTop += maxHeight;
                 maxHeight = 0;
             }
+
+            //This child.layout() prevents the tagViews from appearing on screen...
+            //...when RainbowView extends FrameLayout, but not ViewGroup.
+            child.layout(curLeft, curTop, curLeft + curWidth, curTop + curHeight);
+            if(maxHeight < curHeight) {
+                maxHeight = curHeight;
+            }
+            curLeft += curWidth;
         }
     }
 
@@ -142,7 +159,14 @@ public class RainbowView extends FrameLayout {
             leftWidth += child.getMeasuredWidth();
 
             //Code in tutorial below this, an if-else statement, has to do with bumping objects
-            //down to the next row. That's not what I need, so I'm not including it.
+            //down to the next row. That's not what I need...but I'm including it for now.
+            if ((leftWidth / deviceWidth) > rowCount) {
+                maxHeight += child.getMeasuredHeight();
+                rowCount++;
+            } else {
+                maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
+            }
+            childState = combineMeasuredStates(childState, child.getMeasuredState());
         }
 
         maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());

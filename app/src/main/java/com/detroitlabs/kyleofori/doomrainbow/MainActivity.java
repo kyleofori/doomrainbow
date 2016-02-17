@@ -3,10 +3,12 @@ package com.detroitlabs.kyleofori.doomrainbow;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -18,8 +20,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
+
+        LayoutInflater layoutInflater = getLayoutInflater();
+        String tag;
+        for(int i = 0; i <= 1; i++) {
+            if(i == 0) {
+                tag = "-";
+            } else {
+                tag = "+";
+            }
+            View tagView = layoutInflater.inflate(R.layout.tag_layout, rainbowView, false);
+
+            TextView tagTextView = (TextView) tagView.findViewById(R.id.tagTextView);
+            tagTextView.setText(tag);
+            //This is where a view is added as a child to our view group!
+            rainbowView.addView(tagView);
+        }
+
         pressButton = (Button) findViewById(R.id.press_button);
         pressButton.setOnClickListener(this);
+
+
     }
 
 
