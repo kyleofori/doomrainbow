@@ -6,9 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.View;
+import android.widget.FrameLayout;
 
-public class RainbowView extends View {
+public class RainbowView extends FrameLayout {
 
     private static final float DEFAULT_BACKGROUND_START_ANGLE = 135;
     private static final float DEFAULT_BACKGROUND_SWEEP_ANGLE = 270;
@@ -43,6 +43,7 @@ public class RainbowView extends View {
 
     public RainbowView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.setWillNotDraw(false);
         paint = new Paint();
         rectF = new RectF();
         minValue = new ExtremeValue();
