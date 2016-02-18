@@ -31,7 +31,7 @@ public class RainbowView extends FrameLayout {
     private String centerText, currentLevelText;
     private String minString, maxString;
     private Paint paint;
-    private RectF rectF;
+    private RectF rectF, inscribedRectF;
     private ExtremeValue minValue, maxValue;
     private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
@@ -39,7 +39,10 @@ public class RainbowView extends FrameLayout {
     private boolean hasChangeButtons;
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
-    int deviceWidth;
+    private int deviceWidth;
+    private int radius;
+    private int viewWidthHalf;
+    private int viewHeightHalf;
 
 
     public RainbowView(Context context) {
@@ -59,6 +62,7 @@ public class RainbowView extends FrameLayout {
         this.setWillNotDraw(false);
         paint = new Paint();
         rectF = new RectF();
+        inscribedRectF = new RectF();
         minValue = new ExtremeValue();
         maxValue = new ExtremeValue();
         setStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
@@ -84,17 +88,33 @@ public class RainbowView extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         //The tutorial is not calling super.
         super.onLayout(changed, left, top, right, bottom);
+        viewWidthHalf = getMeasuredWidth() / 2;
+        viewHeightHalf = getMeasuredHeight() / 2;
+
+        if(viewHeightHalf > viewWidthHalf) {
+            radius = viewWidthHalf - 70;
+        } else {
+            radius = viewHeightHalf - 70;
+        }
+
+        inscribedRectF.set(
+                (float) (viewWidthHalf - radius*Math.cos(Math.PI/6)),
+                (float) (viewHeightHalf - radius*Math.sin(Math.PI/6)),
+                (float) (viewWidthHalf + radius*Math.cos(Math.PI/6)),
+                (float) (viewHeightHalf + radius*Math.sin(Math.PI/6))
+                );
 
         //There should be two children; I need to specify this in Java, in MainActivity.
         final int count = getChildCount();
-        System.out.println("onLayout() " + count);
+
         int curWidth, curHeight, curLeft, curTop, maxHeight;
 
-        //This was for finding out what the dimensions of the space where children could go should be.
-        final int childLeft = this.getPaddingLeft();
-        final int childTop = this.getPaddingTop();
-        final int childRight = this.getMeasuredWidth() - this.getPaddingRight();
-        final int childBottom = this.getMeasuredHeight() - this.getPaddingBottom();
+        //This was for determining the space where children should be.
+        //childLeft should be relative to the radius of the circle.
+        final int childLeft = Math.round(inscribedRectF.left);
+        final int childTop = Math.round(inscribedRectF.top);
+        final int childRight = Math.round(inscribedRectF.right);
+        final int childBottom = Math.round(inscribedRectF.bottom);
         final int childWidth = childRight - childLeft;
         final int childHeight = childBottom - childTop;
 
@@ -178,23 +198,6 @@ public class RainbowView extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //draw view
-        //get half of width and height, since we're working with circle
-        int viewWidthHalf = this.getMeasuredWidth()/2;
-        int viewHeightHalf = this.getMeasuredHeight()/2;
-
-        //set radius to be a little smaller than half of whatever side of display is shorter
-        //and set text size
-        int radius;
-        float textSizeValue;
-        if(viewHeightHalf > viewWidthHalf) {
-            radius = viewWidthHalf - 70;
-            textSizeValue = 50;
-        } else {
-            radius = viewHeightHalf - 70;
-            textSizeValue = 40;
-        }
-
         rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
         float floatViewHeightHalf = (float) viewHeightHalf;
@@ -224,6 +227,13 @@ public class RainbowView extends FrameLayout {
         }
 
         if(hasExtremeValues) {
+            float textSizeValue;
+            if(viewHeightHalf > viewWidthHalf) {
+                textSizeValue = 50;
+            } else {
+                textSizeValue = 40;
+            }
+
             initValuePaint(textSizeValue);
 
             initMinValue(radius, yCoordText);
