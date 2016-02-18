@@ -40,9 +40,9 @@ public class RainbowView extends FrameLayout {
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
     private int deviceWidth;
-    private int radius;
-    private int viewWidthHalf;
-    private int viewHeightHalf;
+    private float radius;
+    private float viewWidthHalf;
+    private float viewHeightHalf;
 
 
     public RainbowView(Context context) {
@@ -98,10 +98,10 @@ public class RainbowView extends FrameLayout {
         }
 
         inscribedRectF.set(
-                (float) (viewWidthHalf - radius*Math.cos(Math.PI/6)),
-                (float) (viewHeightHalf - radius*Math.sin(Math.PI/6)),
-                (float) (viewWidthHalf + radius*Math.cos(Math.PI/6)),
-                (float) (viewHeightHalf + radius*Math.sin(Math.PI/6))
+                viewWidthHalf - (float) (radius*Math.cos(Math.PI/6)),
+                viewHeightHalf - (float) (radius*Math.sin(Math.PI/6)),
+                viewWidthHalf + (float) (radius*Math.cos(Math.PI/6)),
+                viewHeightHalf + (float) (radius*Math.sin(Math.PI/6))
                 );
 
         //There should be two children; I need to specify this in Java, in MainActivity.
@@ -200,10 +200,7 @@ public class RainbowView extends FrameLayout {
     protected void onDraw(Canvas canvas) {
         rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
-        float floatViewHeightHalf = (float) viewHeightHalf;
-        float floatRadius = (float) radius;
-        float yCoordText = floatViewHeightHalf + floatRadius;
-
+        float yCoordText = viewHeightHalf + radius;
 
         initBackgroundArcPaint();
 
@@ -288,17 +285,17 @@ public class RainbowView extends FrameLayout {
         canvas.drawText(value.getText(), value.getXCoordinate(), value.getYCoordinate(), paint);
     }
 
-    private void initMinValue(int radius, float yCoordText) {
+    private void initMinValue(float radius, float yCoordText) {
         float minValRadiusCosCoefficient = getRadiusCosineCoefficient(startAngle - 15);
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
-        float xCoordMinText = floatViewWidthHalf + minValRadiusCosCoefficient * (float) radius;
+        float xCoordMinText = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
         minValue.set(xCoordMinText, yCoordText, minString);
     }
 
-    private void initMaxValue(int radius, float yCoordText) {
+    private void initMaxValue(float radius, float yCoordText) {
         float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(startAngle + sweepAngle + 15);
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
-        float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * (float) radius;
+        float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * radius;
         maxValue.set(xCoordMaxText, yCoordText, maxString);
     }
 
