@@ -4,12 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 public class RainbowView extends FrameLayout {
@@ -39,7 +36,6 @@ public class RainbowView extends FrameLayout {
     private boolean hasChangeButtons;
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
-    private int deviceWidth;
     private float radius;
     private float viewWidthHalf;
     private float viewHeightHalf;
@@ -77,16 +73,10 @@ public class RainbowView extends FrameLayout {
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
         initDefaultValues();
-
-        final Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        Point deviceDisplay = new Point();
-        display.getSize(deviceDisplay);
-        deviceWidth = deviceDisplay.x;
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        //The tutorial is not calling super.
         super.onLayout(changed, left, top, right, bottom);
         viewWidthHalf = getMeasuredWidth() / 2;
         viewHeightHalf = getMeasuredHeight() / 2;
@@ -104,7 +94,6 @@ public class RainbowView extends FrameLayout {
                 viewHeightHalf + (float) (radius*Math.sin(Math.PI/6))
                 );
 
-        //There should be two children; I need to specify this in Java, in MainActivity.
         final int count = getChildCount();
 
         if(count != 2) {
@@ -113,8 +102,6 @@ public class RainbowView extends FrameLayout {
 
         int currentChildWidth, currentChildHeight, currentChildLeft, currentChildTop;
 
-        //child_ represent the coordinates of the entire space where children should be.
-        //childrenSpaceLeft should be relative to the radius of the circle.
         final int childrenSpaceLeft = Math.round(inscribedRectF.left);
         final int childrenSpaceTop = Math.round(inscribedRectF.top);
         final int childrenSpaceRight = Math.round(inscribedRectF.right);
@@ -140,8 +127,6 @@ public class RainbowView extends FrameLayout {
                 currentChildLeft = childrenSpaceRight - currentChildWidth;
             }
 
-            //The following is specific to the example where tags are supposed to stack up next to
-            // each other.
             if(currentChildLeft + currentChildWidth > childrenSpaceRight) {
                 throw new IllegalStateException("A button is being laid out beyond the right " +
                         "boundary. currentChildLeft: " + currentChildLeft +
@@ -160,11 +145,9 @@ public class RainbowView extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        //The tutorial is not calling super.
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int count = getChildCount();
-        System.out.println("onMeasure() " + count);
 
         int maxHeight = 0;
         int maxWidth = 0;
