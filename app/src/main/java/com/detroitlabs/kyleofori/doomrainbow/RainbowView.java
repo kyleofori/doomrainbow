@@ -33,7 +33,7 @@ public class RainbowView extends FrameLayout {
     private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
     private boolean hasExtremeValues;
-    private boolean hasChangeButtons;
+    public boolean hasChangeButtons;
     private boolean hasGoalIndicator;
     private boolean hasCurrentLevelText;
     private float radius;
@@ -97,7 +97,7 @@ public class RainbowView extends FrameLayout {
         final int count = getChildCount();
 
         if(count != 2) {
-            throw new IllegalStateException("You may only add two change buttons (-, +) to this view.");
+            throw new IllegalStateException("You may only add two children to this view.");
         }
 
         int currentChildWidth, currentChildHeight, currentChildLeft, currentChildTop;
@@ -128,10 +128,7 @@ public class RainbowView extends FrameLayout {
             }
 
             if(currentChildLeft + currentChildWidth > childrenSpaceRight) {
-                throw new IllegalStateException("A button is being laid out beyond the right " +
-                        "boundary. currentChildLeft: " + currentChildLeft +
-                        "currentChildWidth: " + currentChildWidth +
-                        "childrenSpaceRight: " + childrenSpaceRight);
+                throw new IllegalStateException("A button is being laid out beyond the right boundary.");
             }
 
             child.layout(
@@ -232,32 +229,7 @@ public class RainbowView extends FrameLayout {
                 canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, paint);
             }
         }
-
-//        if(hasChangeButtons) {
-//            initButtonsPaint();
-
-            //draw the increase button circle...but is it a pressable object?????!!!
-//            drawIncreaseButtonCircle(canvas, viewWidthHalf + 2*radius/3, viewHeightHalf);
-            //draw the decrease button circle
-
-            //when up button is pressed, increase goal indicator
-            //when down button is pressed, decrease goal indicator
-            //if goal indicator is at high point, disable increase button
-                //change its color
-                //prevent it from having any effect
-            //v.v.
-
-
-
-//        }
     }
-
-//    private void drawIncreaseButtonCircle(Canvas canvas, float buttonCenterXCoord, float buttonCenterYCoord) {
-//        canvas.drawCircle(buttonCenterXCoord, buttonCenterYCoord, DEFAULT_ARC_WIDTH, paint);
-//        paint.setColor(Color.WHITE);
-//        canvas.drawText("+", buttonCenterXCoord - 1, buttonCenterYCoord + DEFAULT_ARC_WIDTH - 2, paint);
-//
-//    }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
         canvas.drawText(value.getText(), value.getXCoordinate(), value.getYCoordinate(), paint);
@@ -315,11 +287,6 @@ public class RainbowView extends FrameLayout {
         paint.setAntiAlias(true);
         paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
         paint.setColor(DEFAULT_GOAL_ARC_COLOR);
-    }
-
-    private void initButtonsPaint() {
-        paint.setColor(0xFFEEEEEE);
-        paint.setStyle(Paint.Style.FILL);
     }
 
     public void initDefaultValues() {
