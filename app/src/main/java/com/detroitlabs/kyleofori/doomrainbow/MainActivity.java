@@ -67,12 +67,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        rainbowView.setCircleColor(Color.RED);
         rainbowView.setLabelColor(Color.MAGENTA);
         rainbowView.setCenterText("¡Orale!");
         float angle = rainbowView.getCurrentLevelAngle();
-        angle += 30;
-        rainbowView.setCurrentLevelAngle(angle);
-        rainbowView.increaseGoal();
+        if(rainbowView.getGoalAngle() >= angle + 30) {
+            rainbowView.setCurrentLevelAngle(angle + 30);
+        } else {
+            rainbowView.setCurrentLevelAngle(rainbowView.getGoalAngle());
+        }
     }
 }
