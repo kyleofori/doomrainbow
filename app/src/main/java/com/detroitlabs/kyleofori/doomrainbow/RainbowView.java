@@ -31,7 +31,7 @@ public class RainbowView extends FrameLayout {
     private Paint paint;
     private RectF rectF, inscribedRectF;
     private ExtremeValue minValue, maxValue;
-    private float startAngle, backgroundSweepAngle, goalAngle, currentLevelAngle;
+    private float backgroundStartAngle, backgroundSweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
     public boolean hasExtremeValues;
     public boolean hasChangeButtons;
@@ -62,7 +62,7 @@ public class RainbowView extends FrameLayout {
         inscribedRectF = new RectF();
         minValue = new ExtremeValue();
         maxValue = new ExtremeValue();
-        setStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
+        setBackgroundStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
         setBackgroundSweepAngle(DEFAULT_BACKGROUND_SWEEP_ANGLE);
         setGoalAngle(DEFAULT_GOAL_ANGLE);
         setMinString(DEFAULT_MIN_VALUE);
@@ -180,11 +180,11 @@ public class RainbowView extends FrameLayout {
 
         initBackgroundArcPaint();
 
-        canvas.drawArc(rectF, startAngle, backgroundSweepAngle, false, paint);
+        canvas.drawArc(rectF, backgroundStartAngle, backgroundSweepAngle, false, paint);
 
         initCurrentLevelArcPaint();
 
-        canvas.drawArc(rectF, startAngle, currentLevelAngle - startAngle, false, paint);
+        canvas.drawArc(rectF, backgroundStartAngle, currentLevelAngle - backgroundStartAngle, false, paint);
 
         initCenterTextPaint();
 
@@ -241,14 +241,14 @@ public class RainbowView extends FrameLayout {
     }
 
     private void initMinValue(float radius, float yCoordText) {
-        float minValRadiusCosCoefficient = getRadiusCosineCoefficient(startAngle - 15);
+        float minValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle - 15);
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
         float xCoordMinText = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
         minValue.set(xCoordMinText, yCoordText, minString);
     }
 
     private void initMaxValue(float radius, float yCoordText) {
-        float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(startAngle + backgroundSweepAngle + 15);
+        float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle + backgroundSweepAngle + 15);
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
         float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * radius;
         maxValue.set(xCoordMaxText, yCoordText, maxString);
@@ -365,8 +365,8 @@ public class RainbowView extends FrameLayout {
         return backgroundSweepAngle;
     }
 
-    public float getStartAngle() {
-        return startAngle;
+    public float getBackgroundStartAngle() {
+        return backgroundStartAngle;
     }
 
     public String getMinString() {
@@ -418,8 +418,8 @@ public class RainbowView extends FrameLayout {
         invalidateAndRequestLayout();
     }
 
-    public void setStartAngle(float startAngle) {
-        this.startAngle = startAngle;
+    public void setBackgroundStartAngle(float backgroundStartAngle) {
+        this.backgroundStartAngle = backgroundStartAngle;
         invalidateAndRequestLayout();
     }
 

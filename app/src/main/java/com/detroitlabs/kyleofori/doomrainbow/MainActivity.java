@@ -1,6 +1,5 @@
 package com.detroitlabs.kyleofori.doomrainbow;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +26,12 @@ public class MainActivity extends AppCompatActivity {
                 ImageView tagImageView = (ImageView) changeButton.findViewById(R.id.image);
                 if (i == 0) {
                     tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
+                    changeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            decreaseCurrentLevel();
+                        }
+                    });
                 } else {
                     tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
                     changeButton.setOnClickListener(new View.OnClickListener() {
@@ -64,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void increaseCurrentLevel() {
-        rainbowView.setLabelColor(Color.MAGENTA);
-        rainbowView.setCenterText("¡Orale!");
         float angle = rainbowView.getCurrentLevelAngle();
         if(rainbowView.getGoalAngle() >= angle + 30) {
             rainbowView.setCurrentLevelAngle(angle + 30);
@@ -73,4 +76,14 @@ public class MainActivity extends AppCompatActivity {
             rainbowView.setCurrentLevelAngle(rainbowView.getGoalAngle());
         }
     }
+
+    private void decreaseCurrentLevel() {
+        float angle = rainbowView.getCurrentLevelAngle();
+        if(angle - 30 > rainbowView.getBackgroundStartAngle()) {
+            rainbowView.setCurrentLevelAngle(angle - 30);
+        } else {
+            rainbowView.setCurrentLevelAngle(rainbowView.getBackgroundStartAngle());
+        }
+    }
+
 }
