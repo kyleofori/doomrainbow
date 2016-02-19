@@ -111,8 +111,7 @@ public class RainbowView extends FrameLayout {
             throw new IllegalStateException("You may only add two change buttons (-, +) to this view.");
         }
 
-        //currentChildTop is useful for checking row height, but I won't have multiple rows.
-        int currentChildWidth, currentChildHeight, currentChildLeft, currentChildTop, maxHeight;
+        int currentChildWidth, currentChildHeight, currentChildLeft, currentChildTop;
 
         //child_ represent the coordinates of the entire space where children should be.
         //childrenSpaceLeft should be relative to the radius of the circle.
@@ -123,7 +122,6 @@ public class RainbowView extends FrameLayout {
         final int childrenSpaceWidth = childrenSpaceRight - childrenSpaceLeft;
         final int childrenSpaceHeight = childrenSpaceBottom - childrenSpaceTop;
 
-        maxHeight = 0;
         currentChildLeft = childrenSpaceLeft;
 
         for (int i = 0; i < count; i++) {
@@ -138,13 +136,17 @@ public class RainbowView extends FrameLayout {
             currentChildWidth = child.getMeasuredWidth();
             currentChildHeight = child.getMeasuredHeight();
             currentChildTop = (childrenSpaceTop + childrenSpaceBottom) / 2 - currentChildHeight/2;
+            if(i == 1) {
+                currentChildLeft = childrenSpaceRight - currentChildWidth;
+            }
 
             //The following is specific to the example where tags are supposed to stack up next to
             // each other.
-            if(currentChildLeft + currentChildWidth >= childrenSpaceRight) {
-                currentChildLeft = childrenSpaceLeft;
-                currentChildTop += maxHeight; // bumps current child down a row
-                maxHeight = 0;
+            if(currentChildLeft + currentChildWidth > childrenSpaceRight) {
+                throw new IllegalStateException("A button is being laid out beyond the right " +
+                        "boundary. currentChildLeft: " + currentChildLeft +
+                        "currentChildWidth: " + currentChildWidth +
+                        "childrenSpaceRight: " + childrenSpaceRight);
             }
 
             child.layout(
@@ -153,10 +155,6 @@ public class RainbowView extends FrameLayout {
                     currentChildLeft + currentChildWidth,
                     currentChildTop + currentChildHeight
             );
-            if(maxHeight < currentChildHeight) {
-                maxHeight = currentChildHeight;
-            }
-            currentChildLeft += currentChildWidth;
         }
     }
 
@@ -171,11 +169,8 @@ public class RainbowView extends FrameLayout {
         int maxHeight = 0;
         int maxWidth = 0;
         int childState = 0;
-        int leftWidth = 0;
-        int rowCount = 0;
 
         for (int i = 0; i < count; i++) {
-            //This is similar to what's in onLayout()
             final View child = getChildAt(i);
 
             if (child.getVisibility() == GONE) {
@@ -184,16 +179,8 @@ public class RainbowView extends FrameLayout {
 
             measureChild(child, widthMeasureSpec, heightMeasureSpec);
             maxWidth += Math.max(maxWidth, child.getMeasuredWidth());
-            leftWidth += child.getMeasuredWidth();
+            maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
 
-            //Code in tutorial below this, an if-else statement, has to do with bumping objects
-            //down to the next row. That's not what I need...but I'm including it for now.
-            if ((leftWidth / deviceWidth) > rowCount) { //if that ratio is more than the (int) row count
-                maxHeight += child.getMeasuredHeight();
-                rowCount++;
-            } else {
-                maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
-            }
             childState = combineMeasuredStates(childState, child.getMeasuredState());
         }
 
