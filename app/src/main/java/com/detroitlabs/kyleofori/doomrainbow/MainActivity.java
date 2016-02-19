@@ -22,16 +22,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
 
-        LayoutInflater layoutInflater = getLayoutInflater();
-        for(int i = 0; i <= 1; i++) {
-            View changeButton = layoutInflater.inflate(R.layout.change_button_layout, rainbowView, false);
-            ImageView tagImageView = (ImageView) changeButton.findViewById(R.id.image);
-            if(i==0) {
-                tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
-            } else {
-                tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
+        if(rainbowView.hasChangeButtons) {
+            LayoutInflater layoutInflater = getLayoutInflater();
+            for(int i = 0; i <= 1; i++) {
+                View changeButton = layoutInflater.inflate(R.layout.change_button_layout, rainbowView, false);
+                ImageView tagImageView = (ImageView) changeButton.findViewById(R.id.image);
+                if (i == 0) {
+                    tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
+                } else {
+                    tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
+                }
+                rainbowView.addView(changeButton);
             }
-            rainbowView.addView(changeButton);
         }
 
         pressButton = (Button) findViewById(R.id.press_button);
@@ -39,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
