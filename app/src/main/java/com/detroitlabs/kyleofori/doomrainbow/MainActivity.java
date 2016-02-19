@@ -8,13 +8,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     private RainbowView rainbowView;
-    private Button pressButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +29,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
                 } else {
                     tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
+                    changeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            increaseCurrentLevel();
+                        }
+                    });
                 }
                 rainbowView.addView(changeButton);
             }
         }
-
-        pressButton = (Button) findViewById(R.id.press_button);
-        pressButton.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -64,9 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onClick(View v) {
+    private void increaseCurrentLevel() {
         rainbowView.setLabelColor(Color.MAGENTA);
         rainbowView.setCenterText("¡Orale!");
         float angle = rainbowView.getCurrentLevelAngle();
