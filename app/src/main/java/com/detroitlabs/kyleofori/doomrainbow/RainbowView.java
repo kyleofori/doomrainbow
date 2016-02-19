@@ -32,10 +32,10 @@ public class RainbowView extends FrameLayout {
     private ExtremeValue minValue, maxValue;
     private float startAngle, sweepAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
-    private boolean hasExtremeValues;
+    public boolean hasExtremeValues;
     public boolean hasChangeButtons;
-    private boolean hasGoalIndicator;
-    private boolean hasCurrentLevelText;
+    public boolean hasGoalIndicator;
+    public boolean hasCurrentLevelText;
     private float radius;
     private float viewWidthHalf;
     private float viewHeightHalf;
