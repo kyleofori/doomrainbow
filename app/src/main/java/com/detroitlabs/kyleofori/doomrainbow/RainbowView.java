@@ -107,20 +107,24 @@ public class RainbowView extends FrameLayout {
         //There should be two children; I need to specify this in Java, in MainActivity.
         final int count = getChildCount();
 
-        int curWidth, curHeight, curLeft, curTop, maxHeight;
+        if(count != 2) {
+            throw new IllegalStateException("You may only add two change buttons (-, +) to this view.");
+        }
 
-        //This was for determining the space where children should be.
-        //childLeft should be relative to the radius of the circle.
-        final int childLeft = Math.round(inscribedRectF.left);
-        final int childTop = Math.round(inscribedRectF.top);
-        final int childRight = Math.round(inscribedRectF.right);
-        final int childBottom = Math.round(inscribedRectF.bottom);
-        final int childWidth = childRight - childLeft;
-        final int childHeight = childBottom - childTop;
+        //currentChildTop is useful for checking row height, but I won't have multiple rows.
+        int currentChildWidth, currentChildHeight, currentChildLeft, currentChildTop, maxHeight;
+
+        //child_ represent the coordinates of the entire space where children should be.
+        //childrenSpaceLeft should be relative to the radius of the circle.
+        final int childrenSpaceLeft = Math.round(inscribedRectF.left);
+        final int childrenSpaceTop = Math.round(inscribedRectF.top);
+        final int childrenSpaceRight = Math.round(inscribedRectF.right);
+        final int childrenSpaceBottom = Math.round(inscribedRectF.bottom);
+        final int childrenSpaceWidth = childrenSpaceRight - childrenSpaceLeft;
+        final int childrenSpaceHeight = childrenSpaceBottom - childrenSpaceTop;
 
         maxHeight = 0;
-        curLeft = childLeft;
-        curTop = childTop;
+        currentChildLeft = childrenSpaceLeft;
 
         for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
@@ -129,26 +133,30 @@ public class RainbowView extends FrameLayout {
                 return;
             }
 
-            child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
-                    MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.AT_MOST));
-            curWidth = child.getMeasuredWidth();
-            curHeight = child.getMeasuredHeight();
+            child.measure(MeasureSpec.makeMeasureSpec(childrenSpaceWidth, MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(childrenSpaceHeight, MeasureSpec.AT_MOST));
+            currentChildWidth = child.getMeasuredWidth();
+            currentChildHeight = child.getMeasuredHeight();
+            currentChildTop = (childrenSpaceTop + childrenSpaceBottom) / 2 - currentChildHeight/2;
 
-            //The following is specific to the example where tags are supposed to stack on each other.
-            //It will not be relevant to what I am doing.
-            if(curLeft + curWidth >= childRight) {
-                curLeft = childLeft;
-                curTop += maxHeight;
+            //The following is specific to the example where tags are supposed to stack up next to
+            // each other.
+            if(currentChildLeft + currentChildWidth >= childrenSpaceRight) {
+                currentChildLeft = childrenSpaceLeft;
+                currentChildTop += maxHeight; // bumps current child down a row
                 maxHeight = 0;
             }
 
-            //This child.layout() prevents the tagViews from appearing on screen...
-            //...when RainbowView extends FrameLayout, but not ViewGroup.
-            child.layout(curLeft, curTop, curLeft + curWidth, curTop + curHeight);
-            if(maxHeight < curHeight) {
-                maxHeight = curHeight;
+            child.layout(
+                    currentChildLeft,
+                    currentChildTop,
+                    currentChildLeft + currentChildWidth,
+                    currentChildTop + currentChildHeight
+            );
+            if(maxHeight < currentChildHeight) {
+                maxHeight = currentChildHeight;
             }
-            curLeft += curWidth;
+            currentChildLeft += currentChildWidth;
         }
     }
 
@@ -180,7 +188,7 @@ public class RainbowView extends FrameLayout {
 
             //Code in tutorial below this, an if-else statement, has to do with bumping objects
             //down to the next row. That's not what I need...but I'm including it for now.
-            if ((leftWidth / deviceWidth) > rowCount) {
+            if ((leftWidth / deviceWidth) > rowCount) { //if that ratio is more than the (int) row count
                 maxHeight += child.getMeasuredHeight();
                 rowCount++;
             } else {
