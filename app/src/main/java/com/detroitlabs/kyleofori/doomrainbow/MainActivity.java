@@ -2,13 +2,14 @@ package com.detroitlabs.kyleofori.doomrainbow;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,19 +23,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
 
         LayoutInflater layoutInflater = getLayoutInflater();
-        String tag;
         for(int i = 0; i <= 1; i++) {
-            if(i == 0) {
-                tag = "-";
+            View changeButton = layoutInflater.inflate(R.layout.change_button_layout, rainbowView, false);
+            ImageView tagImageView = (ImageView) changeButton.findViewById(R.id.image);
+            if(i==0) {
+                tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
             } else {
-                tag = "+";
+                tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
             }
-            View tagView = layoutInflater.inflate(R.layout.tag_layout, rainbowView, false);
-
-            TextView tagTextView = (TextView) tagView.findViewById(R.id.tagTextView);
-            tagTextView.setText(tag);
-            //This is where a view is added as a child to our view group!
-            rainbowView.addView(tagView);
+            rainbowView.addView(changeButton);
         }
 
         pressButton = (Button) findViewById(R.id.press_button);

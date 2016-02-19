@@ -233,11 +233,11 @@ public class RainbowView extends FrameLayout {
             }
         }
 
-        if(hasChangeButtons) {
-            initButtonsPaint();
+//        if(hasChangeButtons) {
+//            initButtonsPaint();
 
             //draw the increase button circle...but is it a pressable object?????!!!
-            drawIncreaseButtonCircle(canvas, viewWidthHalf + 2*radius/3, viewHeightHalf);
+//            drawIncreaseButtonCircle(canvas, viewWidthHalf + 2*radius/3, viewHeightHalf);
             //draw the decrease button circle
 
             //when up button is pressed, increase goal indicator
@@ -249,15 +249,15 @@ public class RainbowView extends FrameLayout {
 
 
 
-        }
+//        }
     }
 
-    private void drawIncreaseButtonCircle(Canvas canvas, float buttonCenterXCoord, float buttonCenterYCoord) {
-        canvas.drawCircle(buttonCenterXCoord, buttonCenterYCoord, DEFAULT_ARC_WIDTH, paint);
-        paint.setColor(Color.WHITE);
-        canvas.drawText("+", buttonCenterXCoord - 1, buttonCenterYCoord + DEFAULT_ARC_WIDTH - 2, paint);
-
-    }
+//    private void drawIncreaseButtonCircle(Canvas canvas, float buttonCenterXCoord, float buttonCenterYCoord) {
+//        canvas.drawCircle(buttonCenterXCoord, buttonCenterYCoord, DEFAULT_ARC_WIDTH, paint);
+//        paint.setColor(Color.WHITE);
+//        canvas.drawText("+", buttonCenterXCoord - 1, buttonCenterYCoord + DEFAULT_ARC_WIDTH - 2, paint);
+//
+//    }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
         canvas.drawText(value.getText(), value.getXCoordinate(), value.getYCoordinate(), paint);
