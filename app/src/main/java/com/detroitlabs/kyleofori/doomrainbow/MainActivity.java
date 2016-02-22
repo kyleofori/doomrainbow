@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     private RainbowView rainbowView;
 
@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
                 View changeButton = layoutInflater.inflate(R.layout.change_button_layout, rainbowView, false);
                 ImageView tagImageView = (ImageView) changeButton.findViewById(R.id.image);
                 if (i == 0) {
+                    changeButton.setTag(getString(R.string.decrease));
                     tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
                     changeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 } else {
+                    changeButton.setTag(getString(R.string.increase));
                     tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
                     changeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -85,5 +87,4 @@ public class MainActivity extends AppCompatActivity {
             rainbowView.setCurrentLevelAngle(rainbowView.getBackgroundStartAngle());
         }
     }
-
 }
