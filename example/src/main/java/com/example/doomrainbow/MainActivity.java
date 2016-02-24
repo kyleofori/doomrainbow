@@ -1,4 +1,4 @@
-package com.detroitlabs.kyleofori.doomrainbow;
+package com.example.doomrainbow;
 
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
 
 public class MainActivity extends AppCompatActivity  {
 
