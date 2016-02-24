@@ -14,6 +14,12 @@ import android.widget.FrameLayout;
 
 public class RainbowView extends FrameLayout {
 
+    private static final Paint BASE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private static final Paint DEFAULT_BACKGROUND_ARC_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_CURRENT_LEVEL_TEXT_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_EXTREME_VALUE_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_GOAL_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_CURRENT_LEVEL_ARC_PAINT = new Paint(BASE_PAINT);
     private static final float DEFAULT_BACKGROUND_START_ANGLE = 135;
     private static final float DEFAULT_BACKGROUND_SWEEP_ANGLE = 270;
     private static final float DEFAULT_GOAL_ANGLE = 330;
@@ -27,8 +33,50 @@ public class RainbowView extends FrameLayout {
     private static final String DEFAULT_MAX_VALUE = "F";
     private static final int DEFAULT_LABEL_COLOR = Color.GRAY;
     private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
-    private static final int DEFAULT_GOAL_ARC_COLOR = Color.GREEN;
-    private static final int DEFAULT_CURRENT_ARC_COLOR = Color.BLUE;
+
+    static {
+        initDefaultBackgroundArcPaint();
+        initDefaultCurrentLevelTextPaint();
+        initDefaultExtremeValuePaint();
+        initDefaultGoalPaint();
+        initDefaultCurrentLevelArcPaint();
+    }
+
+    private static void initDefaultBackgroundArcPaint() {
+        DEFAULT_BACKGROUND_ARC_PAINT.setStyle(Paint.Style.STROKE);
+        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeWidth(20);
+        DEFAULT_BACKGROUND_ARC_PAINT.setColor(Color.GRAY);
+    }
+
+    private static void initDefaultCurrentLevelTextPaint() {
+        DEFAULT_CURRENT_LEVEL_TEXT_PAINT.setColor(Color.BLACK);
+        DEFAULT_CURRENT_LEVEL_TEXT_PAINT.setFakeBoldText(false);
+//        paint.setTextSize(25);
+    }
+
+    private static void initDefaultExtremeValuePaint() {
+//        paint.setTextSize(textSizeValue);
+        DEFAULT_EXTREME_VALUE_PAINT.setColor(Color.BLACK);
+        DEFAULT_EXTREME_VALUE_PAINT.setFakeBoldText(true);
+    }
+
+    private static void initDefaultGoalPaint() {
+        DEFAULT_GOAL_PAINT.setStyle(Paint.Style.STROKE);
+        DEFAULT_GOAL_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        DEFAULT_GOAL_PAINT.setStrokeWidth(20);
+        DEFAULT_GOAL_PAINT.setColor(Color.GREEN);
+    }
+
+    private static void initDefaultCurrentLevelArcPaint() {
+        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStyle(Paint.Style.STROKE);
+        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStrokeWidth(20);
+        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setColor(Color.BLUE);
+    }
+
+
+
     private int circleColor, labelColor;
     private String centerText, currentLevelText;
     private String minString, maxString;
@@ -188,21 +236,13 @@ public class RainbowView extends FrameLayout {
 
         float yCoordText = viewHeightHalf + radius;
 
-        initBackgroundArcPaint();
-
         canvas.drawArc(rectF, backgroundStartAngle, backgroundSweepAngle, false, paint);
 
-        initCurrentLevelArcPaint();
-
         canvas.drawArc(rectF, backgroundStartAngle, valueToDraw - backgroundStartAngle, false, paint);
-
-        initCenterTextPaint();
 
         canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
         if(hasCurrentLevelText) {
-            initCurrentLevelTextPaint();
-
             double doubleCurrentLevelAngle = (double) currentLevelAngle;
             double currentLevelAngleRadians = AngleUtils.convertToRadians(doubleCurrentLevelAngle);
             float currentLevelCosCoefficient = (float) Math.cos(currentLevelAngleRadians);
@@ -214,15 +254,6 @@ public class RainbowView extends FrameLayout {
         }
 
         if(hasExtremeValues) {
-            float textSizeValue;
-            if(viewHeightHalf > viewWidthHalf) {
-                textSizeValue = 50;
-            } else {
-                textSizeValue = 40;
-            }
-
-            initValuePaint(textSizeValue);
-
             initMinValue(radius, yCoordText);
             drawValue(canvas, minValue);
 
@@ -231,8 +262,6 @@ public class RainbowView extends FrameLayout {
         }
 
         if(hasGoalIndicator) {
-            initGoalPaint();
-
             double doubleGoalAngle = (double) goalAngle;
             double goalAngleRadians = AngleUtils.convertToRadians(doubleGoalAngle);
             float goalCosCoefficient = (float) Math.cos(goalAngleRadians);
@@ -283,49 +312,6 @@ public class RainbowView extends FrameLayout {
     private float getRadiusCosineCoefficient(float valuePositionInDegrees) {
         double valuePositionInRadians = AngleUtils.convertToRadians((double) valuePositionInDegrees);
         return (float) Math.cos(valuePositionInRadians);
-    }
-
-    private void initBackgroundArcPaint() {
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
-        paint.setColor(circleColor);
-    }
-
-    private void initCenterTextPaint() {
-        paint.setColor(labelColor);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(50);
-        paint.setStrokeWidth(0);
-    }
-
-    private void initCurrentLevelTextPaint() {
-        paint.setColor(Color.BLACK);
-        paint.setFakeBoldText(false);
-        paint.setTextSize(25);
-    }
-
-    private void initValuePaint(float textSizeValue) {
-        paint.setTextSize(textSizeValue);
-        paint.setColor(Color.BLACK);
-        paint.setFakeBoldText(true);
-    }
-
-    private void initGoalPaint() {
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
-        paint.setColor(DEFAULT_GOAL_ARC_COLOR);
-    }
-
-    private void initCurrentLevelArcPaint() {
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(DEFAULT_ARC_WIDTH);
-        paint.setColor(DEFAULT_CURRENT_ARC_COLOR);
     }
 
     public void initDefaultValues() {
