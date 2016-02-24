@@ -8,6 +8,9 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,7 +20,7 @@ public class RainbowView extends FrameLayout {
     private static final Paint BASE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final Paint DEFAULT_BACKGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_TEXT_PAINT = new Paint(BASE_PAINT);
-    private static final Paint DEFAULT_EXTREME_VALUE_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_EXTREME_VALUE_TEXT_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_GOAL_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_ARC_PAINT = new Paint(BASE_PAINT);
     private static final float DEFAULT_BACKGROUND_START_ANGLE = 135;
@@ -28,24 +31,26 @@ public class RainbowView extends FrameLayout {
     private static final long DEFAULT_ANIMATION_DURATION = 2000;
     private static final String DEFAULT_CENTER_TEXT = "¡Hola!";
     private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
-    private static final int DEFAULT_ARC_WIDTH = 20;
     private static final String DEFAULT_MIN_VALUE = "E";
     private static final String DEFAULT_MAX_VALUE = "F";
     private static final int DEFAULT_LABEL_COLOR = Color.GRAY;
     private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
+    private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
+    private static final int DEFAULT_ARC_STROKE_WIDTH = 20;
+
 
     static {
         initDefaultBackgroundArcPaint();
         initDefaultCurrentLevelTextPaint();
-        initDefaultExtremeValuePaint();
+        initDefaultExtremeValueTextPaint();
         initDefaultGoalPaint();
         initDefaultCurrentLevelArcPaint();
     }
 
     private static void initDefaultBackgroundArcPaint() {
         DEFAULT_BACKGROUND_ARC_PAINT.setStyle(Paint.Style.STROKE);
-        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeCap(Paint.Cap.ROUND);
-        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeWidth(20);
+        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
+        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeWidth(DEFAULT_ARC_STROKE_WIDTH);
         DEFAULT_BACKGROUND_ARC_PAINT.setColor(Color.GRAY);
     }
 
@@ -55,27 +60,28 @@ public class RainbowView extends FrameLayout {
 //        paint.setTextSize(25);
     }
 
-    private static void initDefaultExtremeValuePaint() {
+    private static void initDefaultExtremeValueTextPaint() {
 //        paint.setTextSize(textSizeValue);
-        DEFAULT_EXTREME_VALUE_PAINT.setColor(Color.BLACK);
-        DEFAULT_EXTREME_VALUE_PAINT.setFakeBoldText(true);
+        DEFAULT_EXTREME_VALUE_TEXT_PAINT.setColor(Color.BLACK);
+        DEFAULT_EXTREME_VALUE_TEXT_PAINT.setFakeBoldText(true);
     }
 
     private static void initDefaultGoalPaint() {
-        DEFAULT_GOAL_PAINT.setStyle(Paint.Style.STROKE);
-        DEFAULT_GOAL_PAINT.setStrokeCap(Paint.Cap.ROUND);
-        DEFAULT_GOAL_PAINT.setStrokeWidth(20);
         DEFAULT_GOAL_PAINT.setColor(Color.GREEN);
     }
 
     private static void initDefaultCurrentLevelArcPaint() {
         DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStyle(Paint.Style.STROKE);
-        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStrokeCap(Paint.Cap.ROUND);
-        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStrokeWidth(20);
+        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
+        DEFAULT_CURRENT_LEVEL_ARC_PAINT.setStrokeWidth(DEFAULT_ARC_STROKE_WIDTH);
         DEFAULT_CURRENT_LEVEL_ARC_PAINT.setColor(Color.BLUE);
     }
 
-
+    private Paint customBackgroundArcPaint;
+    private Paint customCurrentLevelTextPaint;
+    private Paint customExtremeValueTextPaint;
+    private Paint customGoalPaint;
+    private Paint customCurrentLevelArcPaint;
 
     private int circleColor, labelColor;
     private String centerText, currentLevelText;
@@ -109,6 +115,116 @@ public class RainbowView extends FrameLayout {
 
     public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    // The following are accessor methods for the different paints used.
+
+
+    @NonNull
+    public Paint getBackgroundArcPaint() {
+        return getPaint(customBackgroundArcPaint, DEFAULT_BACKGROUND_ARC_PAINT);
+    }
+
+    @NonNull
+    public Paint getCurrentLevelTextPaint() {
+        return getPaint(customCurrentLevelTextPaint, DEFAULT_CURRENT_LEVEL_TEXT_PAINT);
+    }
+
+    @NonNull
+    public Paint getExtremeValueTextPaint() {
+        return getPaint(customExtremeValueTextPaint, DEFAULT_EXTREME_VALUE_TEXT_PAINT);
+    }
+
+    @NonNull
+    public Paint getGoalPaint() {
+        return getPaint(customGoalPaint, DEFAULT_GOAL_PAINT);
+    }
+
+    @NonNull
+    public Paint getCurrentLevelArcPaint() {
+        return getPaint(customCurrentLevelArcPaint, DEFAULT_CURRENT_LEVEL_ARC_PAINT);
+    }
+
+    @NonNull
+    public Paint getPaint(@Nullable Paint customPaint, @NonNull Paint defaultPaint) {
+        if(customPaint != null) {
+            return customPaint;
+        } else {
+            return defaultPaint;
+        }
+    }
+
+    // The following methods set properties on each paint used.
+
+    public void setArcStrokeCap(Paint.Cap strokeCap) {
+        final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
+        newBackgroundPaint.setStrokeCap(strokeCap);
+        customBackgroundArcPaint = newBackgroundPaint;
+        final Paint newCurrentLevelPaint = new Paint(getCurrentLevelArcPaint());
+        newCurrentLevelPaint.setStrokeCap(strokeCap);
+        customCurrentLevelArcPaint = newCurrentLevelPaint;
+        invalidate();
+    }
+
+    public void setArcStrokeWidth(float strokeWidth) {
+        final Paint newBackgroundStrokeWidth = new Paint(getBackgroundArcPaint());
+        newBackgroundStrokeWidth.setStrokeWidth(strokeWidth);
+        customBackgroundArcPaint = newBackgroundStrokeWidth;
+        final Paint newCurrentLevelStrokeWidth = new Paint(getCurrentLevelArcPaint());
+        newCurrentLevelStrokeWidth.setStrokeWidth(strokeWidth);
+        customCurrentLevelArcPaint = newCurrentLevelStrokeWidth;
+        invalidate();
+    }
+
+    public void setBackgroundArcColor(@ColorInt int color) {
+        final Paint newPaint = new Paint(getBackgroundArcPaint());
+        newPaint.setColor(color);
+        customBackgroundArcPaint = newPaint;
+        invalidate();
+    }
+
+    public void setCurrentLevelTextPaintColor(@ColorInt int color) {
+        final Paint newPaint = new Paint(getCurrentLevelTextPaint());
+        newPaint.setColor(color);
+        customCurrentLevelTextPaint = newPaint;
+        invalidate();
+    }
+
+    public void setCurrentLevelTextPaintFakeBoldText(boolean fakeBoldText) {
+        final Paint newPaint = new Paint(getCurrentLevelTextPaint());
+        newPaint.setFakeBoldText(fakeBoldText);
+        customCurrentLevelTextPaint = newPaint;
+        invalidate();
+    }
+
+    public void setExtremeValueTextPaintColor(@ColorInt int color) {
+        final Paint newPaint = new Paint(getExtremeValueTextPaint());
+        newPaint.setColor(color);
+        customExtremeValueTextPaint = newPaint;
+        invalidate();
+    }
+
+    public void setExtremeValueTextPaintFakeBoldText(boolean fakeBoldText) {
+        final Paint newPaint = new Paint(getExtremeValueTextPaint());
+        newPaint.setFakeBoldText(fakeBoldText);
+        customExtremeValueTextPaint = newPaint;
+        invalidate();
+    }
+
+    public void setGoalColor(@ColorInt int color) {
+        final Paint newPaint = new Paint(getGoalPaint());
+        newPaint.setColor(color);
+        customGoalPaint = newPaint;
+        invalidate();
+    }
+
+    public void setGoalIndicatorType(IndicatorType indicatorType) {
+        //TODO: define this method. It'll set the enum value and we'll have predefined paints for each type.
+
+    }
+
+    public enum IndicatorType {
+        CIRCLE, ARC, NONE
     }
 
     private void init() {
@@ -345,8 +461,8 @@ public class RainbowView extends FrameLayout {
         return currentLevelAngle;
     }
 
-    public static int getDefaultArcWidth() {
-        return DEFAULT_ARC_WIDTH;
+    public static int getDefaultArcStrokeWidth() {
+        return DEFAULT_ARC_STROKE_WIDTH;
     }
 
     public static float getDefaultBackgroundStartAngle() {
