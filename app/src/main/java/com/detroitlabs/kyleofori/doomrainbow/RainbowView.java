@@ -1,5 +1,6 @@
 package com.detroitlabs.kyleofori.doomrainbow;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,9 +16,10 @@ public class RainbowView extends FrameLayout {
 
     private static final float DEFAULT_BACKGROUND_START_ANGLE = 135;
     private static final float DEFAULT_BACKGROUND_SWEEP_ANGLE = 270;
-    private static final float DEFAULT_GOAL_ANGLE = 220;
+    private static final float DEFAULT_GOAL_ANGLE = 330;
     private static final float DEFAULT_CURRENT_LEVEL_ANGLE = 160;
     private static final float DEFAULT_GOAL_ARC_LENGTH_DEGREES = 0;
+    private static final long DEFAULT_ANIMATION_DURATION = 2000;
     private static final String DEFAULT_CENTER_TEXT = "¡Hola!";
     private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
     private static final int DEFAULT_ARC_WIDTH = 20;
@@ -42,6 +44,10 @@ public class RainbowView extends FrameLayout {
     private float radius;
     private float viewWidthHalf;
     private float viewHeightHalf;
+    private float valueToDraw;
+    private boolean animated;
+    private long animationDuration = DEFAULT_ANIMATION_DURATION;
+    private ValueAnimator animation;
 
 
     public RainbowView(Context context) {
@@ -58,6 +64,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void init() {
+        setAnimated(true);
         setSaveEnabled(true);
         this.setWillNotDraw(false);
         paint = new Paint();
@@ -187,7 +194,7 @@ public class RainbowView extends FrameLayout {
 
         initCurrentLevelArcPaint();
 
-        canvas.drawArc(rectF, backgroundStartAngle, currentLevelAngle - backgroundStartAngle, false, paint);
+        canvas.drawArc(rectF, backgroundStartAngle, valueToDraw - backgroundStartAngle, false, paint);
 
         initCenterTextPaint();
 
@@ -252,6 +259,7 @@ public class RainbowView extends FrameLayout {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         currentLevelAngle = ss.currentLevelAngle;
+        valueToDraw = currentLevelAngle;
     }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
@@ -432,7 +440,36 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setCurrentLevelAngle(float currentLevelAngle) {
-        this.currentLevelAngle = currentLevelAngle;
+        float previousValue = this.currentLevelAngle;
+        if(currentLevelAngle < DEFAULT_BACKGROUND_START_ANGLE) {
+            this.currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE;
+        } else if (currentLevelAngle > DEFAULT_BACKGROUND_START_ANGLE + DEFAULT_BACKGROUND_SWEEP_ANGLE) {
+            this.currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE + DEFAULT_BACKGROUND_SWEEP_ANGLE;
+        } else {
+            this.currentLevelAngle = currentLevelAngle;
+        }
+
+        if(animation != null) {
+            animation.cancel();
+        }
+
+        if(animated) {
+            animation = ValueAnimator.ofFloat(previousValue, this.currentLevelAngle);
+
+            animation.setDuration(animationDuration);
+            animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    valueToDraw = (float) valueAnimator.getAnimatedValue();
+                    RainbowView.this.invalidate();
+                }
+            });
+
+            animation.start();
+        } else {
+            valueToDraw = this.currentLevelAngle;
+        }
+        
         invalidateAndRequestLayout();
     }
 
@@ -464,6 +501,14 @@ public class RainbowView extends FrameLayout {
     public void setMinString(String minString) {
         this.minString = minString;
         invalidateAndRequestLayout();
+    }
+
+    public void setAnimationDuration(long animationDuration) {
+        this.animationDuration = animationDuration;
+    }
+
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
     }
 
     public void invalidateAndRequestLayout() {
