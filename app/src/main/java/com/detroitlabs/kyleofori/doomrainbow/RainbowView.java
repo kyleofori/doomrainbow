@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -56,6 +58,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void init() {
+        setSaveEnabled(true);
         this.setWillNotDraw(false);
         paint = new Paint();
         rectF = new RectF();
@@ -234,6 +237,21 @@ public class RainbowView extends FrameLayout {
                 canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, paint);
             }
         }
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+        ss.currentLevelAngle = currentLevelAngle;
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        currentLevelAngle = ss.currentLevelAngle;
     }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
@@ -451,5 +469,35 @@ public class RainbowView extends FrameLayout {
     public void invalidateAndRequestLayout() {
         invalidate();
         requestLayout();
+    }
+
+    private static class SavedState extends BaseSavedState {
+        float currentLevelAngle;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            currentLevelAngle = in.readFloat();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeFloat(currentLevelAngle);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }
