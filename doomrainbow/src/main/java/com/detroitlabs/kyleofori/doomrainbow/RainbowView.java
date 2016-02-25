@@ -12,6 +12,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -23,8 +24,10 @@ public class RainbowView extends FrameLayout {
     private static final Paint DEFAULT_EXTREME_VALUE_TEXT_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_GOAL_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_ARC_PAINT = new Paint(BASE_PAINT);
-    private static final float DEFAULT_BACKGROUND_START_ANGLE = 135;
-    private static final float DEFAULT_BACKGROUND_SWEEP_ANGLE = 270;
+    private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
+    private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
+    private static final float DEFAULT_BACKGROUND_START_VALUE = 0;
+    private static final float DEFAULT_BACKGROUND_END_VALUE = 100;
     private static final float DEFAULT_GOAL_ANGLE = 330;
     private static final float DEFAULT_CURRENT_LEVEL_ANGLE = 160;
     private static final float DEFAULT_GOAL_ARC_LENGTH_DEGREES = 0;
@@ -82,6 +85,7 @@ public class RainbowView extends FrameLayout {
     private Paint customExtremeValueTextPaint;
     private Paint customGoalPaint;
     private Paint customCurrentLevelArcPaint;
+    private IndicatorType indicatorType = IndicatorType.NONE;
 
     private int circleColor, labelColor;
     private String centerText, currentLevelText;
@@ -89,7 +93,7 @@ public class RainbowView extends FrameLayout {
     private Paint paint;
     private RectF rectF, inscribedRectF;
     private ExtremeValue minValue, maxValue;
-    private float backgroundStartAngle, backgroundSweepAngle, goalAngle, currentLevelAngle;
+    private float backgroundStartAngle, backgroundEndAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
     public boolean hasExtremeValues;
     public boolean hasChangeButtons;
@@ -220,7 +224,8 @@ public class RainbowView extends FrameLayout {
 
     public void setGoalIndicatorType(IndicatorType indicatorType) {
         //TODO: define this method. It'll set the enum value and we'll have predefined paints for each type.
-
+        this.indicatorType = indicatorType;
+        invalidate();
     }
 
     public enum IndicatorType {
@@ -237,14 +242,14 @@ public class RainbowView extends FrameLayout {
         minValue = new ExtremeValue();
         maxValue = new ExtremeValue();
         setBackgroundStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
-        setBackgroundSweepAngle(DEFAULT_BACKGROUND_SWEEP_ANGLE);
+        setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
         setGoalAngle(DEFAULT_GOAL_ANGLE);
         setMinString(DEFAULT_MIN_VALUE);
         setMaxString(DEFAULT_MAX_VALUE);
         setCenterText(DEFAULT_CENTER_TEXT);
         setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
         currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE;
-        setCurrentLevelAngle(DEFAULT_CURRENT_LEVEL_ANGLE);
+//        setCurrentLevelAngle(DEFAULT_CURRENT_LEVEL_ANGLE);
         setCircleColor(DEFAULT_CIRCLE_COLOR);
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
@@ -353,9 +358,9 @@ public class RainbowView extends FrameLayout {
 
         float yCoordText = viewHeightHalf + radius;
 
-        canvas.drawArc(rectF, backgroundStartAngle, backgroundSweepAngle, false, getBackgroundArcPaint());
+        drawShiftedArc(canvas, rectF, backgroundStartAngle, backgroundEndAngle, getBackgroundArcPaint());
 
-        canvas.drawArc(rectF, backgroundStartAngle, valueToDraw - backgroundStartAngle, false, getCurrentLevelArcPaint());
+        drawShiftedArc(canvas, rectF, backgroundStartAngle, valueToDraw, getCurrentLevelArcPaint());
 
         canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
@@ -366,7 +371,7 @@ public class RainbowView extends FrameLayout {
             float currentLevelSinCoefficient = (float) Math.sin(currentLevelAngleRadians);
 
 
-            canvas.drawText(currentLevelText,viewWidthHalf + currentLevelCosCoefficient * radius * 1.25f,
+            canvas.drawText(currentLevelText, viewWidthHalf + currentLevelCosCoefficient * radius * 1.25f,
                     viewHeightHalf + currentLevelSinCoefficient * radius * 1.25f, paint);
         }
 
@@ -378,17 +383,21 @@ public class RainbowView extends FrameLayout {
             drawValue(canvas, maxValue);
         }
 
-        if(hasGoalIndicator) {
-            double doubleGoalAngle = (double) goalAngle;
-            double goalAngleRadians = AngleUtils.convertToRadians(doubleGoalAngle);
-            float goalCosCoefficient = (float) Math.cos(goalAngleRadians);
-            float goalSinCoefficient = (float) Math.sin(goalAngleRadians);
-
-            if(goalArcSweepAngle == 0) {
-                canvas.drawPoint(viewWidthHalf + goalCosCoefficient * radius, viewHeightHalf + goalSinCoefficient * radius, getGoalPaint());
-            } else if (goalArcSweepAngle > 0) {
-                canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, getGoalPaint());
-            }
+        switch(indicatorType) {
+            case CIRCLE:
+                double goalAngleRadians = AngleUtils.convertToRadians(goalAngle);
+                canvas.drawPoint(
+                        viewWidthHalf + (float) Math.cos(goalAngleRadians) * radius,
+                        viewHeightHalf + (float) Math.sin(goalAngleRadians) * radius,
+                        getGoalPaint()
+                );
+                break;
+            case ARC:
+                drawShiftedArc(canvas, rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, getGoalPaint());
+                break;
+            case NONE:
+            default:
+                break;
         }
     }
 
@@ -406,6 +415,7 @@ public class RainbowView extends FrameLayout {
         super.onRestoreInstanceState(ss.getSuperState());
         currentLevelAngle = ss.currentLevelAngle;
         valueToDraw = currentLevelAngle;
+        Log.i("onRestoreInstanceState", String.valueOf(valueToDraw));
     }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
@@ -420,7 +430,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void initMaxValue(float radius, float yCoordText) {
-        float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle + backgroundSweepAngle + 15);
+        float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle + backgroundEndAngle + 15);
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
         float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * radius;
         maxValue.set(xCoordMaxText, yCoordText, maxString);
@@ -470,8 +480,8 @@ public class RainbowView extends FrameLayout {
         return DEFAULT_BACKGROUND_START_ANGLE;
     }
 
-    public static float getDefaultBackgroundSweepAngle() {
-        return DEFAULT_BACKGROUND_SWEEP_ANGLE;
+    public static float getDefaultBackgroundEndAngle() {
+        return DEFAULT_BACKGROUND_END_ANGLE;
     }
 
     public static float getDefaultGoalAngle() {
@@ -490,8 +500,8 @@ public class RainbowView extends FrameLayout {
         return goalAngle;
     }
 
-    public float getBackgroundSweepAngle() {
-        return backgroundSweepAngle;
+    public float getBackgroundEndAngle() {
+        return backgroundEndAngle;
     }
 
     public float getBackgroundStartAngle() {
@@ -544,13 +554,11 @@ public class RainbowView extends FrameLayout {
 
     public void setCurrentLevelAngle(float currentLevelAngle) {
         float previousValue = this.currentLevelAngle;
-        if(currentLevelAngle < DEFAULT_BACKGROUND_START_ANGLE) {
-            this.currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE;
-        } else if (currentLevelAngle > DEFAULT_BACKGROUND_START_ANGLE + DEFAULT_BACKGROUND_SWEEP_ANGLE) {
-            this.currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE + DEFAULT_BACKGROUND_SWEEP_ANGLE;
-        } else {
-            this.currentLevelAngle = currentLevelAngle;
-        }
+
+        this.currentLevelAngle = Math.min(
+                Math.max(getBackgroundStartAngle(), currentLevelAngle),
+                getBackgroundEndAngle()
+        );
 
         if(animation != null) {
             animation.cancel();
@@ -564,6 +572,7 @@ public class RainbowView extends FrameLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     valueToDraw = (float) valueAnimator.getAnimatedValue();
+                    Log.i("onAnimationUpdate", String.valueOf(valueToDraw));
                     RainbowView.this.invalidate();
                 }
             });
@@ -571,6 +580,7 @@ public class RainbowView extends FrameLayout {
             animation.start();
         } else {
             valueToDraw = this.currentLevelAngle;
+            Log.i("setCurrentLevelAngle (not animated)", String.valueOf(valueToDraw));
         }
         
         invalidateAndRequestLayout();
@@ -581,8 +591,8 @@ public class RainbowView extends FrameLayout {
         invalidateAndRequestLayout();
     }
 
-    public void setBackgroundSweepAngle(float backgroundSweepAngle) {
-        this.backgroundSweepAngle = backgroundSweepAngle;
+    public void setBackgroundEndAngle(float backgroundEndAngle) {
+        this.backgroundEndAngle = backgroundEndAngle;
         invalidateAndRequestLayout();
     }
 
@@ -617,6 +627,10 @@ public class RainbowView extends FrameLayout {
     public void invalidateAndRequestLayout() {
         invalidate();
         requestLayout();
+    }
+
+    public void drawShiftedArc(Canvas canvas, RectF rectF, float backgroundStartAngle, float backgroundEndAngle, Paint paint) {
+        canvas.drawArc(rectF, backgroundStartAngle - 90, (backgroundEndAngle - backgroundStartAngle), false, getBackgroundArcPaint());
     }
 
     private static class SavedState extends BaseSavedState {
