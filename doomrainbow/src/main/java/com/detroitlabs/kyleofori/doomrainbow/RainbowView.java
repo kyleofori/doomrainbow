@@ -12,7 +12,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -40,6 +39,7 @@ public class RainbowView extends FrameLayout {
     private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
     private static final int DEFAULT_ARC_STROKE_WIDTH = 20;
+    private static final float LEVEL_TEXT_RADIUS_SCALE_FACTOR = 1.25f;
 
 
     static {
@@ -249,11 +249,15 @@ public class RainbowView extends FrameLayout {
         setCenterText(DEFAULT_CENTER_TEXT);
         setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
         currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE;
-//        setCurrentLevelAngle(DEFAULT_CURRENT_LEVEL_ANGLE);
+        resetValueToDraw();
         setCircleColor(DEFAULT_CIRCLE_COLOR);
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
         initDefaultValues();
+    }
+
+    private void resetValueToDraw() {
+        valueToDraw = currentLevelAngle;
     }
 
     @Override
@@ -365,14 +369,15 @@ public class RainbowView extends FrameLayout {
         canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
         if(hasCurrentLevelText) {
-            double doubleCurrentLevelAngle = (double) currentLevelAngle;
-            double currentLevelAngleRadians = AngleUtils.convertToRadians(doubleCurrentLevelAngle);
-            float currentLevelCosCoefficient = (float) Math.cos(currentLevelAngleRadians);
-            float currentLevelSinCoefficient = (float) Math.sin(currentLevelAngleRadians);
+            double shiftedAngle = currentLevelAngle - 90;
+            double angleInRadians = AngleUtils.convertToRadians(shiftedAngle);
 
-
-            canvas.drawText(currentLevelText, viewWidthHalf + currentLevelCosCoefficient * radius * 1.25f,
-                    viewHeightHalf + currentLevelSinCoefficient * radius * 1.25f, paint);
+            canvas.drawText(
+                    currentLevelText,
+                    viewWidthHalf + (float) Math.cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
+                    viewHeightHalf + (float) Math.sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
+                    paint
+            );
         }
 
         if(hasExtremeValues) {
@@ -414,8 +419,7 @@ public class RainbowView extends FrameLayout {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         currentLevelAngle = ss.currentLevelAngle;
-        valueToDraw = currentLevelAngle;
-        Log.i("onRestoreInstanceState", String.valueOf(valueToDraw));
+        resetValueToDraw();
     }
 
     private void drawValue(Canvas canvas, ExtremeValue value) {
@@ -572,7 +576,6 @@ public class RainbowView extends FrameLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     valueToDraw = (float) valueAnimator.getAnimatedValue();
-                    Log.i("onAnimationUpdate", String.valueOf(valueToDraw));
                     RainbowView.this.invalidate();
                 }
             });
@@ -580,7 +583,6 @@ public class RainbowView extends FrameLayout {
             animation.start();
         } else {
             valueToDraw = this.currentLevelAngle;
-            Log.i("setCurrentLevelAngle (not animated)", String.valueOf(valueToDraw));
         }
         
         invalidateAndRequestLayout();
@@ -629,8 +631,8 @@ public class RainbowView extends FrameLayout {
         requestLayout();
     }
 
-    public void drawShiftedArc(Canvas canvas, RectF rectF, float backgroundStartAngle, float backgroundEndAngle, Paint paint) {
-        canvas.drawArc(rectF, backgroundStartAngle - 90, (backgroundEndAngle - backgroundStartAngle), false, getBackgroundArcPaint());
+    public void drawShiftedArc(Canvas canvas, RectF rectF, float startAngle, float endAngle, Paint paint) {
+        canvas.drawArc(rectF, startAngle - 90, (endAngle - startAngle), false, paint);
     }
 
     private static class SavedState extends BaseSavedState {
