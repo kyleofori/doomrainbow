@@ -243,6 +243,7 @@ public class RainbowView extends FrameLayout {
         setMaxString(DEFAULT_MAX_VALUE);
         setCenterText(DEFAULT_CENTER_TEXT);
         setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
+        currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE;
         setCurrentLevelAngle(DEFAULT_CURRENT_LEVEL_ANGLE);
         setCircleColor(DEFAULT_CIRCLE_COLOR);
         setLabelColor(DEFAULT_LABEL_COLOR);
@@ -352,9 +353,9 @@ public class RainbowView extends FrameLayout {
 
         float yCoordText = viewHeightHalf + radius;
 
-        canvas.drawArc(rectF, backgroundStartAngle, backgroundSweepAngle, false, paint);
+        canvas.drawArc(rectF, backgroundStartAngle, backgroundSweepAngle, false, getBackgroundArcPaint());
 
-        canvas.drawArc(rectF, backgroundStartAngle, valueToDraw - backgroundStartAngle, false, paint);
+        canvas.drawArc(rectF, backgroundStartAngle, valueToDraw - backgroundStartAngle, false, getCurrentLevelArcPaint());
 
         canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
@@ -384,9 +385,9 @@ public class RainbowView extends FrameLayout {
             float goalSinCoefficient = (float) Math.sin(goalAngleRadians);
 
             if(goalArcSweepAngle == 0) {
-                canvas.drawPoint(viewWidthHalf + goalCosCoefficient * radius, viewHeightHalf + goalSinCoefficient * radius, paint);
+                canvas.drawPoint(viewWidthHalf + goalCosCoefficient * radius, viewHeightHalf + goalSinCoefficient * radius, getGoalPaint());
             } else if (goalArcSweepAngle > 0) {
-                canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, paint);
+                canvas.drawArc(rectF, goalAngle - goalArcSweepAngle/2, goalArcSweepAngle, false, getGoalPaint());
             }
         }
     }
