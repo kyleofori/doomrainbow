@@ -394,13 +394,13 @@ public class RainbowView extends FrameLayout {
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
 
         if(minString != null) {
-            float minValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+            float minValRadiusCosCoefficient = AngleUtils.getRadiusCosineCoefficient(backgroundStartAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
             float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
             drawValue(canvas, minString, xCoord, yCoord);
         }
 
         if(maxString != null) {
-            float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundEndAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+            float maxValRadiusCosCoefficient = AngleUtils.getRadiusCosineCoefficient(backgroundEndAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
             float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
             drawValue(canvas, maxString, xCoord, yCoord);
         }
@@ -424,11 +424,6 @@ public class RainbowView extends FrameLayout {
 
     private void drawValue(Canvas canvas, String string, float xCoord, float yCoord) {
         canvas.drawText(string, xCoord, yCoord, getExtremeValueTextPaint());
-    }
-
-    private float getRadiusCosineCoefficient(float valuePositionInDegrees) {
-        double valuePositionInRadians = AngleUtils.convertToRadians((double) valuePositionInDegrees);
-        return (float) Math.cos(valuePositionInRadians);
     }
 
     public void initDefaultValues() {
