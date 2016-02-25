@@ -46,7 +46,7 @@ public class RainbowView extends FrameLayout {
     static {
         initDefaultBackgroundArcPaint();
         initDefaultCurrentLevelTextPaint();
-        initDefaultExtremeValueTextPaint();
+        initDefaultExtremeLabelTextPaint();
         initDefaultGoalPaint();
         initDefaultCurrentLevelArcPaint();
     }
@@ -64,10 +64,11 @@ public class RainbowView extends FrameLayout {
 //        paint.setTextSize(25);
     }
 
-    private static void initDefaultExtremeValueTextPaint() {
+    private static void initDefaultExtremeLabelTextPaint() {
 //        paint.setTextSize(textSizeValue);
         DEFAULT_EXTREME_LABEL_TEXT_PAINT.setColor(Color.BLACK);
         DEFAULT_EXTREME_LABEL_TEXT_PAINT.setFakeBoldText(true);
+        DEFAULT_EXTREME_LABEL_TEXT_PAINT.setTextAlign(Paint.Align.CENTER);
     }
 
     private static void initDefaultGoalPaint() {
