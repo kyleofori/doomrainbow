@@ -43,20 +43,20 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void increaseCurrentLevel() {
-        float angle = rainbowView.getCurrentLevelAngle();
-        if(rainbowView.getGoalAngle() >= angle + 30) {
-            rainbowView.setCurrentLevelAngle(angle + 30);
+        float angle = rainbowView.getCurrentLevelValue();
+        if(rainbowView.getGoalValue() >= angle + 8) {
+            rainbowView.setCurrentLevelValue(angle + 8);
         } else {
-            rainbowView.setCurrentLevelAngle(rainbowView.getGoalAngle());
+            rainbowView.setCurrentLevelValue(rainbowView.getGoalValue());
         }
     }
 
     private void decreaseCurrentLevel() {
-        float angle = rainbowView.getCurrentLevelAngle();
+        float angle = rainbowView.getCurrentLevelValue();
         if(angle - 30 > rainbowView.getBackgroundStartAngle()) {
-            rainbowView.setCurrentLevelAngle(angle - 30);
+            rainbowView.setCurrentLevelValue(angle - 30);
         } else {
-            rainbowView.setCurrentLevelAngle(rainbowView.getBackgroundStartAngle());
+            rainbowView.setCurrentLevelValue(rainbowView.getBackgroundStartAngle());
         }
     }
 }

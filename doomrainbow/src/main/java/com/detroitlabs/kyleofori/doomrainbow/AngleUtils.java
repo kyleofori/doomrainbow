@@ -9,4 +9,11 @@ public class AngleUtils {
         double valuePositionInRadians = AngleUtils.convertToRadians((double) valuePositionInDegrees);
         return (float) Math.cos(valuePositionInRadians);
     }
+
+    public static float convertFromValueToAngle(
+            float value,
+            float distanceBetweenExtremeAngles,
+            float distanceBetweenExtremeValues) {
+        return value * distanceBetweenExtremeAngles / distanceBetweenExtremeValues - distanceBetweenExtremeAngles/2;
+    }
 }
