@@ -254,6 +254,7 @@ public class RainbowView extends FrameLayout {
         setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
         initDefaultValues();
+        reanimate();
     }
 
     private void resetValueToDraw() {
@@ -569,23 +570,27 @@ public class RainbowView extends FrameLayout {
         }
 
         if(animated) {
-            animation = ValueAnimator.ofFloat(previousValue, this.currentLevelAngle);
-
-            animation.setDuration(animationDuration);
-            animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    valueToDraw = (float) valueAnimator.getAnimatedValue();
-                    RainbowView.this.invalidate();
-                }
-            });
-
-            animation.start();
+            animateBetweenAngles(previousValue, this.currentLevelAngle);
         } else {
             valueToDraw = this.currentLevelAngle;
         }
         
         invalidateAndRequestLayout();
+    }
+
+    private void animateBetweenAngles(float firstValue, float secondValue) {
+        animation = ValueAnimator.ofFloat(firstValue, secondValue);
+
+        animation.setDuration(animationDuration);
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                valueToDraw = (float) valueAnimator.getAnimatedValue();
+                RainbowView.this.invalidate();
+            }
+        });
+
+        animation.start();
     }
 
     public void setBackgroundStartAngle(float backgroundStartAngle) {
@@ -633,6 +638,11 @@ public class RainbowView extends FrameLayout {
 
     public void drawShiftedArc(Canvas canvas, RectF rectF, float startAngle, float endAngle, Paint paint) {
         canvas.drawArc(rectF, startAngle - 90, (endAngle - startAngle), false, paint);
+    }
+
+    public void reanimate() {
+        //when the view reloads, make sure the valueToDraw animates up to the initial current level
+        animateBetweenAngles(getBackgroundStartAngle(), currentLevelAngle);
     }
 
     private static class SavedState extends BaseSavedState {
