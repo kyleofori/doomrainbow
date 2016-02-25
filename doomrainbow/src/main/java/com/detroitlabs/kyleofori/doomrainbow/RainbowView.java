@@ -257,10 +257,6 @@ public class RainbowView extends FrameLayout {
         reanimate();
     }
 
-    private void resetValueToDraw() {
-        valueToDraw = currentLevelAngle;
-    }
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -453,52 +449,8 @@ public class RainbowView extends FrameLayout {
         setHasCurrentLevelText(true);
     }
 
-    public void decreaseGoal() {
-        setGoalAngle(goalAngle - 30);
-    }
-
-    public int getCircleColor() {
-        return circleColor;
-    }
-
-    public int getLabelColor() {
-        return labelColor;
-    }
-
-    public String getCenterText() {
-        return centerText;
-    }
-
-    public String getCurrentLevelText() {
-        return currentLevelText;
-    }
-
     public float getCurrentLevelAngle() {
         return currentLevelAngle;
-    }
-
-    public static int getDefaultArcStrokeWidth() {
-        return DEFAULT_ARC_STROKE_WIDTH;
-    }
-
-    public static float getDefaultBackgroundStartAngle() {
-        return DEFAULT_BACKGROUND_START_ANGLE;
-    }
-
-    public static float getDefaultBackgroundEndAngle() {
-        return DEFAULT_BACKGROUND_END_ANGLE;
-    }
-
-    public static float getDefaultGoalAngle() {
-        return DEFAULT_GOAL_ANGLE;
-    }
-
-    public static float getDefaultGoalArcLengthDegrees() {
-        return DEFAULT_GOAL_ARC_LENGTH_DEGREES;
-    }
-
-    public float getGoalArcSweepAngle() {
-        return goalArcSweepAngle;
     }
 
     public float getGoalAngle() {
@@ -511,14 +463,6 @@ public class RainbowView extends FrameLayout {
 
     public float getBackgroundStartAngle() {
         return backgroundStartAngle;
-    }
-
-    public String getMinString() {
-        return minString;
-    }
-
-    public String getMaxString() {
-        return maxString;
     }
 
     public void setHasExtremeValues(boolean hasExtremeValues) {
@@ -557,6 +501,10 @@ public class RainbowView extends FrameLayout {
         invalidateAndRequestLayout();
     }
 
+    private void resetValueToDraw() {
+        valueToDraw = currentLevelAngle;
+    }
+
     public void setCurrentLevelAngle(float currentLevelAngle) {
         float previousValue = this.currentLevelAngle;
 
@@ -578,8 +526,8 @@ public class RainbowView extends FrameLayout {
         invalidateAndRequestLayout();
     }
 
-    private void animateBetweenAngles(float firstValue, float secondValue) {
-        animation = ValueAnimator.ofFloat(firstValue, secondValue);
+    private void animateBetweenAngles(float startAngle, float stopAngle) {
+        animation = ValueAnimator.ofFloat(startAngle, stopAngle);
 
         animation.setDuration(animationDuration);
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -641,7 +589,6 @@ public class RainbowView extends FrameLayout {
     }
 
     public void reanimate() {
-        //when the view reloads, make sure the valueToDraw animates up to the initial current level
         animateBetweenAngles(getBackgroundStartAngle(), currentLevelAngle);
     }
 
