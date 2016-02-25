@@ -1,13 +1,9 @@
 package com.example.doomrainbow;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
 
@@ -20,34 +16,8 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
-
-        if(rainbowView.hasChangeButtons) {
-            LayoutInflater layoutInflater = getLayoutInflater();
-            for(int i = 0; i <= 1; i++) {
-                View changeButton = layoutInflater.inflate(R.layout.change_button_layout, rainbowView, false);
-                ImageView tagImageView = (ImageView) changeButton.findViewById(R.id.image);
-                if (i == 0) {
-                    changeButton.setTag(getString(R.string.decrease));
-                    tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.minus_sign));
-                    changeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            decreaseCurrentLevel();
-                        }
-                    });
-                } else {
-                    changeButton.setTag(getString(R.string.increase));
-                    tagImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.plus_sign));
-                    changeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            increaseCurrentLevel();
-                        }
-                    });
-                }
-                rainbowView.addView(changeButton);
-            }
-        }
+        rainbowView.setMinString("0");
+        rainbowView.setMaxString("100");
     }
 
     @Override

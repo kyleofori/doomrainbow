@@ -20,11 +20,12 @@ public class RainbowView extends FrameLayout {
     private static final Paint BASE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final Paint DEFAULT_BACKGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_TEXT_PAINT = new Paint(BASE_PAINT);
-    private static final Paint DEFAULT_EXTREME_VALUE_TEXT_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_EXTREME_LABEL_TEXT_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_GOAL_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_ARC_PAINT = new Paint(BASE_PAINT);
     private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
     private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
+    private static final float DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING = 15;
     private static final float DEFAULT_BACKGROUND_START_VALUE = 0;
     private static final float DEFAULT_BACKGROUND_END_VALUE = 100;
     private static final float DEFAULT_GOAL_ANGLE = 330;
@@ -33,8 +34,8 @@ public class RainbowView extends FrameLayout {
     private static final long DEFAULT_ANIMATION_DURATION = 2000;
     private static final String DEFAULT_CENTER_TEXT = "¡Hola!";
     private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
-    private static final String DEFAULT_MIN_VALUE = "E";
-    private static final String DEFAULT_MAX_VALUE = "F";
+    private static final int DEFAULT_MIN_VALUE = 0;
+    private static final int DEFAULT_MAX_VALUE = 100;
     private static final int DEFAULT_LABEL_COLOR = Color.GRAY;
     private static final int DEFAULT_CIRCLE_COLOR = Color.GRAY;
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
@@ -65,8 +66,8 @@ public class RainbowView extends FrameLayout {
 
     private static void initDefaultExtremeValueTextPaint() {
 //        paint.setTextSize(textSizeValue);
-        DEFAULT_EXTREME_VALUE_TEXT_PAINT.setColor(Color.BLACK);
-        DEFAULT_EXTREME_VALUE_TEXT_PAINT.setFakeBoldText(true);
+        DEFAULT_EXTREME_LABEL_TEXT_PAINT.setColor(Color.BLACK);
+        DEFAULT_EXTREME_LABEL_TEXT_PAINT.setFakeBoldText(true);
     }
 
     private static void initDefaultGoalPaint() {
@@ -87,17 +88,13 @@ public class RainbowView extends FrameLayout {
     private Paint customCurrentLevelArcPaint;
     private IndicatorType indicatorType = IndicatorType.NONE;
 
-    private int circleColor, labelColor;
     private String centerText, currentLevelText;
     private String minString, maxString;
+    private int minValue, maxValue;
     private Paint paint;
     private RectF rectF, inscribedRectF;
-    private ExtremeValue minValue, maxValue;
     private float backgroundStartAngle, backgroundEndAngle, goalAngle, currentLevelAngle;
     private float goalArcSweepAngle;
-    public boolean hasExtremeValues;
-    public boolean hasChangeButtons;
-    public boolean hasGoalIndicator;
     public boolean hasCurrentLevelText;
     private float radius;
     private float viewWidthHalf;
@@ -136,7 +133,7 @@ public class RainbowView extends FrameLayout {
 
     @NonNull
     public Paint getExtremeValueTextPaint() {
-        return getPaint(customExtremeValueTextPaint, DEFAULT_EXTREME_VALUE_TEXT_PAINT);
+        return getPaint(customExtremeValueTextPaint, DEFAULT_EXTREME_LABEL_TEXT_PAINT);
     }
 
     @NonNull
@@ -239,19 +236,15 @@ public class RainbowView extends FrameLayout {
         paint = new Paint();
         rectF = new RectF();
         inscribedRectF = new RectF();
-        minValue = new ExtremeValue();
-        maxValue = new ExtremeValue();
+        minValue = DEFAULT_MIN_VALUE;
+        maxValue = DEFAULT_MAX_VALUE;
         setBackgroundStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
         setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
         setGoalAngle(DEFAULT_GOAL_ANGLE);
-        setMinString(DEFAULT_MIN_VALUE);
-        setMaxString(DEFAULT_MAX_VALUE);
         setCenterText(DEFAULT_CENTER_TEXT);
         setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
         currentLevelAngle = DEFAULT_BACKGROUND_START_ANGLE;
         resetValueToDraw();
-        setCircleColor(DEFAULT_CIRCLE_COLOR);
-        setLabelColor(DEFAULT_LABEL_COLOR);
         setGoalArcSweepAngle(DEFAULT_GOAL_ARC_LENGTH_DEGREES);
         initDefaultValues();
         reanimate();
@@ -278,7 +271,7 @@ public class RainbowView extends FrameLayout {
 
         final int count = getChildCount();
 
-        if(count != 2) {
+        if(count >= 2) {
             throw new IllegalStateException("You may only add two children to this view.");
         }
 
@@ -357,8 +350,6 @@ public class RainbowView extends FrameLayout {
     protected void onDraw(Canvas canvas) {
         rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
-        float yCoordText = viewHeightHalf + radius;
-
         drawShiftedArc(canvas, rectF, backgroundStartAngle, backgroundEndAngle, getBackgroundArcPaint());
 
         drawShiftedArc(canvas, rectF, backgroundStartAngle, valueToDraw, getCurrentLevelArcPaint());
@@ -377,13 +368,7 @@ public class RainbowView extends FrameLayout {
             );
         }
 
-        if(hasExtremeValues) {
-            initMinValue(radius, yCoordText);
-            drawValue(canvas, minValue);
-
-            initMaxValue(radius, yCoordText);
-            drawValue(canvas, maxValue);
-        }
+        drawExtremeLabelsIfPresent(canvas);
 
         switch(indicatorType) {
             case CIRCLE:
@@ -403,6 +388,23 @@ public class RainbowView extends FrameLayout {
         }
     }
 
+    private void drawExtremeLabelsIfPresent(Canvas canvas) {
+        float yCoord = viewHeightHalf + radius;
+        float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
+
+        if(minString != null) {
+            float minValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+            float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
+            drawValue(canvas, minString, xCoord, yCoord);
+        }
+
+        if(maxString != null) {
+            float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundEndAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+            float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
+            drawValue(canvas, maxString, xCoord, yCoord);
+        }
+    }
+
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
@@ -419,22 +421,8 @@ public class RainbowView extends FrameLayout {
         resetValueToDraw();
     }
 
-    private void drawValue(Canvas canvas, ExtremeValue value) {
-        canvas.drawText(value.getText(), value.getXCoordinate(), value.getYCoordinate(), paint);
-    }
-
-    private void initMinValue(float radius, float yCoordText) {
-        float minValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle - 15);
-        float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
-        float xCoordMinText = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
-        minValue.set(xCoordMinText, yCoordText, minString);
-    }
-
-    private void initMaxValue(float radius, float yCoordText) {
-        float maxValRadiusCosCoefficient = getRadiusCosineCoefficient(backgroundStartAngle + backgroundEndAngle + 15);
-        float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
-        float xCoordMaxText = floatViewWidthHalf + maxValRadiusCosCoefficient * radius;
-        maxValue.set(xCoordMaxText, yCoordText, maxString);
+    private void drawValue(Canvas canvas, String string, float xCoord, float yCoord) {
+        canvas.drawText(string, xCoord, yCoord, getExtremeValueTextPaint());
     }
 
     private float getRadiusCosineCoefficient(float valuePositionInDegrees) {
@@ -443,9 +431,6 @@ public class RainbowView extends FrameLayout {
     }
 
     public void initDefaultValues() {
-        setHasExtremeValues(true);
-        setHasChangeButtons(true);
-        setHasGoalIndicator(true);
         setHasCurrentLevelText(true);
     }
 
@@ -465,30 +450,8 @@ public class RainbowView extends FrameLayout {
         return backgroundStartAngle;
     }
 
-    public void setHasExtremeValues(boolean hasExtremeValues) {
-        this.hasExtremeValues = hasExtremeValues;
-    }
-
-    public void setHasChangeButtons(boolean hasChangeButtons) {
-        this.hasChangeButtons = hasChangeButtons;
-    }
-
-    public void setHasGoalIndicator(boolean hasGoalIndicator) {
-        this.hasGoalIndicator = hasGoalIndicator;
-    }
-
     public void setHasCurrentLevelText(boolean hasCurrentLevelText) {
         this.hasCurrentLevelText = hasCurrentLevelText;
-    }
-
-    public void setCircleColor(int circleColor) {
-        this.circleColor = circleColor;
-        invalidateAndRequestLayout();
-    }
-
-    public void setLabelColor(int labelColor) {
-        this.labelColor = labelColor;
-        invalidateAndRequestLayout();
     }
 
     public void setCenterText(String centerText) {
