@@ -29,7 +29,6 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_GOAL_VALUE = 20;
     private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
     private static final long DEFAULT_ANIMATION_DURATION = 2000;
-    private static final String DEFAULT_CENTER_TEXT = "¡Hola!";
     private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 100;
@@ -84,7 +83,7 @@ public class RainbowView extends FrameLayout {
     private Paint customCurrentLevelArcPaint;
     private Paint paint;
     private IndicatorType indicatorType = IndicatorType.NONE;
-    private String centerText, currentLevelText;
+    private String currentLevelText;
     private String minString, maxString;
     private RectF rectF, inscribedRectF;
     private ValueAnimator animation;
@@ -236,7 +235,6 @@ public class RainbowView extends FrameLayout {
         setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
         distanceBetweenExtremeAngles = backgroundEndAngle - backgroundStartAngle;
         setGoalValue(DEFAULT_GOAL_VALUE);
-        setCenterText(DEFAULT_CENTER_TEXT);
         setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
         currentLevelValue = minValue;
         resetValueToDraw();
@@ -347,8 +345,6 @@ public class RainbowView extends FrameLayout {
         drawShiftedArc(canvas, rectF, minValue, maxValue, getBackgroundArcPaint());
 
         drawShiftedArc(canvas, rectF, minValue, valueToDraw, getCurrentLevelArcPaint());
-
-        canvas.drawText(centerText, viewWidthHalf, viewHeightHalf, paint);
 
         if(hasCurrentLevelText) {
             double currentLevelAngle = AngleUtils.convertFromValueToAngle(
@@ -472,11 +468,6 @@ public class RainbowView extends FrameLayout {
 
     public void setHasCurrentLevelText(boolean hasCurrentLevelText) {
         this.hasCurrentLevelText = hasCurrentLevelText;
-    }
-
-    public void setCenterText(String centerText) {
-        this.centerText = centerText;
-        invalidate();
     }
 
     public void setCurrentLevelText(String currentLevelText) {
