@@ -269,21 +269,14 @@ public class RainbowView extends FrameLayout {
             radius = viewHeightHalf - 70;
         }
 
-        final int count = getChildCount();
-
-        if(count >= 2) {
-            throw new IllegalStateException("You may only add two children to this view.");
-        }
-
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             child.layout(
                     childViewRect.left,
                     childViewRect.top,
                     childViewRect.right,
-                    childViewRect.bottom);
-
-
+                    childViewRect.bottom
+            );
         }
     }
 
@@ -299,33 +292,26 @@ public class RainbowView extends FrameLayout {
                 (int) ceil((getMeasuredWidth() - childViewWidth) / 2),
                 (int) floor((getMeasuredHeight() - childViewHeight) / 2),
                 (int) ceil((getMeasuredWidth() + childViewWidth) / 2),
-                (int) floor((getMeasuredHeight() + childViewHeight) / 2));
+                (int) floor((getMeasuredHeight() + childViewHeight) / 2)
+        );
 
-        int count = getChildCount();
+        final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
+                childViewRect.height(),
+                MeasureSpec.EXACTLY
+        );
 
-        int maxHeight = 0;
-        int maxWidth = 0;
-        int childState = 0;
+        final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
+                childViewRect.width(),
+                MeasureSpec.EXACTLY
+        );
 
-        for (int i = 0; i < count; i++) {
-            final View child = getChildAt(i);
-
-            if (child.getVisibility() == GONE) {
-                continue;
-            }
-
-            measureChild(child, widthMeasureSpec, heightMeasureSpec);
-            maxWidth += Math.max(maxWidth, child.getMeasuredWidth());
-            maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
-
-            childState = combineMeasuredStates(childState, child.getMeasuredState());
+        if(getChildCount() != 1) {
+            throw new IllegalStateException("This view must have exactly one child.");
+        } else {
+            getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
         }
 
-        maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
-        maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
-
-        setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
-                resolveSizeAndState(maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
