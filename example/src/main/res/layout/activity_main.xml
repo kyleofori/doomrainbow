@@ -9,6 +9,13 @@
     <com.detroitlabs.kyleofori.doomrainbow.RainbowView
         android:id="@+id/rainbow_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#13F051" />
+
+    </com.detroitlabs.kyleofori.doomrainbow.RainbowView>
 
 </RelativeLayout>

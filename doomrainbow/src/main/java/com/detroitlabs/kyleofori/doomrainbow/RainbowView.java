@@ -85,7 +85,7 @@ public class RainbowView extends FrameLayout {
     private IndicatorType indicatorType = IndicatorType.NONE;
     private String currentLevelText;
     private String minString, maxString;
-    private RectF rectF, inscribedRectF;
+    private RectF doomRainbowRectF, inscribedRectF;
     private ValueAnimator animation;
     private int minValue, maxValue, distanceBetweenExtremeValues;
     private float currentLevelValue, goalValue;
@@ -226,7 +226,7 @@ public class RainbowView extends FrameLayout {
         setSaveEnabled(true);
         this.setWillNotDraw(false);
         paint = new Paint();
-        rectF = new RectF();
+        doomRainbowRectF = new RectF();
         inscribedRectF = new RectF();
         minValue = DEFAULT_MIN_VALUE;
         maxValue = DEFAULT_MAX_VALUE;
@@ -340,11 +340,10 @@ public class RainbowView extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        rectF.set(viewWidthHalf - radius, viewHeightHalf - radius, viewWidthHalf + radius, viewHeightHalf + radius);
 
-        drawShiftedArc(canvas, rectF, minValue, maxValue, getBackgroundArcPaint());
+        drawShiftedArc(canvas, doomRainbowRectF, minValue, maxValue, getBackgroundArcPaint());
 
-        drawShiftedArc(canvas, rectF, minValue, valueToDraw, getCurrentLevelArcPaint());
+        drawShiftedArc(canvas, doomRainbowRectF, minValue, valueToDraw, getCurrentLevelArcPaint());
 
         if(hasCurrentLevelText) {
             double currentLevelAngle = AngleUtils.convertFromValueToAngle(
@@ -382,7 +381,7 @@ public class RainbowView extends FrameLayout {
             case ARC:
                 drawShiftedArc(
                         canvas,
-                        rectF,
+                        doomRainbowRectF,
                         goalValue - DEFAULT_GOAL_ARC_LENGTH/2,
                         goalValue + DEFAULT_GOAL_ARC_LENGTH/2,
                         getGoalPaint()
