@@ -36,7 +36,6 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION = 2000;
-    private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 100;
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
@@ -93,7 +92,7 @@ public class RainbowView extends FrameLayout {
     private Paint customCurrentLevelArcPaint;
     private Paint paint;
     private IndicatorType indicatorType = IndicatorType.NONE;
-    private String currentLevelText;
+
     private String minString, maxString;
     private RectF doomRainbowRectF;
     private Rect childViewRect;
@@ -106,6 +105,7 @@ public class RainbowView extends FrameLayout {
     private float viewHeightHalf;
     private float valueToDraw;
     private boolean animated;
+    private boolean currentLevelText;
     private long animationDuration = DEFAULT_ANIMATION_DURATION;
     /**
      * Aspect ratio of child view, such that
@@ -258,7 +258,7 @@ public class RainbowView extends FrameLayout {
         setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
         distanceBetweenExtremeAngles = backgroundEndAngle - backgroundStartAngle;
         setGoalValue(DEFAULT_GOAL_VALUE);
-        setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
+        setCurrentLevelText(true);
         currentLevelValue = minValue;
         resetValueToDraw();
         reanimate();
@@ -368,7 +368,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void drawCurrentLevelTextIfPresent(Canvas canvas) {
-        if(currentLevelText != null) {
+        if(hasCurrentLevelText()) {
             double currentLevelAngle = AngleUtils.convertFromValueToAngle(
                     currentLevelValue,
                     distanceBetweenExtremeAngles,
@@ -377,7 +377,7 @@ public class RainbowView extends FrameLayout {
             double angleInRadians = AngleUtils.convertToRadians(currentLevelAngle - 90);
 
             canvas.drawText(
-                    currentLevelText,
+                    String.valueOf(Math.round(currentLevelValue)),
                     viewWidthHalf + (float) Math.cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
                     viewHeightHalf + (float) Math.sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
                     paint
@@ -453,7 +453,11 @@ public class RainbowView extends FrameLayout {
         return backgroundStartAngle;
     }
 
-    public void setCurrentLevelText(String currentLevelText) {
+    public boolean hasCurrentLevelText() {
+        return currentLevelText;
+    }
+
+    public void setCurrentLevelText(boolean currentLevelText) {
         this.currentLevelText = currentLevelText;
         invalidate();
     }
