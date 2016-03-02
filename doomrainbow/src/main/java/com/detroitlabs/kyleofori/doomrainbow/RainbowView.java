@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,6 +15,11 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class RainbowView extends FrameLayout {
 
@@ -85,7 +91,8 @@ public class RainbowView extends FrameLayout {
     private IndicatorType indicatorType = IndicatorType.NONE;
     private String currentLevelText;
     private String minString, maxString;
-    private RectF doomRainbowRectF, inscribedRectF;
+    private RectF doomRainbowRectF;
+    private Rect childViewRect;
     private ValueAnimator animation;
     private int minValue, maxValue, distanceBetweenExtremeValues;
     private float currentLevelValue, goalValue;
@@ -97,6 +104,14 @@ public class RainbowView extends FrameLayout {
     private float valueToDraw;
     private boolean animated;
     private long animationDuration = DEFAULT_ANIMATION_DURATION;
+    /**
+     * Aspect ratio of child view, such that
+     *
+     *     w = LAMBDA h
+     *
+     * where w is the width of the child view, and h is the height of the child view.
+     */
+    private float lambda = 2f;
 
     public RainbowView(Context context) {
         super(context);
@@ -227,7 +242,7 @@ public class RainbowView extends FrameLayout {
         this.setWillNotDraw(false);
         paint = new Paint();
         doomRainbowRectF = new RectF();
-        inscribedRectF = new RectF();
+        childViewRect = new Rect();
         minValue = DEFAULT_MIN_VALUE;
         maxValue = DEFAULT_MAX_VALUE;
         distanceBetweenExtremeValues = maxValue - minValue;
@@ -254,62 +269,37 @@ public class RainbowView extends FrameLayout {
             radius = viewHeightHalf - 70;
         }
 
-        inscribedRectF.set(
-                viewWidthHalf - (float) (radius * Math.cos(Math.PI / 6)),
-                viewHeightHalf - (float) (radius * Math.sin(Math.PI / 6)),
-                viewWidthHalf + (float) (radius * Math.cos(Math.PI / 6)),
-                viewHeightHalf + (float) (radius * Math.sin(Math.PI / 6))
-        );
-
         final int count = getChildCount();
 
         if(count >= 2) {
             throw new IllegalStateException("You may only add two children to this view.");
         }
 
-        int currentChildWidth, currentChildHeight, currentChildLeft, currentChildTop;
-
-        final int childrenSpaceLeft = Math.round(inscribedRectF.left);
-        final int childrenSpaceTop = Math.round(inscribedRectF.top);
-        final int childrenSpaceRight = Math.round(inscribedRectF.right);
-        final int childrenSpaceBottom = Math.round(inscribedRectF.bottom);
-        final int childrenSpaceWidth = childrenSpaceRight - childrenSpaceLeft;
-        final int childrenSpaceHeight = childrenSpaceBottom - childrenSpaceTop;
-
-        currentChildLeft = childrenSpaceLeft;
-
         for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
-
-            if(child.getVisibility() == GONE) {
-                return;
-            }
-
-            child.measure(MeasureSpec.makeMeasureSpec(childrenSpaceWidth, MeasureSpec.AT_MOST),
-                    MeasureSpec.makeMeasureSpec(childrenSpaceHeight, MeasureSpec.AT_MOST));
-            currentChildWidth = child.getMeasuredWidth();
-            currentChildHeight = child.getMeasuredHeight();
-            currentChildTop = (childrenSpaceTop + childrenSpaceBottom) / 2 - currentChildHeight/2;
-            if(i == 1) {
-                currentChildLeft = childrenSpaceRight - currentChildWidth;
-            }
-
-            if(currentChildLeft + currentChildWidth > childrenSpaceRight) {
-                throw new IllegalStateException("A button is being laid out beyond the right boundary.");
-            }
-
             child.layout(
-                    currentChildLeft,
-                    currentChildTop,
-                    currentChildLeft + currentChildWidth,
-                    currentChildTop + currentChildHeight
-            );
+                    childViewRect.left,
+                    childViewRect.top,
+                    childViewRect.right,
+                    childViewRect.bottom);
+
+
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        final double circleInternalRadius = radius - getBackgroundArcPaint().getStrokeWidth() / 2;
+        final double childViewHeight = 2 * circleInternalRadius / sqrt(1 + pow(lambda, 2));
+        final double childViewWidth = lambda * childViewHeight;
+
+        childViewRect.set(
+                (int) ceil((getMeasuredWidth() - childViewWidth) / 2),
+                (int) floor((getMeasuredHeight() - childViewHeight) / 2),
+                (int) ceil((getMeasuredWidth() + childViewWidth) / 2),
+                (int) floor((getMeasuredHeight() + childViewHeight) / 2));
 
         int count = getChildCount();
 
@@ -340,6 +330,12 @@ public class RainbowView extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        doomRainbowRectF.set(
+                viewWidthHalf - radius,
+                viewHeightHalf - radius,
+                viewWidthHalf + radius,
+                viewHeightHalf + radius
+        );
 
         drawShiftedArc(canvas, doomRainbowRectF, minValue, maxValue, getBackgroundArcPaint());
 
