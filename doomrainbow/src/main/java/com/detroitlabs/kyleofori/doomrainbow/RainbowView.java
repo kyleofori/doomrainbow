@@ -34,6 +34,7 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING = 15;
     private static final float DEFAULT_GOAL_VALUE = 20;
     private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
+    private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION = 2000;
     private static final String DEFAULT_CURRENT_LEVEL_TEXT = "30%";
     private static final int DEFAULT_MIN_VALUE = 0;
@@ -111,7 +112,7 @@ public class RainbowView extends FrameLayout {
      *
      * where w is the width of the child view, and h is the height of the child view.
      */
-    private float lambda = 2f;
+    private float lambda = DEFAULT_CHILD_VIEW_ASPECT_RATIO;
 
     public RainbowView(Context context) {
         super(context);
@@ -532,6 +533,12 @@ public class RainbowView extends FrameLayout {
     public void reanimate() {
         animateBetweenValues(minValue, currentLevelValue);
     }
+
+    public void setChildViewAspectRatio(final float lambda) {
+        this.lambda = lambda;
+        requestLayout();
+    }
+
 
     private static class SavedState extends BaseSavedState {
         float currentLevelValue;
