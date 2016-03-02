@@ -40,6 +40,8 @@ public class RainbowView extends FrameLayout {
     private static final int DEFAULT_MAX_VALUE = 100;
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
     private static final int DEFAULT_ARC_STROKE_WIDTH = 20;
+    private static final float DEFAULT_CURRENT_LEVEL_TEXT_SIZE = 20;
+    private static final float DEFAULT_EXTREME_LABEL_TEXT_SIZE = 20;
     private static final float LEVEL_TEXT_RADIUS_SCALE_FACTOR = 1.25f;
 
 
@@ -61,13 +63,13 @@ public class RainbowView extends FrameLayout {
     private static void initDefaultCurrentLevelTextPaint() {
         DEFAULT_CURRENT_LEVEL_TEXT_PAINT.setColor(Color.BLACK);
         DEFAULT_CURRENT_LEVEL_TEXT_PAINT.setFakeBoldText(false);
-//        paint.setTextSize(25);
+        DEFAULT_CURRENT_LEVEL_TEXT_PAINT.setTextSize(DEFAULT_CURRENT_LEVEL_TEXT_SIZE);
     }
 
     private static void initDefaultExtremeLabelTextPaint() {
-//        paint.setTextSize(textSizeValue);
         DEFAULT_EXTREME_LABEL_TEXT_PAINT.setColor(Color.BLACK);
         DEFAULT_EXTREME_LABEL_TEXT_PAINT.setFakeBoldText(true);
+        DEFAULT_EXTREME_LABEL_TEXT_PAINT.setTextSize(DEFAULT_EXTREME_LABEL_TEXT_SIZE);
         DEFAULT_EXTREME_LABEL_TEXT_PAINT.setTextAlign(Paint.Align.CENTER);
     }
 
@@ -87,12 +89,10 @@ public class RainbowView extends FrameLayout {
 
     private Paint customBackgroundArcPaint;
     private Paint customCurrentLevelTextPaint;
-    private Paint customExtremeValueTextPaint;
+    private Paint customExtremeLabelTextPaint;
     private Paint customGoalPaint;
     private Paint customCurrentLevelArcPaint;
-    private Paint paint;
     private IndicatorType indicatorType = IndicatorType.NONE;
-
     private String minString, maxString;
     private RectF doomRainbowRectF;
     private Rect childViewRect;
@@ -142,8 +142,8 @@ public class RainbowView extends FrameLayout {
     }
 
     @NonNull
-    public Paint getExtremeValueTextPaint() {
-        return getPaint(customExtremeValueTextPaint, DEFAULT_EXTREME_LABEL_TEXT_PAINT);
+    public Paint getExtremeLabelTextPaint() {
+        return getPaint(customExtremeLabelTextPaint, DEFAULT_EXTREME_LABEL_TEXT_PAINT);
     }
 
     @NonNull
@@ -214,17 +214,31 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setExtremeValueTextPaintColor(@ColorInt int color) {
-        final Paint newPaint = new Paint(getExtremeValueTextPaint());
-        newPaint.setColor(color);
-        customExtremeValueTextPaint = newPaint;
+    public void setCurrentLevelTextPaintTextSize(float textSize) {
+        final Paint newPaint = new Paint(getCurrentLevelTextPaint());
+        newPaint.setTextSize(textSize);
+        customCurrentLevelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setExtremeValueTextPaintFakeBoldText(boolean fakeBoldText) {
-        final Paint newPaint = new Paint(getExtremeValueTextPaint());
+    public void setExtremeLabelTextPaintColor(@ColorInt int color) {
+        final Paint newPaint = new Paint(getExtremeLabelTextPaint());
+        newPaint.setColor(color);
+        customExtremeLabelTextPaint = newPaint;
+        invalidate();
+    }
+
+    public void setExtremeLabelTextPaintFakeBoldText(boolean fakeBoldText) {
+        final Paint newPaint = new Paint(getExtremeLabelTextPaint());
         newPaint.setFakeBoldText(fakeBoldText);
-        customExtremeValueTextPaint = newPaint;
+        customExtremeLabelTextPaint = newPaint;
+        invalidate();
+    }
+
+    public void setExtremeLabelTextPaintTextSize(float textSize) {
+        final Paint newPaint = new Paint(getExtremeLabelTextPaint());
+        newPaint.setTextSize(textSize);
+        customExtremeLabelTextPaint = newPaint;
         invalidate();
     }
 
@@ -248,7 +262,6 @@ public class RainbowView extends FrameLayout {
         setAnimated(true);
         setSaveEnabled(true);
         this.setWillNotDraw(false);
-        paint = new Paint();
         doomRainbowRectF = new RectF();
         childViewRect = new Rect();
         minValue = DEFAULT_MIN_VALUE;
@@ -380,7 +393,7 @@ public class RainbowView extends FrameLayout {
                     String.valueOf(Math.round(currentLevelValue)),
                     viewWidthHalf + (float) Math.cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
                     viewHeightHalf + (float) Math.sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
-                    paint
+                    getCurrentLevelTextPaint()
             );
         }
     }
@@ -434,7 +447,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void drawValue(Canvas canvas, String string, float xCoord, float yCoord) {
-        canvas.drawText(string, xCoord, yCoord, getExtremeValueTextPaint());
+        canvas.drawText(string, xCoord, yCoord, getExtremeLabelTextPaint());
     }
 
     public float getCurrentLevelValue() {
