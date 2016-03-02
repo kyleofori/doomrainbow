@@ -101,7 +101,6 @@ public class RainbowView extends FrameLayout {
     private int minValue, maxValue, distanceBetweenExtremeValues;
     private float currentLevelValue, goalValue;
     private float backgroundStartAngle, backgroundEndAngle, distanceBetweenExtremeAngles;
-    public boolean hasCurrentLevelText;
     private float radius;
     private float viewWidthHalf;
     private float viewHeightHalf;
@@ -237,7 +236,6 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setGoalIndicatorType(IndicatorType indicatorType) {
-        //TODO: define this method. It'll set the enum value and we'll have predefined paints for each type.
         this.indicatorType = indicatorType;
         invalidate();
     }
@@ -263,7 +261,6 @@ public class RainbowView extends FrameLayout {
         setCurrentLevelText(DEFAULT_CURRENT_LEVEL_TEXT);
         currentLevelValue = minValue;
         resetValueToDraw();
-        initDefaultValues();
         reanimate();
     }
 
@@ -337,22 +334,7 @@ public class RainbowView extends FrameLayout {
 
         drawShiftedArc(canvas, doomRainbowRectF, minValue, valueToDraw, getCurrentLevelArcPaint());
 
-        if(hasCurrentLevelText) {
-            double currentLevelAngle = AngleUtils.convertFromValueToAngle(
-                    currentLevelValue,
-                    distanceBetweenExtremeAngles,
-                    distanceBetweenExtremeValues
-            );
-            double shiftedAngle = currentLevelAngle - 90;
-            double angleInRadians = AngleUtils.convertToRadians(shiftedAngle);
-
-            canvas.drawText(
-                    currentLevelText,
-                    viewWidthHalf + (float) Math.cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
-                    viewHeightHalf + (float) Math.sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
-                    paint
-            );
-        }
+        drawCurrentLevelTextIfPresent(canvas);
 
         drawExtremeLabelsIfPresent(canvas);
 
@@ -382,6 +364,24 @@ public class RainbowView extends FrameLayout {
             case NONE:
             default:
                 break;
+        }
+    }
+
+    private void drawCurrentLevelTextIfPresent(Canvas canvas) {
+        if(currentLevelText != null) {
+            double currentLevelAngle = AngleUtils.convertFromValueToAngle(
+                    currentLevelValue,
+                    distanceBetweenExtremeAngles,
+                    distanceBetweenExtremeValues
+            );
+            double angleInRadians = AngleUtils.convertToRadians(currentLevelAngle - 90);
+
+            canvas.drawText(
+                    currentLevelText,
+                    viewWidthHalf + (float) Math.cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
+                    viewHeightHalf + (float) Math.sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
+                    paint
+            );
         }
     }
 
@@ -437,10 +437,6 @@ public class RainbowView extends FrameLayout {
         canvas.drawText(string, xCoord, yCoord, getExtremeValueTextPaint());
     }
 
-    public void initDefaultValues() {
-        setHasCurrentLevelText(true);
-    }
-
     public float getCurrentLevelValue() {
         return currentLevelValue;
     }
@@ -455,10 +451,6 @@ public class RainbowView extends FrameLayout {
 
     public float getBackgroundStartAngle() {
         return backgroundStartAngle;
-    }
-
-    public void setHasCurrentLevelText(boolean hasCurrentLevelText) {
-        this.hasCurrentLevelText = hasCurrentLevelText;
     }
 
     public void setCurrentLevelText(String currentLevelText) {
