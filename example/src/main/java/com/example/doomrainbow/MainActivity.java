@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
-        rainbowView.setMinString("0");
-        rainbowView.setMaxString("100");
+        rainbowView.setMinLabel("0");
+        rainbowView.setMaxLabel("100");
         rainbowView.setChildViewAspectRatio(0.5f);
         rainbowView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
     }

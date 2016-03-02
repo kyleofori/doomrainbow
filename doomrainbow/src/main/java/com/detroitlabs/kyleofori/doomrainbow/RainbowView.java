@@ -93,7 +93,7 @@ public class RainbowView extends FrameLayout {
     private Paint customGoalPaint;
     private Paint customCurrentLevelArcPaint;
     private IndicatorType indicatorType = IndicatorType.NONE;
-    private String minString, maxString;
+    private String minLabel, maxLabel;
     private RectF doomRainbowRectF;
     private Rect childViewRect;
     private ValueAnimator animation;
@@ -417,16 +417,16 @@ public class RainbowView extends FrameLayout {
         float yCoord = viewHeightHalf + radius;
         float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
 
-        if(minString != null) {
+        if(minLabel != null) {
             float minValRadiusCosCoefficient = AngleUtils.getRadiusCosineCoefficient(backgroundStartAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
             float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
-            drawValue(canvas, minString, xCoord, yCoord);
+            drawValue(canvas, minLabel, xCoord, yCoord);
         }
 
-        if(maxString != null) {
+        if(maxLabel != null) {
             float maxValRadiusCosCoefficient = AngleUtils.getRadiusCosineCoefficient(backgroundEndAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
             float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
-            drawValue(canvas, maxString, xCoord, yCoord);
+            drawValue(canvas, maxLabel, xCoord, yCoord);
         }
     }
 
@@ -530,13 +530,13 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setMaxString(String maxString) {
-        this.maxString = maxString;
+    public void setMaxLabel(String maxLabel) {
+        this.maxLabel = maxLabel;
         invalidate();
     }
 
-    public void setMinString(String minString) {
-        this.minString = minString;
+    public void setMinLabel(String minLabel) {
+        this.minLabel = minLabel;
         invalidate();
     }
 
