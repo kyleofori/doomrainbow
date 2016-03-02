@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity  {
         rainbowView.setMinString("0");
         rainbowView.setMaxString("100");
         rainbowView.setChildViewAspectRatio(0.5f);
+        rainbowView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
     }
 
     @Override

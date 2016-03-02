@@ -73,6 +73,9 @@ public class RainbowView extends FrameLayout {
     }
 
     private static void initDefaultGoalPaint() {
+        DEFAULT_GOAL_PAINT.setStyle(Paint.Style.STROKE);
+        DEFAULT_GOAL_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
+        DEFAULT_GOAL_PAINT.setStrokeWidth(DEFAULT_ARC_STROKE_WIDTH);
         DEFAULT_GOAL_PAINT.setColor(Color.GREEN);
     }
 
@@ -165,27 +168,33 @@ public class RainbowView extends FrameLayout {
 
     // The following methods set properties on each paint used.
 
-    public void setArcStrokeCap(Paint.Cap strokeCap) {
+    public void setPaintStrokeCap(Paint.Cap strokeCap) {
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
         newBackgroundPaint.setStrokeCap(strokeCap);
         customBackgroundArcPaint = newBackgroundPaint;
         final Paint newCurrentLevelPaint = new Paint(getCurrentLevelArcPaint());
         newCurrentLevelPaint.setStrokeCap(strokeCap);
         customCurrentLevelArcPaint = newCurrentLevelPaint;
+        final Paint newGoalPaint = new Paint(getGoalPaint());
+        newGoalPaint.setStrokeCap(strokeCap);
+        customGoalPaint = newGoalPaint;
         invalidate();
     }
 
-    public void setArcStrokeWidth(float strokeWidth) {
-        final Paint newBackgroundStrokeWidth = new Paint(getBackgroundArcPaint());
-        newBackgroundStrokeWidth.setStrokeWidth(strokeWidth);
-        customBackgroundArcPaint = newBackgroundStrokeWidth;
-        final Paint newCurrentLevelStrokeWidth = new Paint(getCurrentLevelArcPaint());
-        newCurrentLevelStrokeWidth.setStrokeWidth(strokeWidth);
-        customCurrentLevelArcPaint = newCurrentLevelStrokeWidth;
+    public void setArcPaintStrokeWidth(float strokeWidth) {
+        final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
+        newBackgroundPaint.setStrokeWidth(strokeWidth);
+        customBackgroundArcPaint = newBackgroundPaint;
+        final Paint newCurrentLevelPaint = new Paint(getCurrentLevelArcPaint());
+        newCurrentLevelPaint.setStrokeWidth(strokeWidth);
+        customCurrentLevelArcPaint = newCurrentLevelPaint;
+        final Paint newGoalPaint = new Paint(getGoalPaint());
+        newGoalPaint.setStrokeWidth(strokeWidth);
+        customGoalPaint = newGoalPaint;
         invalidate();
     }
 
-    public void setBackgroundArcColor(@ColorInt int color) {
+    public void setBackgroundArcPaintColor(@ColorInt int color) {
         final Paint newPaint = new Paint(getBackgroundArcPaint());
         newPaint.setColor(color);
         customBackgroundArcPaint = newPaint;
@@ -220,7 +229,7 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setGoalColor(@ColorInt int color) {
+    public void setGoalPaintColor(@ColorInt int color) {
         final Paint newPaint = new Paint(getGoalPaint());
         newPaint.setColor(color);
         customGoalPaint = newPaint;
@@ -351,10 +360,10 @@ public class RainbowView extends FrameLayout {
             case CIRCLE:
                 float goalAngle = AngleUtils.convertFromValueToAngle(
                         goalValue,
-                        backgroundEndAngle - backgroundStartAngle,
-                        maxValue - minValue
+                        distanceBetweenExtremeAngles,
+                        distanceBetweenExtremeValues
                         );
-                double goalAngleRadians = AngleUtils.convertToRadians(goalAngle);
+                double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
                 canvas.drawPoint(
                         viewWidthHalf + (float) Math.cos(goalAngleRadians) * radius,
                         viewHeightHalf + (float) Math.sin(goalAngleRadians) * radius,
