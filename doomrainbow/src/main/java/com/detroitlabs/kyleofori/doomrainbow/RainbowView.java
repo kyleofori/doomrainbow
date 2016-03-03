@@ -200,6 +200,13 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
+    public void setCurrentLevelArcPaintColor(@ColorInt int color) {
+        final Paint newPaint = new Paint(getCurrentLevelArcPaint());
+        newPaint.setColor(color);
+        customCurrentLevelArcPaint = newPaint;
+        invalidate();
+    }
+
     public void setCurrentLevelTextPaintColor(@ColorInt int color) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setColor(color);

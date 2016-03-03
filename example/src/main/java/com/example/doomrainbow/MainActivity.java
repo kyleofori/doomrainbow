@@ -1,5 +1,6 @@
 package com.example.doomrainbow;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity  {
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
         rainbowView.setMinLabel("0");
         rainbowView.setMaxLabel("100");
-        rainbowView.setRange(0, 100);
+        rainbowView.setCurrentLevelArcPaintColor(Color.argb(118, 234, 122, 97));
         rainbowView.setChildViewAspectRatio(0.5f);
         rainbowView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
         rainbowView.setOnClickListener(new View.OnClickListener() {
