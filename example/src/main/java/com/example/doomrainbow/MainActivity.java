@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
 
@@ -18,8 +19,15 @@ public class MainActivity extends AppCompatActivity  {
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
         rainbowView.setMinLabel("0");
         rainbowView.setMaxLabel("100");
+        rainbowView.setRange(0, 100);
         rainbowView.setChildViewAspectRatio(0.5f);
         rainbowView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
+        rainbowView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                increaseCurrentLevel();
+            }
+        });
     }
 
     @Override

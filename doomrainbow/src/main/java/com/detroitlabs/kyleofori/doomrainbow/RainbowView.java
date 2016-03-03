@@ -97,9 +97,9 @@ public class RainbowView extends FrameLayout {
     private RectF doomRainbowRectF;
     private Rect childViewRect;
     private ValueAnimator animation;
-    private int minValue, maxValue, distanceBetweenExtremeValues;
+    private int minValue, maxValue, differenceOfExtremeValues;
     private float currentLevelValue, goalValue;
-    private float backgroundStartAngle, backgroundEndAngle, distanceBetweenExtremeAngles;
+    private float backgroundStartAngle, backgroundEndAngle, differenceOfExtremeAngles;
     private float radius;
     private float viewWidthHalf;
     private float viewHeightHalf;
@@ -266,10 +266,10 @@ public class RainbowView extends FrameLayout {
         childViewRect = new Rect();
         minValue = DEFAULT_MIN_VALUE;
         maxValue = DEFAULT_MAX_VALUE;
-        distanceBetweenExtremeValues = maxValue - minValue;
+        resetDifferenceOfExtremeValues();
         setBackgroundStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
         setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
-        distanceBetweenExtremeAngles = backgroundEndAngle - backgroundStartAngle;
+        resetDifferenceOfBackgroundExtremeAngles();
         setGoalValue(DEFAULT_GOAL_VALUE);
         setCurrentLevelText(true);
         currentLevelValue = minValue;
@@ -355,8 +355,8 @@ public class RainbowView extends FrameLayout {
             case CIRCLE:
                 float goalAngle = AngleUtils.convertFromValueToAngle(
                         goalValue,
-                        distanceBetweenExtremeAngles,
-                        distanceBetweenExtremeValues
+                        differenceOfExtremeAngles,
+                        differenceOfExtremeValues
                         );
                 double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
                 canvas.drawPoint(
@@ -384,8 +384,8 @@ public class RainbowView extends FrameLayout {
         if(hasCurrentLevelText()) {
             double currentLevelAngle = AngleUtils.convertFromValueToAngle(
                     currentLevelValue,
-                    distanceBetweenExtremeAngles,
-                    distanceBetweenExtremeValues
+                    differenceOfExtremeAngles,
+                    differenceOfExtremeValues
             );
             double angleInRadians = AngleUtils.convertToRadians(currentLevelAngle - 90);
 
@@ -401,13 +401,13 @@ public class RainbowView extends FrameLayout {
     public void drawShiftedArc(Canvas canvas, RectF rectF, float startValue, float endValue, Paint paint) {
         float startAngle = AngleUtils.convertFromValueToAngle(
                 startValue,
-                distanceBetweenExtremeAngles,
-                distanceBetweenExtremeValues
+                differenceOfExtremeAngles,
+                differenceOfExtremeValues
         );
         float endAngle = AngleUtils.convertFromValueToAngle(
                 endValue,
-                distanceBetweenExtremeAngles,
-                distanceBetweenExtremeValues
+                differenceOfExtremeAngles,
+                differenceOfExtremeValues
         );
         canvas.drawArc(rectF, startAngle - 90, (endAngle - startAngle), false, paint);
     }
@@ -494,14 +494,35 @@ public class RainbowView extends FrameLayout {
         animation.start();
     }
 
+    /**
+    *Note: if you intend to use numbers for minLabel and maxLabel's values,
+     * change those to reflect the range when you set range.
+    **/
+
+    public void setRange(int minValue, int maxValue) {
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        resetDifferenceOfExtremeValues();
+    }
+
+    private void resetDifferenceOfExtremeValues() {
+        differenceOfExtremeValues = maxValue - minValue;
+    }
+
     public void setBackgroundStartAngle(float backgroundStartAngle) {
         this.backgroundStartAngle = backgroundStartAngle;
+        resetDifferenceOfBackgroundExtremeAngles();
         invalidate();
     }
 
     public void setBackgroundEndAngle(float backgroundEndAngle) {
         this.backgroundEndAngle = backgroundEndAngle;
+        resetDifferenceOfBackgroundExtremeAngles();
         invalidate();
+    }
+
+    private void resetDifferenceOfBackgroundExtremeAngles() {
+        differenceOfExtremeAngles = backgroundEndAngle - backgroundStartAngle;
     }
 
     public void setCurrentLevelValue(float currentLevelValue) {
