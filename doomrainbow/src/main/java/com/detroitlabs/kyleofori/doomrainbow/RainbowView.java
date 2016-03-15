@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import rx.functions.Func1;
+
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
 import static java.lang.Math.pow;
@@ -32,7 +34,7 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
     private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
     private static final float DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING = 15;
-    private static final float DEFAULT_GOAL_VALUE = 20;
+    private static final float DEFAULT_GOAL_VALUE = 90;
     private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION = 2000;
@@ -203,6 +205,18 @@ public class RainbowView extends FrameLayout {
     public void setCurrentLevelArcPaintColor(@ColorInt int color) {
         final Paint newPaint = new Paint(getCurrentLevelArcPaint());
         newPaint.setColor(color);
+        customCurrentLevelArcPaint = newPaint;
+        invalidate();
+    }
+
+    /**
+     * User should pass in a function that maps from the minimum and maximum value of the rainbowView
+     * to the color code.
+     */
+
+    public void setCurrentLevelArcPaintColorFunction(Float value, Func1<Integer, Integer> function) {
+        final Paint newPaint = new Paint(getCurrentLevelArcPaint());
+        newPaint.setColor(function.call(Math.round(value)));
         customCurrentLevelArcPaint = newPaint;
         invalidate();
     }
@@ -467,6 +481,14 @@ public class RainbowView extends FrameLayout {
 
     public float getBackgroundEndAngle() {
         return backgroundEndAngle;
+    }
+
+    public int getMinValue() {
+        return minValue;
+    }
+
+    public int getMaxValue() {
+        return maxValue;
     }
 
     public float getBackgroundStartAngle() {

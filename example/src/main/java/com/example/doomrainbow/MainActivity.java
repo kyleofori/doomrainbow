@@ -9,18 +9,27 @@ import android.view.View;
 
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
 
+import rx.functions.Func1;
+
 public class MainActivity extends AppCompatActivity  {
 
     private RainbowView rainbowView;
+    private Func1<Integer, Integer> colorFunction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
+        colorFunction = new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer integer) {
+                return Color.argb(80, 2 * integer, 0, integer);
+            }
+        };
         rainbowView.setMinLabel("0");
         rainbowView.setMaxLabel("100");
-        rainbowView.setCurrentLevelArcPaintColor(Color.argb(118, 234, 122, 97));
+        rainbowView.setCurrentLevelArcPaintColorFunction(rainbowView.getCurrentLevelValue(), colorFunction);
         rainbowView.setChildViewAspectRatio(0.5f);
         rainbowView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
         rainbowView.setOnClickListener(new View.OnClickListener() {
@@ -54,20 +63,22 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void increaseCurrentLevel() {
-        float angle = rainbowView.getCurrentLevelValue();
-        if(rainbowView.getGoalValue() >= angle + 8) {
-            rainbowView.setCurrentLevelValue(angle + 8);
+        float value = rainbowView.getCurrentLevelValue();
+        if(rainbowView.getGoalValue() >= value + 8) {
+            rainbowView.setCurrentLevelValue(value + 8);
         } else {
             rainbowView.setCurrentLevelValue(rainbowView.getGoalValue());
         }
+        rainbowView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
     }
 
     private void decreaseCurrentLevel() {
-        float angle = rainbowView.getCurrentLevelValue();
-        if(angle - 30 > rainbowView.getBackgroundStartAngle()) {
-            rainbowView.setCurrentLevelValue(angle - 30);
+        float value = rainbowView.getCurrentLevelValue();
+        if(value - 30 > rainbowView.getBackgroundStartAngle()) {
+            rainbowView.setCurrentLevelValue(value - 30);
         } else {
             rainbowView.setCurrentLevelValue(rainbowView.getBackgroundStartAngle());
         }
+        rainbowView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
     }
 }
