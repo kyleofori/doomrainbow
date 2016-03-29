@@ -13,6 +13,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -350,6 +351,14 @@ public class RainbowView extends FrameLayout {
             throw new IllegalStateException("This view must have exactly one child.");
         } else {
             getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        }
+
+        Log.i("result of getheight", Integer.toString(getHeight()) + "  " + Integer.toString(getChildCount()));
+
+        int rainbowViewHeight = 647;
+        int rainbowViewQuantity = 3;
+        if(heightMeasureSpec == 0) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(rainbowViewHeight * rainbowViewQuantity, MeasureSpec.AT_MOST);
         }
 
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);

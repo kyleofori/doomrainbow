@@ -13,7 +13,7 @@ import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity  {
 
-    private RainbowView rainbowView;
+    private RainbowView rainbowView, rainbowView1, rainbowView2;
     private Func1<Integer, Integer> colorFunction;
 
     @Override
@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
+        rainbowView1 = (RainbowView) findViewById(R.id.rainbow_view1);
+        rainbowView2 = (RainbowView) findViewById(R.id.rainbow_view2);
         colorFunction = new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer integer) {
