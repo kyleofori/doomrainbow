@@ -503,11 +503,7 @@ public class RainbowView extends FrameLayout {
 
     @NonNull
     private Paint getPaint(@Nullable final Paint customPaint, @NonNull final Paint defaultPaint) {
-        if(customPaint != null) {
-            return customPaint;
-        } else {
-            return defaultPaint;
-        }
+        return customPaint != null ? customPaint : defaultPaint;
     }
 
     private boolean hasCurrentLevelText() {
