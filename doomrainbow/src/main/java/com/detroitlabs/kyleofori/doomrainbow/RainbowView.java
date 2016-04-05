@@ -116,7 +116,7 @@ public class RainbowView extends FrameLayout {
     private float viewHeightHalf;
     private float valueToDraw;
     private boolean animateChangesInCurrentLevel = true;
-    private boolean currentLevelText;
+    private boolean displayCurrentLevelLabel;
     private long animationDuration = DEFAULT_ANIMATION_DURATION_MS;
 
     /**
@@ -426,6 +426,10 @@ public class RainbowView extends FrameLayout {
         this.animateChangesInCurrentLevel = animateChangesInCurrentLevel;
     }
 
+    private void setDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
+        this.displayCurrentLevelLabel = displayCurrentLevelLabel;
+    }
+
     public void setChildViewAspectRatio(final float lambda) {
         this.lambda = lambda;
         requestLayout();
@@ -473,12 +477,8 @@ public class RainbowView extends FrameLayout {
         return customPaint != null ? customPaint : defaultPaint;
     }
 
-    private boolean hasCurrentLevelText() {
-        return currentLevelText;
-    }
-
     private void drawCurrentLevelTextIfPresent(final Canvas canvas) {
-        if(hasCurrentLevelText()) {
+        if(displayCurrentLevelLabel) {
             final double currentLevelAngle = AngleUtils.convertFromValueToAngle(currentValue,
                     getAnglesRange(),
                     getValuesRange()
