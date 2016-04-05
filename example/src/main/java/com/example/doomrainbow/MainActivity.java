@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity  {
 
     private void initFirstView() {
         firstView.setRepresentedRange(0, 100, true);
+        firstView.setGoalValue(72);
+        firstView.setCurrentValue(64);
         firstView.setChildViewAspectRatio(0.5f);
-        firstView.setGoalIndicatorType(RainbowView.IndicatorType.CIRCLE);
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -39,7 +40,6 @@ public class MainActivity extends AppCompatActivity  {
 
     private void initSecondView() {
         secondView.setBackgroundArcColor(Color.YELLOW);
-        secondView.setGoalIndicatorType(RainbowView.IndicatorType.CIRCLE);
         secondView.setGoalIndicatorColor(Color.BLACK);
         secondView.setArcWidthDp(24);
     }

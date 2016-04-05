@@ -29,10 +29,6 @@ import static java.lang.Math.sqrt;
 
 public class RainbowView extends FrameLayout {
 
-    public enum IndicatorType {
-        CIRCLE, ARC, NONE
-    }
-
     private static final Paint BASE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final Paint DEFAULT_BACKGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_VALUE_LABEL_PAINT = new Paint(BASE_PAINT);
@@ -45,8 +41,7 @@ public class RainbowView extends FrameLayout {
 
     // todo: what is this?
     private static final float DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP = 15;
-    private static final float DEFAULT_RADIUS_COEFFICIENT = .85f;
-    private static final float DEFAULT_GOAL_INDICATOR_ARC_LENGTH = 4;
+    private static final float DEFAULT_RADIUS_COEFFICIENT = .75f;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
     private static final int DEFAULT_MINIMUM_VALUE = 0;
@@ -98,15 +93,8 @@ public class RainbowView extends FrameLayout {
     @Nullable private Paint customGoalIndicatorPaint;
     @Nullable private Paint customForegroundArcPaint;
 
-    @NonNull private IndicatorType goalIndicatorType = IndicatorType.NONE;
-
-    private String minimumValueLabel, maximumValueLabel;
-    private RectF doomRainbowRectF;
-    private Rect childViewRect;
-    private ValueAnimator animation;
-
     private int minimumValue, maximumValue;
-    private float currentValue, goalValue;
+    private float currentValue;
     private float minimumBackgroundArcAngle, maximumBackgroundArcAngle;
     private float radius;
     private float viewWidthHalf;
@@ -115,6 +103,12 @@ public class RainbowView extends FrameLayout {
     private boolean animateChangesInCurrentLevel = true;
     private boolean displayCurrentLevelLabel;
     private long animationDuration = DEFAULT_ANIMATION_DURATION_MS;
+
+    private String minimumValueLabel, maximumValueLabel;
+    private RectF doomRainbowRectF;
+    private Rect childViewRect;
+    private ValueAnimator animation;
+    private Float goalValue;
 
     /**
      * Aspect ratio of child view, such that
@@ -246,7 +240,7 @@ public class RainbowView extends FrameLayout {
 
         drawExtremeLabelsIfPresent(canvas);
 
-        if (goalIndicatorType != IndicatorType.NONE) {
+        if (goalValue != null) {
             drawIndicator(canvas);
         }
     }
@@ -399,11 +393,6 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setGoalIndicatorType(@NonNull final IndicatorType indicatorType) {
-        this.goalIndicatorType = indicatorType;
-        invalidate();
-    }
-
     public void changeCurrentValueBy(final float difference) {
         setCurrentValue(currentValue + difference);
     }
@@ -444,6 +433,11 @@ public class RainbowView extends FrameLayout {
 
     public void setGoalValue(final float goalValue) {
         this.goalValue = goalValue;
+        invalidate();
+    }
+
+    public void clearGoalValue() {
+        goalValue = null;
         invalidate();
     }
 
@@ -579,33 +573,17 @@ public class RainbowView extends FrameLayout {
     }
 
     private void drawIndicator(final Canvas canvas) {
-        switch(goalIndicatorType) {
-            case CIRCLE:
-                final float goalAngle = AngleUtils.convertFromValueToAngle(
-                        goalValue,
-                        getBackgroundArcAngleRangeLength(),
-                        getRepresentedRangeLength());
+        final float goalAngle = AngleUtils.convertFromValueToAngle(
+                goalValue,
+                getBackgroundArcAngleRangeLength(),
+                getRepresentedRangeLength());
 
-                final double goalAngleRadians = Math.toRadians(goalAngle - 90);
+        final double goalAngleRadians = Math.toRadians(goalAngle - 90);
 
-                canvas.drawPoint(
-                        viewWidthHalf + (float) cos(goalAngleRadians) * radius,
-                        viewHeightHalf + (float) sin(goalAngleRadians) * radius,
-                        getGoalPaint());
-
-                break;
-            case ARC:
-                drawShiftedArc(
-                        canvas,
-                        doomRainbowRectF,
-                        goalValue - DEFAULT_GOAL_INDICATOR_ARC_LENGTH /2,
-                        goalValue + DEFAULT_GOAL_INDICATOR_ARC_LENGTH /2,
-                        getGoalPaint());
-
-                break;
-            default:
-                break;
-        }
+        canvas.drawPoint(
+                viewWidthHalf + (float) cos(goalAngleRadians) * radius,
+                viewHeightHalf + (float) sin(goalAngleRadians) * radius,
+                getGoalPaint());
     }
 
     private void drawValue(
