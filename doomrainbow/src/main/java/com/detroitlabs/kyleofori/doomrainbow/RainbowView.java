@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 import static java.lang.Math.ceil;
 import static java.lang.Math.cos;
 import static java.lang.Math.floor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
@@ -384,8 +386,7 @@ public class RainbowView extends FrameLayout {
     public void setCurrentValue(final float currentValue) {
         final float previousValue = this.currentValue;
 
-        this.currentValue = Math.min(
-                Math.max(minimumValue, currentValue), maximumValue);
+        this.currentValue = min(max(minimumValue, currentValue), maximumValue);
 
         if(animation != null) {
             animation.cancel();
