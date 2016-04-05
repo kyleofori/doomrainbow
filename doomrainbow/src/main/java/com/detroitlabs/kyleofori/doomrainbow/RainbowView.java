@@ -267,7 +267,7 @@ public class RainbowView extends FrameLayout {
 
     // Public API
 
-    public void setPaintStrokeCap(final Paint.Cap strokeCap) {
+    public void setArcCapStyle(final Paint.Cap strokeCap) {
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
         newBackgroundPaint.setStrokeCap(strokeCap);
         customBackgroundArcPaint = newBackgroundPaint;
