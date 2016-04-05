@@ -7,13 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.detroitlabs.kyleofori.doomrainbow.Function;
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
 
 public class MainActivity extends AppCompatActivity  {
 
     private RainbowView firstView, secondView, thirdView;
-    private Function<Integer, Integer> colorFunction;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -22,12 +20,6 @@ public class MainActivity extends AppCompatActivity  {
         firstView = (RainbowView) findViewById(R.id.rainbow_view);
         secondView = (RainbowView) findViewById(R.id.rainbow_view1);
         thirdView = (RainbowView) findViewById(R.id.rainbow_view2);
-        colorFunction = new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(final Integer integer) {
-                return Color.argb(80, 2 * integer, 0, integer);
-            }
-        };
         initFirstView();
         initSecondView();
         initThirdView();
@@ -36,13 +28,12 @@ public class MainActivity extends AppCompatActivity  {
     private void initFirstView() {
         firstView.setMinimumValueLabel("0");
         firstView.setMaximumValueLabel("100");
-        firstView.setCurrentLevelArcPaintColorFunction(firstView.getCurrentValue(), colorFunction);
         firstView.setChildViewAspectRatio(0.5f);
         firstView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                increaseCurrentLevel();
+                firstView.changeCurrentValueBy(1);
             }
         });
     }
@@ -82,23 +73,4 @@ public class MainActivity extends AppCompatActivity  {
         return super.onOptionsItemSelected(item);
     }
 
-    private void increaseCurrentLevel() {
-        final float value = firstView.getCurrentValue();
-        if(firstView.getGoalValue() >= value + 8) {
-            firstView.setCurrentValue(value + 8);
-        } else {
-            firstView.setCurrentValue(firstView.getGoalValue());
-        }
-        firstView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
-    }
-
-    private void decreaseCurrentLevel() {
-        final float value = firstView.getCurrentValue();
-        if(value - 30 > firstView.getMinimumBackgroundArcAngle()) {
-            firstView.setCurrentValue(value - 30);
-        } else {
-            firstView.setCurrentValue(firstView.getMinimumBackgroundArcAngle());
-        }
-        firstView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
-    }
 }

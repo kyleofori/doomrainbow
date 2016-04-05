@@ -359,6 +359,10 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
+    public void changeCurrentValueBy(final float difference) {
+        setCurrentValue(currentValue + difference);
+    }
+
     /**
      * Note: if you intend to use numbers for minimumValueLabel and maximumValueLabel's values,
      * change those to reflect the range when you set range.
