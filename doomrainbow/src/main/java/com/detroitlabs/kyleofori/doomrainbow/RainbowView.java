@@ -326,6 +326,11 @@ public class RainbowView extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        final int measuredWidth = getMeasuredWidth();
+
+        //noinspection SuspiciousNameCombination
+        setMeasuredDimension(measuredWidth, measuredWidth);
+
         final double circleInternalRadius = radius - getBackgroundArcPaint().getStrokeWidth() / 2;
         final double childViewHeight = 2 * circleInternalRadius / sqrt(1 + pow(lambda, 2));
         final double childViewWidth = lambda * childViewHeight;
@@ -352,14 +357,6 @@ public class RainbowView extends FrameLayout {
         } else {
             getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
         }
-
-        int rainbowViewHeight = 647;
-        int rainbowViewQuantity = 3;
-        if(heightMeasureSpec == 0) {
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(rainbowViewHeight * rainbowViewQuantity, MeasureSpec.AT_MOST);
-        }
-
-        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
