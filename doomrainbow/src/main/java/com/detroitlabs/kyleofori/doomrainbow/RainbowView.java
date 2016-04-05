@@ -479,10 +479,10 @@ public class RainbowView extends FrameLayout {
 
     private void drawCurrentLevelTextIfPresent(final Canvas canvas) {
         if(displayCurrentLevelLabel) {
-            final double currentLevelAngle = AngleUtils.convertFromValueToAngle(currentValue,
-                    getAnglesRange(),
-                    getValuesRange()
-            );
+            final double currentLevelAngle = AngleUtils.convertFromValueToAngle(
+                    currentValue,
+                    getBackgroundArcAngleRangeLength(),
+                    getRepresentedRangeLength());
 
             final double angleInRadians = Math.toRadians(currentLevelAngle - 90);
 
@@ -504,13 +504,13 @@ public class RainbowView extends FrameLayout {
 
         final float startAngle = AngleUtils.convertFromValueToAngle(
                 startValue,
-                getAnglesRange(),
-                getValuesRange());
+                getBackgroundArcAngleRangeLength(),
+                getRepresentedRangeLength());
 
         final float endAngle = AngleUtils.convertFromValueToAngle(
                 endValue,
-                getAnglesRange(),
-                getValuesRange());
+                getBackgroundArcAngleRangeLength(),
+                getRepresentedRangeLength());
 
         canvas.drawArc(rectF, startAngle - 90, (endAngle - startAngle), false, paint);
     }
@@ -544,8 +544,8 @@ public class RainbowView extends FrameLayout {
             case CIRCLE:
                 final float goalAngle = AngleUtils.convertFromValueToAngle(
                         goalValue,
-                        getAnglesRange(),
-                        getValuesRange());
+                        getBackgroundArcAngleRangeLength(),
+                        getRepresentedRangeLength());
 
                 final double goalAngleRadians = Math.toRadians(goalAngle - 90);
 
@@ -601,11 +601,11 @@ public class RainbowView extends FrameLayout {
         animation.start();
     }
 
-    private int getValuesRange() {
+    private int getRepresentedRangeLength() {
         return maximumValue - minimumValue;
     }
 
-    private float getAnglesRange() {
+    private float getBackgroundArcAngleRangeLength() {
         return maximumBackgroundArcAngle - minimumBackgroundArcAngle;
     }
 
