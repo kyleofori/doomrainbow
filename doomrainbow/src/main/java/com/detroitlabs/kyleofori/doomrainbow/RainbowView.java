@@ -49,7 +49,6 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_EXTREME_LABEL_TEXT_SIZE = 60;
     private static final float LEVEL_TEXT_RADIUS_SCALE_FACTOR = 1.10f;
 
-
     static {
         initDefaultBackgroundArcPaint();
         initDefaultCurrentLevelTextPaint();
@@ -112,6 +111,7 @@ public class RainbowView extends FrameLayout {
     private boolean animated;
     private boolean currentLevelText;
     private long animationDuration = DEFAULT_ANIMATION_DURATION;
+
     /**
      * Aspect ratio of child view, such that
      *
@@ -220,7 +220,6 @@ public class RainbowView extends FrameLayout {
      * User should pass in a function that maps from the minimum and maximum value of the rainbowView
      * to the color code.
      */
-
     public void setCurrentLevelArcPaintColorFunction(
             final Float value,
             final Func1<Integer, Integer> function) {
@@ -380,8 +379,7 @@ public class RainbowView extends FrameLayout {
                 viewWidthHalf - radius,
                 viewHeightHalf - radius,
                 viewWidthHalf + radius,
-                viewHeightHalf + radius
-        );
+                viewHeightHalf + radius);
 
         drawShiftedArc(canvas, doomRainbowRectF, minValue, maxValue, getBackgroundArcPaint());
 
@@ -449,13 +447,13 @@ public class RainbowView extends FrameLayout {
         final float startAngle = AngleUtils.convertFromValueToAngle(
                 startValue,
                 differenceOfExtremeAngles,
-                differenceOfExtremeValues
-        );
+                differenceOfExtremeValues);
+
         final float endAngle = AngleUtils.convertFromValueToAngle(
                 endValue,
                 differenceOfExtremeAngles,
-                differenceOfExtremeValues
-        );
+                differenceOfExtremeValues);
+
         canvas.drawArc(rectF, startAngle - 90, (endAngle - startAngle), false, paint);
     }
 
@@ -561,10 +559,9 @@ public class RainbowView extends FrameLayout {
     }
 
     /**
-    *Note: if you intend to use numbers for minLabel and maxLabel's values,
+     * Note: if you intend to use numbers for minLabel and maxLabel's values,
      * change those to reflect the range when you set range.
-    **/
-
+     */
     public void setRange(final int minValue, final int maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -643,7 +640,6 @@ public class RainbowView extends FrameLayout {
         this.lambda = lambda;
         requestLayout();
     }
-
 
     private static class SavedState extends BaseSavedState {
         float currentLevelValue;
