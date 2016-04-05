@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity  {
         secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorType(RainbowView.IndicatorType.CIRCLE);
         secondView.setGoalIndicatorColor(Color.BLACK);
-        secondView.setArcWidth(50);
+        secondView.setArcWidthDp(24);
     }
 
     private void initThirdView() {

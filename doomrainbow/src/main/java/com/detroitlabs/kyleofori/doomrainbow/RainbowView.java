@@ -13,6 +13,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -40,17 +41,19 @@ public class RainbowView extends FrameLayout {
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
     private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
     private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
-    private static final float DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING = 15;
+
+    // todo: what is this?
+    private static final float DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP = 15;
     private static final float DEFAULT_RADIUS_COEFFICIENT = .85f;
-    private static final float DEFAULT_GOAL_VALUE = 90;
-    private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
+    private static final float DEFAULT_GOAL_INDICATOR_ARC_LENGTH = 4;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
-    private static final int DEFAULT_MIN_VALUE = 0;
-    private static final int DEFAULT_MAX_VALUE = 100;
-    private static final int DEFAULT_ARC_STROKE_WIDTH = 20;
-    private static final float DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE = 40;
-    private static final float DEFAULT_EXTREME_VALUE_LABEL_TEXT_SIZE = 60;
+    private static final int DEFAULT_MINIMUM_VALUE = 0;
+    private static final float DEFAULT_GOAL_VALUE = 90;
+    private static final int DEFAULT_MAXIMUM_VALUE = 100;
+    private static final int DEFAULT_ARC_STROKE_WIDTH_DP = 16;
+    private static final float DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE_SP = 14;
+    private static final float DEFAULT_EXTREME_VALUE_LABEL_TEXT_SIZE_SP = 14;
     private static final float LEVEL_TEXT_RADIUS_SCALE_FACTOR = 1.10f;
 
     static {
@@ -64,34 +67,27 @@ public class RainbowView extends FrameLayout {
     private static void initDefaultBackgroundArcPaint() {
         DEFAULT_BACKGROUND_ARC_PAINT.setStyle(Paint.Style.STROKE);
         DEFAULT_BACKGROUND_ARC_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
-        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeWidth(DEFAULT_ARC_STROKE_WIDTH);
         DEFAULT_BACKGROUND_ARC_PAINT.setColor(Color.GRAY);
     }
 
     private static void initDefaultCurrentValueLabelPaint() {
         DEFAULT_CURRENT_VALUE_LABEL_PAINT.setColor(Color.BLACK);
-        DEFAULT_CURRENT_VALUE_LABEL_PAINT.setFakeBoldText(false);
-        DEFAULT_CURRENT_VALUE_LABEL_PAINT.setTextSize(DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE);
     }
 
     private static void initDefaultExtremeValueLabelPaint() {
         DEFAULT_EXTREME_VALUE_LABEL_PAINT.setColor(Color.BLACK);
-        DEFAULT_EXTREME_VALUE_LABEL_PAINT.setFakeBoldText(true);
-        DEFAULT_EXTREME_VALUE_LABEL_PAINT.setTextSize(DEFAULT_EXTREME_VALUE_LABEL_TEXT_SIZE);
         DEFAULT_EXTREME_VALUE_LABEL_PAINT.setTextAlign(Paint.Align.CENTER);
     }
 
     private static void initDefaultGoalIndicatorPaint() {
         DEFAULT_GOAL_INDICATOR_PAINT.setStyle(Paint.Style.STROKE);
         DEFAULT_GOAL_INDICATOR_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
-        DEFAULT_GOAL_INDICATOR_PAINT.setStrokeWidth(DEFAULT_ARC_STROKE_WIDTH);
         DEFAULT_GOAL_INDICATOR_PAINT.setColor(Color.GREEN);
     }
 
     private static void initDefaultForegroundArcPaint() {
         DEFAULT_FOREGROUND_ARC_PAINT.setStyle(Paint.Style.STROKE);
         DEFAULT_FOREGROUND_ARC_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
-        DEFAULT_FOREGROUND_ARC_PAINT.setStrokeWidth(DEFAULT_ARC_STROKE_WIDTH);
         DEFAULT_FOREGROUND_ARC_PAINT.setColor(Color.BLUE);
     }
 
@@ -146,12 +142,19 @@ public class RainbowView extends FrameLayout {
     }
 
     private void init() {
+        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
+        DEFAULT_GOAL_INDICATOR_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
+        DEFAULT_FOREGROUND_ARC_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
+
+        DEFAULT_CURRENT_VALUE_LABEL_PAINT.setTextSize(spToPx(DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE_SP));
+        DEFAULT_EXTREME_VALUE_LABEL_PAINT.setTextSize(spToPx(DEFAULT_EXTREME_VALUE_LABEL_TEXT_SIZE_SP));
+
         setSaveEnabled(true);
         setWillNotDraw(false);
         doomRainbowRectF = new RectF();
         childViewRect = new Rect();
-        minimumValue = DEFAULT_MIN_VALUE;
-        maximumValue = DEFAULT_MAX_VALUE;
+        minimumValue = DEFAULT_MINIMUM_VALUE;
+        maximumValue = DEFAULT_MAXIMUM_VALUE;
         setMinimumBackgroundArcAngle(DEFAULT_BACKGROUND_START_ANGLE);
         setMaximumBackgroundArcAngle(DEFAULT_BACKGROUND_END_ANGLE);
         setGoalValue(DEFAULT_GOAL_VALUE);
@@ -280,16 +283,21 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setArcWidth(final float strokeWidth) {
+    public void setArcWidthDp(final float arcWidthDp) {
+        final float arcWidthPx = dpToPx(arcWidthDp);
+
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
-        newBackgroundPaint.setStrokeWidth(strokeWidth);
+        newBackgroundPaint.setStrokeWidth(arcWidthPx);
         customBackgroundArcPaint = newBackgroundPaint;
+
         final Paint newCurrentLevelPaint = new Paint(getCurrentLevelArcPaint());
-        newCurrentLevelPaint.setStrokeWidth(strokeWidth);
+        newCurrentLevelPaint.setStrokeWidth(arcWidthPx);
         customForegroundArcPaint = newCurrentLevelPaint;
+
         final Paint newGoalPaint = new Paint(getGoalPaint());
-        newGoalPaint.setStrokeWidth(strokeWidth);
+        newGoalPaint.setStrokeWidth(arcWidthPx);
         customGoalIndicatorPaint = newGoalPaint;
+
         invalidate();
     }
 
@@ -328,9 +336,9 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setCurrentValueLabelTextSize(final float textSize) {
+    public void setCurrentValueLabelTextSizePx(final float textSizePx) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
-        newPaint.setTextSize(textSize);
+        newPaint.setTextSize(textSizePx);
         customCurrentValueLabelPaint = newPaint;
         invalidate();
     }
@@ -342,9 +350,9 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setExtremeValueLabelTextSize(final float textSize) {
+    public void setExtremeValueLabelTextSizePx(final float textSizePx) {
         final Paint newPaint = new Paint(getExtremeLabelTextPaint());
-        newPaint.setTextSize(textSize);
+        newPaint.setTextSize(textSizePx);
         customExtremeValueLabelPaint = newPaint;
         invalidate();
     }
@@ -523,7 +531,7 @@ public class RainbowView extends FrameLayout {
         if(minimumValueLabel != null) {
             final float minValRadiusCosCoefficient
                     = AngleUtils.getRadiusCosineCoefficient(
-                            minimumBackgroundArcAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+                            minimumBackgroundArcAngle - DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP);
 
             final float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
             drawValue(canvas, minimumValueLabel, xCoord, yCoord);
@@ -532,7 +540,7 @@ public class RainbowView extends FrameLayout {
         if(maximumValueLabel != null) {
             final float maxValRadiusCosCoefficient
                     = AngleUtils.getRadiusCosineCoefficient(
-                            maximumBackgroundArcAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+                            maximumBackgroundArcAngle + DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP);
 
             final float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
             drawValue(canvas, maximumValueLabel, xCoord, yCoord);
@@ -559,8 +567,8 @@ public class RainbowView extends FrameLayout {
                 drawShiftedArc(
                         canvas,
                         doomRainbowRectF,
-                        goalValue - DEFAULT_GOAL_ARC_LENGTH/2,
-                        goalValue + DEFAULT_GOAL_ARC_LENGTH/2,
+                        goalValue - DEFAULT_GOAL_INDICATOR_ARC_LENGTH /2,
+                        goalValue + DEFAULT_GOAL_INDICATOR_ARC_LENGTH /2,
                         getGoalPaint());
 
                 break;
@@ -607,6 +615,16 @@ public class RainbowView extends FrameLayout {
 
     private float getBackgroundArcAngleRangeLength() {
         return maximumBackgroundArcAngle - minimumBackgroundArcAngle;
+    }
+
+    private float spToPx(final float sp) {
+        return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, sp, getResources().getDisplayMetrics());
+    }
+
+    private float dpToPx(final float dp) {
+        return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
     private static class SavedState extends BaseSavedState {
