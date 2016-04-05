@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initFirstView() {
-        firstView.setMinLabel("0");
-        firstView.setMaxLabel("100");
-        firstView.setCurrentLevelArcPaintColorFunction(firstView.getCurrentLevelValue(), colorFunction);
+        firstView.setMinimumValueLabel("0");
+        firstView.setMaximumValueLabel("100");
+        firstView.setCurrentLevelArcPaintColorFunction(firstView.getCurrentValue(), colorFunction);
         firstView.setChildViewAspectRatio(0.5f);
         firstView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
         firstView.setOnClickListener(new View.OnClickListener() {
@@ -48,16 +48,16 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initSecondView() {
-        secondView.setBackgroundArcPaintColor(Color.YELLOW);
+        secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorType(RainbowView.IndicatorType.CIRCLE);
-        secondView.setGoalPaintColor(Color.BLACK);
-        secondView.setArcPaintStrokeWidth(50);
+        secondView.setGoalIndicatorColor(Color.BLACK);
+        secondView.setArcWidth(50);
     }
 
     private void initThirdView() {
-        thirdView.setBackgroundArcPaintColor(Color.BLACK);
-        thirdView.setMinLabel("E");
-        thirdView.setMaxLabel("F");
+        thirdView.setBackgroundArcColor(Color.BLACK);
+        thirdView.setMinimumValueLabel("E");
+        thirdView.setMaximumValueLabel("F");
     }
 
     @Override
@@ -83,21 +83,21 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void increaseCurrentLevel() {
-        final float value = firstView.getCurrentLevelValue();
+        final float value = firstView.getCurrentValue();
         if(firstView.getGoalValue() >= value + 8) {
-            firstView.setCurrentLevelValue(value + 8);
+            firstView.setCurrentValue(value + 8);
         } else {
-            firstView.setCurrentLevelValue(firstView.getGoalValue());
+            firstView.setCurrentValue(firstView.getGoalValue());
         }
         firstView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
     }
 
     private void decreaseCurrentLevel() {
-        final float value = firstView.getCurrentLevelValue();
-        if(value - 30 > firstView.getBackgroundStartAngle()) {
-            firstView.setCurrentLevelValue(value - 30);
+        final float value = firstView.getCurrentValue();
+        if(value - 30 > firstView.getMinimumBackgroundArcAngle()) {
+            firstView.setCurrentValue(value - 30);
         } else {
-            firstView.setCurrentLevelValue(firstView.getBackgroundStartAngle());
+            firstView.setCurrentValue(firstView.getMinimumBackgroundArcAngle());
         }
         firstView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
     }
