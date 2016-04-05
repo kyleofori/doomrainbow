@@ -16,8 +16,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import rx.functions.Func1;
-
 import static java.lang.Math.ceil;
 import static java.lang.Math.cos;
 import static java.lang.Math.floor;
@@ -315,10 +313,10 @@ public class RainbowView extends FrameLayout {
      */
     public void setCurrentLevelArcPaintColorFunction(
             final Float value,
-            final Func1<Integer, Integer> function) {
+            final Function<Integer, Integer> function) {
 
         final Paint newPaint = new Paint(getCurrentLevelArcPaint());
-        newPaint.setColor(function.call(Math.round(value)));
+        newPaint.setColor(function.apply(Math.round(value)));
         customCurrentLevelArcPaint = newPaint;
         invalidate();
     }

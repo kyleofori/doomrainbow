@@ -7,14 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.detroitlabs.kyleofori.doomrainbow.Function;
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
-
-import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity  {
 
     private RainbowView firstView, secondView, thirdView;
-    private Func1<Integer, Integer> colorFunction;
+    private Function<Integer, Integer> colorFunction;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -23,9 +22,9 @@ public class MainActivity extends AppCompatActivity  {
         firstView = (RainbowView) findViewById(R.id.rainbow_view);
         secondView = (RainbowView) findViewById(R.id.rainbow_view1);
         thirdView = (RainbowView) findViewById(R.id.rainbow_view2);
-        colorFunction = new Func1<Integer, Integer>() {
+        colorFunction = new Function<Integer, Integer>() {
             @Override
-            public Integer call(final Integer integer) {
+            public Integer apply(final Integer integer) {
                 return Color.argb(80, 2 * integer, 0, integer);
             }
         };
