@@ -19,8 +19,10 @@ import android.widget.FrameLayout;
 import rx.functions.Func1;
 
 import static java.lang.Math.ceil;
+import static java.lang.Math.cos;
 import static java.lang.Math.floor;
 import static java.lang.Math.pow;
+import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
 public class RainbowView extends FrameLayout {
@@ -119,15 +121,19 @@ public class RainbowView extends FrameLayout {
      */
     private float lambda = DEFAULT_CHILD_VIEW_ASPECT_RATIO;
 
-    public RainbowView(Context context) {
+    public RainbowView(final Context context) {
         this(context, null);
     }
 
-    public RainbowView(Context context, @Nullable AttributeSet attrs) {
+    public RainbowView(final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RainbowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RainbowView(
+            final Context context,
+            @Nullable final AttributeSet attrs,
+            final int defStyleAttr) {
+
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -160,7 +166,7 @@ public class RainbowView extends FrameLayout {
     }
 
     @NonNull
-    public Paint getPaint(@Nullable Paint customPaint, @NonNull Paint defaultPaint) {
+    public Paint getPaint(@Nullable final Paint customPaint, @NonNull final Paint defaultPaint) {
         if(customPaint != null) {
             return customPaint;
         } else {
@@ -170,7 +176,7 @@ public class RainbowView extends FrameLayout {
 
     // The following methods set properties on each paint used.
 
-    public void setPaintStrokeCap(Paint.Cap strokeCap) {
+    public void setPaintStrokeCap(final Paint.Cap strokeCap) {
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
         newBackgroundPaint.setStrokeCap(strokeCap);
         customBackgroundArcPaint = newBackgroundPaint;
@@ -183,7 +189,7 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setArcPaintStrokeWidth(float strokeWidth) {
+    public void setArcPaintStrokeWidth(final float strokeWidth) {
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
         newBackgroundPaint.setStrokeWidth(strokeWidth);
         customBackgroundArcPaint = newBackgroundPaint;
@@ -196,14 +202,14 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setBackgroundArcPaintColor(@ColorInt int color) {
+    public void setBackgroundArcPaintColor(@ColorInt final int color) {
         final Paint newPaint = new Paint(getBackgroundArcPaint());
         newPaint.setColor(color);
         customBackgroundArcPaint = newPaint;
         invalidate();
     }
 
-    public void setCurrentLevelArcPaintColor(@ColorInt int color) {
+    public void setCurrentLevelArcPaintColor(@ColorInt final int color) {
         final Paint newPaint = new Paint(getCurrentLevelArcPaint());
         newPaint.setColor(color);
         customCurrentLevelArcPaint = newPaint;
@@ -215,63 +221,66 @@ public class RainbowView extends FrameLayout {
      * to the color code.
      */
 
-    public void setCurrentLevelArcPaintColorFunction(Float value, Func1<Integer, Integer> function) {
+    public void setCurrentLevelArcPaintColorFunction(
+            final Float value,
+            final Func1<Integer, Integer> function) {
+
         final Paint newPaint = new Paint(getCurrentLevelArcPaint());
         newPaint.setColor(function.call(Math.round(value)));
         customCurrentLevelArcPaint = newPaint;
         invalidate();
     }
 
-    public void setCurrentLevelTextPaintColor(@ColorInt int color) {
+    public void setCurrentLevelTextPaintColor(@ColorInt final int color) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setColor(color);
         customCurrentLevelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setCurrentLevelTextPaintFakeBoldText(boolean fakeBoldText) {
+    public void setCurrentLevelTextPaintFakeBoldText(final boolean fakeBoldText) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setFakeBoldText(fakeBoldText);
         customCurrentLevelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setCurrentLevelTextPaintTextSize(float textSize) {
+    public void setCurrentLevelTextPaintTextSize(final float textSize) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setTextSize(textSize);
         customCurrentLevelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setExtremeLabelTextPaintColor(@ColorInt int color) {
+    public void setExtremeLabelTextPaintColor(@ColorInt final int color) {
         final Paint newPaint = new Paint(getExtremeLabelTextPaint());
         newPaint.setColor(color);
         customExtremeLabelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setExtremeLabelTextPaintFakeBoldText(boolean fakeBoldText) {
+    public void setExtremeLabelTextPaintFakeBoldText(final boolean fakeBoldText) {
         final Paint newPaint = new Paint(getExtremeLabelTextPaint());
         newPaint.setFakeBoldText(fakeBoldText);
         customExtremeLabelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setExtremeLabelTextPaintTextSize(float textSize) {
+    public void setExtremeLabelTextPaintTextSize(final float textSize) {
         final Paint newPaint = new Paint(getExtremeLabelTextPaint());
         newPaint.setTextSize(textSize);
         customExtremeLabelTextPaint = newPaint;
         invalidate();
     }
 
-    public void setGoalPaintColor(@ColorInt int color) {
+    public void setGoalPaintColor(@ColorInt final int color) {
         final Paint newPaint = new Paint(getGoalPaint());
         newPaint.setColor(color);
         customGoalPaint = newPaint;
         invalidate();
     }
 
-    public void setGoalIndicatorType(IndicatorType indicatorType) {
+    public void setGoalIndicatorType(final IndicatorType indicatorType) {
         this.indicatorType = indicatorType;
         invalidate();
     }
@@ -300,7 +309,13 @@ public class RainbowView extends FrameLayout {
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(
+            final boolean changed,
+            final int left,
+            final int top,
+            final int right,
+            final int bottom) {
+
         super.onLayout(changed, left, top, right, bottom);
         viewWidthHalf = getMeasuredWidth() / 2;
         viewHeightHalf = getMeasuredHeight() / 2;
@@ -312,7 +327,7 @@ public class RainbowView extends FrameLayout {
         }
 
         for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
+            final View child = getChildAt(i);
             child.layout(
                     childViewRect.left,
                     childViewRect.top,
@@ -323,7 +338,7 @@ public class RainbowView extends FrameLayout {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         final int measuredWidth = getMeasuredWidth();
@@ -360,7 +375,7 @@ public class RainbowView extends FrameLayout {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(final Canvas canvas) {
         doomRainbowRectF.set(
                 viewWidthHalf - radius,
                 viewHeightHalf - radius,
@@ -378,15 +393,15 @@ public class RainbowView extends FrameLayout {
 
         switch(indicatorType) {
             case CIRCLE:
-                float goalAngle = AngleUtils.convertFromValueToAngle(
+                final float goalAngle = AngleUtils.convertFromValueToAngle(
                         goalValue,
                         differenceOfExtremeAngles,
                         differenceOfExtremeValues
                         );
-                double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
+                final double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
                 canvas.drawPoint(
-                        viewWidthHalf + (float) Math.cos(goalAngleRadians) * radius,
-                        viewHeightHalf + (float) Math.sin(goalAngleRadians) * radius,
+                        viewWidthHalf + (float) cos(goalAngleRadians) * radius,
+                        viewHeightHalf + (float) sin(goalAngleRadians) * radius,
                         getGoalPaint()
                 );
                 break;
@@ -405,31 +420,38 @@ public class RainbowView extends FrameLayout {
         }
     }
 
-    private void drawCurrentLevelTextIfPresent(Canvas canvas) {
+    private void drawCurrentLevelTextIfPresent(final Canvas canvas) {
         if(hasCurrentLevelText()) {
-            double currentLevelAngle = AngleUtils.convertFromValueToAngle(
+            final double currentLevelAngle = AngleUtils.convertFromValueToAngle(
                     currentLevelValue,
                     differenceOfExtremeAngles,
                     differenceOfExtremeValues
             );
-            double angleInRadians = AngleUtils.convertToRadians(currentLevelAngle - 90);
+
+            final double angleInRadians = AngleUtils.convertToRadians(currentLevelAngle - 90);
 
             canvas.drawText(
                     String.valueOf(Math.round(currentLevelValue)),
-                    viewWidthHalf + (float) Math.cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
-                    viewHeightHalf + (float) Math.sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
+                    viewWidthHalf + (float) cos(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
+                    viewHeightHalf + (float) sin(angleInRadians) * radius * LEVEL_TEXT_RADIUS_SCALE_FACTOR,
                     getCurrentLevelTextPaint()
             );
         }
     }
 
-    public void drawShiftedArc(Canvas canvas, RectF rectF, float startValue, float endValue, Paint paint) {
-        float startAngle = AngleUtils.convertFromValueToAngle(
+    public void drawShiftedArc(
+            final Canvas canvas,
+            final RectF rectF,
+            final float startValue,
+            final float endValue,
+            final Paint paint) {
+
+        final float startAngle = AngleUtils.convertFromValueToAngle(
                 startValue,
                 differenceOfExtremeAngles,
                 differenceOfExtremeValues
         );
-        float endAngle = AngleUtils.convertFromValueToAngle(
+        final float endAngle = AngleUtils.convertFromValueToAngle(
                 endValue,
                 differenceOfExtremeAngles,
                 differenceOfExtremeValues
@@ -438,40 +460,51 @@ public class RainbowView extends FrameLayout {
     }
 
 
-    private void drawExtremeLabelsIfPresent(Canvas canvas) {
-        float yCoord = viewHeightHalf + radius;
-        float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
+    private void drawExtremeLabelsIfPresent(final Canvas canvas) {
+        final float yCoord = viewHeightHalf + radius;
+        final float floatViewWidthHalf = (float) this.getMeasuredWidth()/2;
 
         if(minLabel != null) {
-            float minValRadiusCosCoefficient = AngleUtils.getRadiusCosineCoefficient(backgroundStartAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
-            float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
+            final float minValRadiusCosCoefficient
+                    = AngleUtils.getRadiusCosineCoefficient(
+                            backgroundStartAngle - DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+
+            final float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
             drawValue(canvas, minLabel, xCoord, yCoord);
         }
 
         if(maxLabel != null) {
-            float maxValRadiusCosCoefficient = AngleUtils.getRadiusCosineCoefficient(backgroundEndAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
-            float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
+            final float maxValRadiusCosCoefficient
+                    = AngleUtils.getRadiusCosineCoefficient(
+                            backgroundEndAngle + DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING);
+
+            final float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
             drawValue(canvas, maxLabel, xCoord, yCoord);
         }
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState ss = new SavedState(superState);
+        final Parcelable superState = super.onSaveInstanceState();
+        final SavedState ss = new SavedState(superState);
         ss.currentLevelValue = currentLevelValue;
         return ss;
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        SavedState ss = (SavedState) state;
+    protected void onRestoreInstanceState(final Parcelable state) {
+        final SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         currentLevelValue = ss.currentLevelValue;
         resetValueToDraw();
     }
 
-    private void drawValue(Canvas canvas, String string, float xCoord, float yCoord) {
+    private void drawValue(
+            final Canvas canvas,
+            final String string,
+            final float xCoord,
+            final float yCoord) {
+
         canvas.drawText(string, xCoord, yCoord, getExtremeLabelTextPaint());
     }
 
@@ -503,7 +536,7 @@ public class RainbowView extends FrameLayout {
         return currentLevelText;
     }
 
-    public void setCurrentLevelText(boolean currentLevelText) {
+    public void setCurrentLevelText(final boolean currentLevelText) {
         this.currentLevelText = currentLevelText;
         invalidate();
     }
@@ -512,13 +545,13 @@ public class RainbowView extends FrameLayout {
         valueToDraw = currentLevelValue;
     }
 
-    private void animateBetweenValues(float startValue, float stopValue) {
+    private void animateBetweenValues(final float startValue, final float stopValue) {
         animation = ValueAnimator.ofFloat(startValue, stopValue);
 
         animation.setDuration(animationDuration);
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            public void onAnimationUpdate(final ValueAnimator valueAnimator) {
                 valueToDraw = (float) valueAnimator.getAnimatedValue();
                 RainbowView.this.invalidate();
             }
@@ -532,7 +565,7 @@ public class RainbowView extends FrameLayout {
      * change those to reflect the range when you set range.
     **/
 
-    public void setRange(int minValue, int maxValue) {
+    public void setRange(final int minValue, final int maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
         resetDifferenceOfExtremeValues();
@@ -542,13 +575,13 @@ public class RainbowView extends FrameLayout {
         differenceOfExtremeValues = maxValue - minValue;
     }
 
-    public void setBackgroundStartAngle(float backgroundStartAngle) {
+    public void setBackgroundStartAngle(final float backgroundStartAngle) {
         this.backgroundStartAngle = backgroundStartAngle;
         resetDifferenceOfBackgroundExtremeAngles();
         invalidate();
     }
 
-    public void setBackgroundEndAngle(float backgroundEndAngle) {
+    public void setBackgroundEndAngle(final float backgroundEndAngle) {
         this.backgroundEndAngle = backgroundEndAngle;
         resetDifferenceOfBackgroundExtremeAngles();
         invalidate();
@@ -558,8 +591,8 @@ public class RainbowView extends FrameLayout {
         differenceOfExtremeAngles = backgroundEndAngle - backgroundStartAngle;
     }
 
-    public void setCurrentLevelValue(float currentLevelValue) {
-        float previousValue = this.currentLevelValue;
+    public void setCurrentLevelValue(final float currentLevelValue) {
+        final float previousValue = this.currentLevelValue;
 
         this.currentLevelValue = Math.min(
                 Math.max(minValue, currentLevelValue),
@@ -579,26 +612,26 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setGoalValue(float goalValue) {
+    public void setGoalValue(final float goalValue) {
         this.goalValue = goalValue;
         invalidate();
     }
 
-    public void setMaxLabel(String maxLabel) {
+    public void setMaxLabel(final String maxLabel) {
         this.maxLabel = maxLabel;
         invalidate();
     }
 
-    public void setMinLabel(String minLabel) {
+    public void setMinLabel(final String minLabel) {
         this.minLabel = minLabel;
         invalidate();
     }
 
-    public void setAnimationDuration(long animationDuration) {
+    public void setAnimationDuration(final long animationDuration) {
         this.animationDuration = animationDuration;
     }
 
-    public void setAnimated(boolean animated) {
+    public void setAnimated(final boolean animated) {
         this.animated = animated;
     }
 
@@ -615,28 +648,28 @@ public class RainbowView extends FrameLayout {
     private static class SavedState extends BaseSavedState {
         float currentLevelValue;
 
-        SavedState(Parcelable superState) {
+        SavedState(final Parcelable superState) {
             super(superState);
         }
 
-        private SavedState(Parcel in) {
+        private SavedState(final Parcel in) {
             super(in);
             currentLevelValue = in.readFloat();
         }
 
         @Override
-        public void writeToParcel(Parcel out, int flags) {
+        public void writeToParcel(final Parcel out, final int flags) {
             super.writeToParcel(out, flags);
             out.writeFloat(currentLevelValue);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR
                 = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
+            public SavedState createFromParcel(final Parcel in) {
                 return new SavedState(in);
             }
 
-            public SavedState[] newArray(int size) {
+            public SavedState[] newArray(final int size) {
                 return new SavedState[size];
             }
         };
