@@ -26,8 +26,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initFirstView() {
-        firstView.setMinimumValueLabel("0");
-        firstView.setMaximumValueLabel("100");
+        firstView.setRepresentedRange(0, 100, true);
         firstView.setChildViewAspectRatio(0.5f);
         firstView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
         firstView.setOnClickListener(new View.OnClickListener() {

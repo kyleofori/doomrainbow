@@ -373,10 +373,6 @@ public class RainbowView extends FrameLayout {
         setCurrentValue(currentValue + difference);
     }
 
-    public void setRepresentedRange(final int minimumValue, final int maximumValue) {
-        setRepresentedRange(minimumValue, maximumValue, false);
-    }
-
     public void setRepresentedRange(
             final int minimumValue,
             final int maximumValue,
