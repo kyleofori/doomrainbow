@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity  {
     private Func1<Integer, Integer> colorFunction;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         firstView = (RainbowView) findViewById(R.id.rainbow_view);
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity  {
         thirdView = (RainbowView) findViewById(R.id.rainbow_view2);
         colorFunction = new Func1<Integer, Integer>() {
             @Override
-            public Integer call(Integer integer) {
+            public Integer call(final Integer integer) {
                 return Color.argb(80, 2 * integer, 0, integer);
             }
         };
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity  {
         firstView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 increaseCurrentLevel();
             }
         });
@@ -62,18 +62,18 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void increaseCurrentLevel() {
-        float value = firstView.getCurrentLevelValue();
+        final float value = firstView.getCurrentLevelValue();
         if(firstView.getGoalValue() >= value + 8) {
             firstView.setCurrentLevelValue(value + 8);
         } else {
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void decreaseCurrentLevel() {
-        float value = firstView.getCurrentLevelValue();
+        final float value = firstView.getCurrentLevelValue();
         if(value - 30 > firstView.getBackgroundStartAngle()) {
             firstView.setCurrentLevelValue(value - 30);
         } else {
