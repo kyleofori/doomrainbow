@@ -120,16 +120,16 @@ public class RainbowView extends FrameLayout {
     private float lambda = DEFAULT_CHILD_VIEW_ASPECT_RATIO;
 
     public RainbowView(Context context) {
-        super(context);
+        this(context, null);
     }
 
-    public RainbowView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+    public RainbowView(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public RainbowView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RainbowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     // The following are accessor methods for the different paints used.
