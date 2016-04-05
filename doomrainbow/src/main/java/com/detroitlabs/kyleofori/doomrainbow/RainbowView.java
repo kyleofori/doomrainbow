@@ -363,13 +363,22 @@ public class RainbowView extends FrameLayout {
         setCurrentValue(currentValue + difference);
     }
 
-    /**
-     * Note: if you intend to use numbers for minimumValueLabel and maximumValueLabel's values,
-     * change those to reflect the range when you set range.
-     */
     public void setRepresentedRange(final int minimumValue, final int maximumValue) {
+        setRepresentedRange(minimumValue, maximumValue, false);
+    }
+
+    public void setRepresentedRange(
+            final int minimumValue,
+            final int maximumValue,
+            final boolean updateExtremeValueLabels) {
+
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
+
+        if (updateExtremeValueLabels) {
+            minimumValueLabel = Integer.toString(minimumValue);
+            maximumValueLabel = Integer.toString(maximumValue);
+        }
     }
 
     public void setCurrentValue(final float currentValue) {
