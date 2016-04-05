@@ -44,7 +44,7 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_GOAL_VALUE = 90;
     private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
-    private static final long DEFAULT_ANIMATION_DURATION = 2000;
+    private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 100;
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
@@ -114,7 +114,7 @@ public class RainbowView extends FrameLayout {
     private float valueToDraw;
     private boolean animated;
     private boolean currentLevelText;
-    private long animationDuration = DEFAULT_ANIMATION_DURATION;
+    private long animationDuration = DEFAULT_ANIMATION_DURATION_MS;
 
     /**
      * Aspect ratio of child view, such that
