@@ -37,6 +37,7 @@ public class RainbowView extends FrameLayout {
     private static final Paint DEFAULT_EXTREME_LABEL_TEXT_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_GOAL_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_ARC_PAINT = new Paint(BASE_PAINT);
+    private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
     private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
     private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
     private static final float DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING = 15;
@@ -47,7 +48,6 @@ public class RainbowView extends FrameLayout {
     private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 100;
-    private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
     private static final int DEFAULT_ARC_STROKE_WIDTH = 20;
     private static final float DEFAULT_CURRENT_LEVEL_TEXT_SIZE = 40;
     private static final float DEFAULT_EXTREME_LABEL_TEXT_SIZE = 60;
