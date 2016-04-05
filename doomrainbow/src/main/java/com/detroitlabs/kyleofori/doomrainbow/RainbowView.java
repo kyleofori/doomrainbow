@@ -95,16 +95,19 @@ public class RainbowView extends FrameLayout {
         DEFAULT_CURRENT_LEVEL_ARC_PAINT.setColor(Color.BLUE);
     }
 
-    private Paint customBackgroundArcPaint;
-    private Paint customCurrentLevelTextPaint;
-    private Paint customExtremeLabelTextPaint;
-    private Paint customGoalPaint;
-    private Paint customCurrentLevelArcPaint;
-    private IndicatorType indicatorType = IndicatorType.NONE;
+    @Nullable private Paint customBackgroundArcPaint;
+    @Nullable private Paint customCurrentLevelTextPaint;
+    @Nullable private Paint customExtremeLabelTextPaint;
+    @Nullable private Paint customGoalPaint;
+    @Nullable private Paint customCurrentLevelArcPaint;
+
+    @NonNull private IndicatorType indicatorType = IndicatorType.NONE;
+
     private String minLabel, maxLabel;
     private RectF doomRainbowRectF;
     private Rect childViewRect;
     private ValueAnimator animation;
+
     private int minValue, maxValue, differenceOfExtremeValues;
     private float currentLevelValue, goalValue;
     private float backgroundStartAngle, backgroundEndAngle, differenceOfExtremeAngles;
@@ -243,32 +246,8 @@ public class RainbowView extends FrameLayout {
 
         drawExtremeLabelsIfPresent(canvas);
 
-        switch(indicatorType) {
-            case CIRCLE:
-                final float goalAngle = AngleUtils.convertFromValueToAngle(
-                        goalValue,
-                        differenceOfExtremeAngles,
-                        differenceOfExtremeValues
-                );
-                final double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
-                canvas.drawPoint(
-                        viewWidthHalf + (float) cos(goalAngleRadians) * radius,
-                        viewHeightHalf + (float) sin(goalAngleRadians) * radius,
-                        getGoalPaint()
-                );
-                break;
-            case ARC:
-                drawShiftedArc(
-                        canvas,
-                        doomRainbowRectF,
-                        goalValue - DEFAULT_GOAL_ARC_LENGTH/2,
-                        goalValue + DEFAULT_GOAL_ARC_LENGTH/2,
-                        getGoalPaint()
-                );
-                break;
-            case NONE:
-            default:
-                break;
+        if (indicatorType != IndicatorType.NONE) {
+            drawIndicator(canvas);
         }
     }
 
@@ -597,6 +576,36 @@ public class RainbowView extends FrameLayout {
 
             final float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
             drawValue(canvas, maxLabel, xCoord, yCoord);
+        }
+    }
+
+    private void drawIndicator(final Canvas canvas) {
+        switch(indicatorType) {
+            case CIRCLE:
+                final float goalAngle = AngleUtils.convertFromValueToAngle(
+                        goalValue,
+                        differenceOfExtremeAngles,
+                        differenceOfExtremeValues);
+
+                final double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
+
+                canvas.drawPoint(
+                        viewWidthHalf + (float) cos(goalAngleRadians) * radius,
+                        viewHeightHalf + (float) sin(goalAngleRadians) * radius,
+                        getGoalPaint());
+
+                break;
+            case ARC:
+                drawShiftedArc(
+                        canvas,
+                        doomRainbowRectF,
+                        goalValue - DEFAULT_GOAL_ARC_LENGTH/2,
+                        goalValue + DEFAULT_GOAL_ARC_LENGTH/2,
+                        getGoalPaint());
+
+                break;
+            default:
+                break;
         }
     }
 
