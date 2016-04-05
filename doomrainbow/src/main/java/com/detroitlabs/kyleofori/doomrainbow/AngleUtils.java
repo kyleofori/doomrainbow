@@ -2,12 +2,8 @@ package com.detroitlabs.kyleofori.doomrainbow;
 
 public final class AngleUtils {
 
-    public static double convertToRadians(final double degree) {
-        return (degree % 360) * Math.PI / 180;
-    }
-
     public static float getRadiusCosineCoefficient(final float valuePositionInDegrees) {
-        final double valuePositionInRadians = AngleUtils.convertToRadians((double) valuePositionInDegrees);
+        final double valuePositionInRadians = Math.toRadians((double) valuePositionInDegrees);
         return (float) Math.cos(valuePositionInRadians);
     }
 

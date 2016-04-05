@@ -522,7 +522,7 @@ public class RainbowView extends FrameLayout {
                     differenceOfExtremeValues
             );
 
-            final double angleInRadians = AngleUtils.convertToRadians(currentLevelAngle - 90);
+            final double angleInRadians = Math.toRadians(currentLevelAngle - 90);
 
             canvas.drawText(
                     String.valueOf(Math.round(currentLevelValue)),
@@ -585,7 +585,7 @@ public class RainbowView extends FrameLayout {
                         differenceOfExtremeAngles,
                         differenceOfExtremeValues);
 
-                final double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
+                final double goalAngleRadians = Math.toRadians(goalAngle - 90);
 
                 canvas.drawPoint(
                         viewWidthHalf + (float) cos(goalAngleRadians) * radius,
