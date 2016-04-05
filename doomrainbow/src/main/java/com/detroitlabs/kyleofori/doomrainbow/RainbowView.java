@@ -381,6 +381,8 @@ public class RainbowView extends FrameLayout {
             minimumValueLabel = Integer.toString(minimumValue);
             maximumValueLabel = Integer.toString(maximumValue);
         }
+
+        invalidate();
     }
 
     public void setCurrentValue(final float currentValue) {
