@@ -112,7 +112,7 @@ public class RainbowView extends FrameLayout {
     private float viewWidthHalf;
     private float viewHeightHalf;
     private float valueToDraw;
-    private boolean animated;
+    private boolean animateChangesInCurrentLevel = true;
     private boolean currentLevelText;
     private long animationDuration = DEFAULT_ANIMATION_DURATION_MS;
 
@@ -424,7 +424,7 @@ public class RainbowView extends FrameLayout {
             animation.cancel();
         }
 
-        if(animated) {
+        if(animateChangesInCurrentLevel) {
             animateBetweenValues(previousValue, this.currentLevelValue);
         } else {
             valueToDraw = this.currentLevelValue;
@@ -452,8 +452,8 @@ public class RainbowView extends FrameLayout {
         this.animationDuration = animationDuration;
     }
 
-    public void setAnimated(final boolean animated) {
-        this.animated = animated;
+    public void setShouldAnimateChangesInCurrentLevel(final boolean animateChangesInCurrentLevel) {
+        this.animateChangesInCurrentLevel = animateChangesInCurrentLevel;
     }
 
     public void setChildViewAspectRatio(final float lambda) {
