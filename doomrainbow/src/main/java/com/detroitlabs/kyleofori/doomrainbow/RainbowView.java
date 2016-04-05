@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import static java.lang.Math.ceil;
@@ -67,7 +68,7 @@ public class RainbowView extends FrameLayout {
     private static void initDefaultBackgroundArcPaint() {
         DEFAULT_BACKGROUND_ARC_PAINT.setStyle(Paint.Style.STROKE);
         DEFAULT_BACKGROUND_ARC_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
-        DEFAULT_BACKGROUND_ARC_PAINT.setColor(Color.GRAY);
+        DEFAULT_BACKGROUND_ARC_PAINT.setColor(Color.parseColor("#E3EBED"));
     }
 
     private static void initDefaultCurrentValueLabelPaint() {
@@ -82,13 +83,13 @@ public class RainbowView extends FrameLayout {
     private static void initDefaultGoalIndicatorPaint() {
         DEFAULT_GOAL_INDICATOR_PAINT.setStyle(Paint.Style.STROKE);
         DEFAULT_GOAL_INDICATOR_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
-        DEFAULT_GOAL_INDICATOR_PAINT.setColor(Color.GREEN);
+        DEFAULT_GOAL_INDICATOR_PAINT.setColor(Color.parseColor("#A4AFB4"));
     }
 
     private static void initDefaultForegroundArcPaint() {
         DEFAULT_FOREGROUND_ARC_PAINT.setStyle(Paint.Style.STROKE);
         DEFAULT_FOREGROUND_ARC_PAINT.setStrokeCap(DEFAULT_ARC_STROKE_CAP);
-        DEFAULT_FOREGROUND_ARC_PAINT.setColor(Color.BLUE);
+        DEFAULT_FOREGROUND_ARC_PAINT.setColor(Color.parseColor("#1EB2E9"));
     }
 
     @Nullable private Paint customBackgroundArcPaint;
@@ -195,9 +196,7 @@ public class RainbowView extends FrameLayout {
                 MeasureSpec.EXACTLY
         );
 
-        if(getChildCount() != 1) {
-            throw new IllegalStateException("This view must have exactly one child.");
-        } else {
+        if (getChildCount() > 0) {
             getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
         }
     }
@@ -266,6 +265,42 @@ public class RainbowView extends FrameLayout {
         super.onRestoreInstanceState(ss.getSuperState());
         currentValue = ss.currentLevelValue;
         resetValueToDraw();
+    }
+
+    @Override
+    public void addView(final View child) {
+        if (getChildCount() > 0) {
+            throw new IllegalStateException("RainbowView can host at most one direct child");
+        }
+
+        super.addView(child);
+    }
+
+    @Override
+    public void addView(final View child, final int index) {
+        if (getChildCount() > 0) {
+            throw new IllegalStateException("RainbowView can host at most one direct child");
+        }
+
+        super.addView(child, index);
+    }
+
+    @Override
+    public void addView(final View child, final ViewGroup.LayoutParams params) {
+        if (getChildCount() > 0) {
+            throw new IllegalStateException("RainbowView can host at most one direct child");
+        }
+
+        super.addView(child, params);
+    }
+
+    @Override
+    public void addView(final View child, final int index, final ViewGroup.LayoutParams params) {
+        if (getChildCount() > 0) {
+            throw new IllegalStateException("RainbowView can host at most one direct child");
+        }
+
+        super.addView(child, index, params);
     }
 
     // Public API
