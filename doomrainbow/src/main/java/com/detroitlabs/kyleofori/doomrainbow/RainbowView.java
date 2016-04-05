@@ -27,6 +27,10 @@ import static java.lang.Math.sqrt;
 
 public class RainbowView extends FrameLayout {
 
+    public enum IndicatorType {
+        CIRCLE, ARC, NONE
+    }
+
     private static final Paint BASE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final Paint DEFAULT_BACKGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_LEVEL_TEXT_PAINT = new Paint(BASE_PAINT);
@@ -138,43 +142,153 @@ public class RainbowView extends FrameLayout {
         init();
     }
 
-    // The following are accessor methods for the different paints used.
-
-    @NonNull
-    public Paint getBackgroundArcPaint() {
-        return getPaint(customBackgroundArcPaint, DEFAULT_BACKGROUND_ARC_PAINT);
+    private void init() {
+        setSaveEnabled(true);
+        setWillNotDraw(false);
+        doomRainbowRectF = new RectF();
+        childViewRect = new Rect();
+        minValue = DEFAULT_MIN_VALUE;
+        maxValue = DEFAULT_MAX_VALUE;
+        resetDifferenceOfExtremeValues();
+        setBackgroundStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
+        setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
+        resetDifferenceOfBackgroundExtremeAngles();
+        setGoalValue(DEFAULT_GOAL_VALUE);
+        currentLevelValue = minValue;
+        resetValueToDraw();
+        reanimate();
     }
 
-    @NonNull
-    public Paint getCurrentLevelTextPaint() {
-        return getPaint(customCurrentLevelTextPaint, DEFAULT_CURRENT_LEVEL_TEXT_PAINT);
-    }
+    // Overrides
 
-    @NonNull
-    public Paint getExtremeLabelTextPaint() {
-        return getPaint(customExtremeLabelTextPaint, DEFAULT_EXTREME_LABEL_TEXT_PAINT);
-    }
+    @Override
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-    @NonNull
-    public Paint getGoalPaint() {
-        return getPaint(customGoalPaint, DEFAULT_GOAL_PAINT);
-    }
+        final int measuredWidth = getMeasuredWidth();
 
-    @NonNull
-    public Paint getCurrentLevelArcPaint() {
-        return getPaint(customCurrentLevelArcPaint, DEFAULT_CURRENT_LEVEL_ARC_PAINT);
-    }
+        //noinspection SuspiciousNameCombination
+        setMeasuredDimension(measuredWidth, measuredWidth);
 
-    @NonNull
-    public Paint getPaint(@Nullable final Paint customPaint, @NonNull final Paint defaultPaint) {
-        if(customPaint != null) {
-            return customPaint;
+        final double circleInternalRadius = radius - getBackgroundArcPaint().getStrokeWidth() / 2;
+        final double childViewHeight = 2 * circleInternalRadius / sqrt(1 + pow(lambda, 2));
+        final double childViewWidth = lambda * childViewHeight;
+
+        childViewRect.set(
+                (int) ceil((getMeasuredWidth() - childViewWidth) / 2),
+                (int) floor((getMeasuredHeight() - childViewHeight) / 2),
+                (int) ceil((getMeasuredWidth() + childViewWidth) / 2),
+                (int) floor((getMeasuredHeight() + childViewHeight) / 2)
+        );
+
+        final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
+                childViewRect.height(),
+                MeasureSpec.EXACTLY
+        );
+
+        final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
+                childViewRect.width(),
+                MeasureSpec.EXACTLY
+        );
+
+        if(getChildCount() != 1) {
+            throw new IllegalStateException("This view must have exactly one child.");
         } else {
-            return defaultPaint;
+            getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
         }
     }
 
-    // The following methods set properties on each paint used.
+    @Override
+    protected void onLayout(
+            final boolean changed,
+            final int left,
+            final int top,
+            final int right,
+            final int bottom) {
+
+        super.onLayout(changed, left, top, right, bottom);
+        viewWidthHalf = getMeasuredWidth() / 2;
+        viewHeightHalf = getMeasuredHeight() / 2;
+
+        if(viewHeightHalf > viewWidthHalf) {
+            radius = viewWidthHalf * DEFAULT_RADIUS_COEFFICIENT;
+        } else {
+            radius = viewHeightHalf * DEFAULT_RADIUS_COEFFICIENT;
+        }
+
+        for (int i = 0; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
+            child.layout(
+                    childViewRect.left,
+                    childViewRect.top,
+                    childViewRect.right,
+                    childViewRect.bottom
+            );
+        }
+    }
+
+    @Override
+    protected void onDraw(final Canvas canvas) {
+        doomRainbowRectF.set(
+                viewWidthHalf - radius,
+                viewHeightHalf - radius,
+                viewWidthHalf + radius,
+                viewHeightHalf + radius);
+
+        drawShiftedArc(canvas, doomRainbowRectF, minValue, maxValue, getBackgroundArcPaint());
+
+        drawShiftedArc(canvas, doomRainbowRectF, minValue, valueToDraw, getCurrentLevelArcPaint());
+
+        drawCurrentLevelTextIfPresent(canvas);
+
+        drawExtremeLabelsIfPresent(canvas);
+
+        switch(indicatorType) {
+            case CIRCLE:
+                final float goalAngle = AngleUtils.convertFromValueToAngle(
+                        goalValue,
+                        differenceOfExtremeAngles,
+                        differenceOfExtremeValues
+                );
+                final double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
+                canvas.drawPoint(
+                        viewWidthHalf + (float) cos(goalAngleRadians) * radius,
+                        viewHeightHalf + (float) sin(goalAngleRadians) * radius,
+                        getGoalPaint()
+                );
+                break;
+            case ARC:
+                drawShiftedArc(
+                        canvas,
+                        doomRainbowRectF,
+                        goalValue - DEFAULT_GOAL_ARC_LENGTH/2,
+                        goalValue + DEFAULT_GOAL_ARC_LENGTH/2,
+                        getGoalPaint()
+                );
+                break;
+            case NONE:
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        final Parcelable superState = super.onSaveInstanceState();
+        final SavedState ss = new SavedState(superState);
+        ss.currentLevelValue = currentLevelValue;
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(final Parcelable state) {
+        final SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        currentLevelValue = ss.currentLevelValue;
+        resetValueToDraw();
+    }
+
+    // Public API
 
     public void setPaintStrokeCap(final Paint.Cap strokeCap) {
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
@@ -284,138 +398,143 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public enum IndicatorType {
-        CIRCLE, ARC, NONE
-    }
-
-    private void init() {
-        setAnimated(true);
-        setSaveEnabled(true);
-        this.setWillNotDraw(false);
-        doomRainbowRectF = new RectF();
-        childViewRect = new Rect();
-        minValue = DEFAULT_MIN_VALUE;
-        maxValue = DEFAULT_MAX_VALUE;
+    /**
+     * Note: if you intend to use numbers for minLabel and maxLabel's values,
+     * change those to reflect the range when you set range.
+     */
+    public void setRange(final int minValue, final int maxValue) {
+        this.minValue = minValue;
+        this.maxValue = maxValue;
         resetDifferenceOfExtremeValues();
-        setBackgroundStartAngle(DEFAULT_BACKGROUND_START_ANGLE);
-        setBackgroundEndAngle(DEFAULT_BACKGROUND_END_ANGLE);
+    }
+
+    public void setCurrentLevelText(final boolean currentLevelText) {
+        this.currentLevelText = currentLevelText;
+        invalidate();
+    }
+
+    public void setCurrentLevelValue(final float currentLevelValue) {
+        final float previousValue = this.currentLevelValue;
+
+        this.currentLevelValue = Math.min(
+                Math.max(minValue, currentLevelValue),
+                maxValue);
+
+        if(animation != null) {
+            animation.cancel();
+        }
+
+        if(animated) {
+            animateBetweenValues(previousValue, this.currentLevelValue);
+        } else {
+            valueToDraw = this.currentLevelValue;
+        }
+
+        invalidate();
+    }
+
+    public void setGoalValue(final float goalValue) {
+        this.goalValue = goalValue;
+        invalidate();
+    }
+
+    public void setMaxLabel(final String maxLabel) {
+        this.maxLabel = maxLabel;
+        invalidate();
+    }
+
+    public void setMinLabel(final String minLabel) {
+        this.minLabel = minLabel;
+        invalidate();
+    }
+
+    public void setAnimationDuration(final long animationDuration) {
+        this.animationDuration = animationDuration;
+    }
+
+    public void setAnimated(final boolean animated) {
+        this.animated = animated;
+    }
+
+    public void setChildViewAspectRatio(final float lambda) {
+        this.lambda = lambda;
+        requestLayout();
+    }
+
+    public void setBackgroundStartAngle(final float backgroundStartAngle) {
+        this.backgroundStartAngle = backgroundStartAngle;
         resetDifferenceOfBackgroundExtremeAngles();
-        setGoalValue(DEFAULT_GOAL_VALUE);
-        setCurrentLevelText(true);
-        currentLevelValue = minValue;
-        resetValueToDraw();
-        reanimate();
+        invalidate();
     }
 
-    @Override
-    protected void onLayout(
-            final boolean changed,
-            final int left,
-            final int top,
-            final int right,
-            final int bottom) {
+    public void setBackgroundEndAngle(final float backgroundEndAngle) {
+        this.backgroundEndAngle = backgroundEndAngle;
+        resetDifferenceOfBackgroundExtremeAngles();
+        invalidate();
+    }
 
-        super.onLayout(changed, left, top, right, bottom);
-        viewWidthHalf = getMeasuredWidth() / 2;
-        viewHeightHalf = getMeasuredHeight() / 2;
+    public float getCurrentLevelValue() {
+        return currentLevelValue;
+    }
 
-        if(viewHeightHalf > viewWidthHalf) {
-            radius = viewWidthHalf * DEFAULT_RADIUS_COEFFICIENT;
+    public float getGoalValue() {
+        return goalValue;
+    }
+
+    public float getBackgroundEndAngle() {
+        return backgroundEndAngle;
+    }
+
+    public int getMinValue() {
+        return minValue;
+    }
+
+    public int getMaxValue() {
+        return maxValue;
+    }
+
+    public float getBackgroundStartAngle() {
+        return backgroundStartAngle;
+    }
+
+    // Private implementation
+
+    @NonNull
+    private Paint getBackgroundArcPaint() {
+        return getPaint(customBackgroundArcPaint, DEFAULT_BACKGROUND_ARC_PAINT);
+    }
+
+    @NonNull
+    private Paint getCurrentLevelTextPaint() {
+        return getPaint(customCurrentLevelTextPaint, DEFAULT_CURRENT_LEVEL_TEXT_PAINT);
+    }
+
+    @NonNull
+    private Paint getExtremeLabelTextPaint() {
+        return getPaint(customExtremeLabelTextPaint, DEFAULT_EXTREME_LABEL_TEXT_PAINT);
+    }
+
+    @NonNull
+    private Paint getGoalPaint() {
+        return getPaint(customGoalPaint, DEFAULT_GOAL_PAINT);
+    }
+
+    @NonNull
+    private Paint getCurrentLevelArcPaint() {
+        return getPaint(customCurrentLevelArcPaint, DEFAULT_CURRENT_LEVEL_ARC_PAINT);
+    }
+
+    @NonNull
+    private Paint getPaint(@Nullable final Paint customPaint, @NonNull final Paint defaultPaint) {
+        if(customPaint != null) {
+            return customPaint;
         } else {
-            radius = viewHeightHalf * DEFAULT_RADIUS_COEFFICIENT;
-        }
-
-        for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            child.layout(
-                    childViewRect.left,
-                    childViewRect.top,
-                    childViewRect.right,
-                    childViewRect.bottom
-            );
+            return defaultPaint;
         }
     }
 
-    @Override
-    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        final int measuredWidth = getMeasuredWidth();
-
-        //noinspection SuspiciousNameCombination
-        setMeasuredDimension(measuredWidth, measuredWidth);
-
-        final double circleInternalRadius = radius - getBackgroundArcPaint().getStrokeWidth() / 2;
-        final double childViewHeight = 2 * circleInternalRadius / sqrt(1 + pow(lambda, 2));
-        final double childViewWidth = lambda * childViewHeight;
-
-        childViewRect.set(
-                (int) ceil((getMeasuredWidth() - childViewWidth) / 2),
-                (int) floor((getMeasuredHeight() - childViewHeight) / 2),
-                (int) ceil((getMeasuredWidth() + childViewWidth) / 2),
-                (int) floor((getMeasuredHeight() + childViewHeight) / 2)
-        );
-
-        final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                childViewRect.height(),
-                MeasureSpec.EXACTLY
-        );
-
-        final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-                childViewRect.width(),
-                MeasureSpec.EXACTLY
-        );
-
-        if(getChildCount() != 1) {
-            throw new IllegalStateException("This view must have exactly one child.");
-        } else {
-            getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
-        }
-    }
-
-    @Override
-    protected void onDraw(final Canvas canvas) {
-        doomRainbowRectF.set(
-                viewWidthHalf - radius,
-                viewHeightHalf - radius,
-                viewWidthHalf + radius,
-                viewHeightHalf + radius);
-
-        drawShiftedArc(canvas, doomRainbowRectF, minValue, maxValue, getBackgroundArcPaint());
-
-        drawShiftedArc(canvas, doomRainbowRectF, minValue, valueToDraw, getCurrentLevelArcPaint());
-
-        drawCurrentLevelTextIfPresent(canvas);
-
-        drawExtremeLabelsIfPresent(canvas);
-
-        switch(indicatorType) {
-            case CIRCLE:
-                final float goalAngle = AngleUtils.convertFromValueToAngle(
-                        goalValue,
-                        differenceOfExtremeAngles,
-                        differenceOfExtremeValues
-                        );
-                final double goalAngleRadians = AngleUtils.convertToRadians(goalAngle - 90);
-                canvas.drawPoint(
-                        viewWidthHalf + (float) cos(goalAngleRadians) * radius,
-                        viewHeightHalf + (float) sin(goalAngleRadians) * radius,
-                        getGoalPaint()
-                );
-                break;
-            case ARC:
-                drawShiftedArc(
-                        canvas,
-                        doomRainbowRectF,
-                        goalValue - DEFAULT_GOAL_ARC_LENGTH/2,
-                        goalValue + DEFAULT_GOAL_ARC_LENGTH/2,
-                        getGoalPaint()
-                );
-                break;
-            case NONE:
-            default:
-                break;
-        }
+    private boolean hasCurrentLevelText() {
+        return currentLevelText;
     }
 
     private void drawCurrentLevelTextIfPresent(final Canvas canvas) {
@@ -437,7 +556,7 @@ public class RainbowView extends FrameLayout {
         }
     }
 
-    public void drawShiftedArc(
+    private void drawShiftedArc(
             final Canvas canvas,
             final RectF rectF,
             final float startValue,
@@ -481,22 +600,6 @@ public class RainbowView extends FrameLayout {
         }
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        final Parcelable superState = super.onSaveInstanceState();
-        final SavedState ss = new SavedState(superState);
-        ss.currentLevelValue = currentLevelValue;
-        return ss;
-    }
-
-    @Override
-    protected void onRestoreInstanceState(final Parcelable state) {
-        final SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-        currentLevelValue = ss.currentLevelValue;
-        resetValueToDraw();
-    }
-
     private void drawValue(
             final Canvas canvas,
             final String string,
@@ -506,37 +609,8 @@ public class RainbowView extends FrameLayout {
         canvas.drawText(string, xCoord, yCoord, getExtremeLabelTextPaint());
     }
 
-    public float getCurrentLevelValue() {
-        return currentLevelValue;
-    }
-
-    public float getGoalValue() {
-        return goalValue;
-    }
-
-    public float getBackgroundEndAngle() {
-        return backgroundEndAngle;
-    }
-
-    public int getMinValue() {
-        return minValue;
-    }
-
-    public int getMaxValue() {
-        return maxValue;
-    }
-
-    public float getBackgroundStartAngle() {
-        return backgroundStartAngle;
-    }
-
-    public boolean hasCurrentLevelText() {
-        return currentLevelText;
-    }
-
-    public void setCurrentLevelText(final boolean currentLevelText) {
-        this.currentLevelText = currentLevelText;
-        invalidate();
+    private void reanimate() {
+        animateBetweenValues(minValue, currentLevelValue);
     }
 
     private void resetValueToDraw() {
@@ -558,91 +632,17 @@ public class RainbowView extends FrameLayout {
         animation.start();
     }
 
-    /**
-     * Note: if you intend to use numbers for minLabel and maxLabel's values,
-     * change those to reflect the range when you set range.
-     */
-    public void setRange(final int minValue, final int maxValue) {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        resetDifferenceOfExtremeValues();
-    }
-
     private void resetDifferenceOfExtremeValues() {
         differenceOfExtremeValues = maxValue - minValue;
-    }
-
-    public void setBackgroundStartAngle(final float backgroundStartAngle) {
-        this.backgroundStartAngle = backgroundStartAngle;
-        resetDifferenceOfBackgroundExtremeAngles();
-        invalidate();
-    }
-
-    public void setBackgroundEndAngle(final float backgroundEndAngle) {
-        this.backgroundEndAngle = backgroundEndAngle;
-        resetDifferenceOfBackgroundExtremeAngles();
-        invalidate();
     }
 
     private void resetDifferenceOfBackgroundExtremeAngles() {
         differenceOfExtremeAngles = backgroundEndAngle - backgroundStartAngle;
     }
 
-    public void setCurrentLevelValue(final float currentLevelValue) {
-        final float previousValue = this.currentLevelValue;
-
-        this.currentLevelValue = Math.min(
-                Math.max(minValue, currentLevelValue),
-                maxValue
-        );
-
-        if(animation != null) {
-            animation.cancel();
-        }
-
-        if(animated) {
-            animateBetweenValues(previousValue, this.currentLevelValue);
-        } else {
-            valueToDraw = this.currentLevelValue;
-        }
-
-        invalidate();
-    }
-
-    public void setGoalValue(final float goalValue) {
-        this.goalValue = goalValue;
-        invalidate();
-    }
-
-    public void setMaxLabel(final String maxLabel) {
-        this.maxLabel = maxLabel;
-        invalidate();
-    }
-
-    public void setMinLabel(final String minLabel) {
-        this.minLabel = minLabel;
-        invalidate();
-    }
-
-    public void setAnimationDuration(final long animationDuration) {
-        this.animationDuration = animationDuration;
-    }
-
-    public void setAnimated(final boolean animated) {
-        this.animated = animated;
-    }
-
-    public void reanimate() {
-        animateBetweenValues(minValue, currentLevelValue);
-    }
-
-    public void setChildViewAspectRatio(final float lambda) {
-        this.lambda = lambda;
-        requestLayout();
-    }
-
     private static class SavedState extends BaseSavedState {
-        float currentLevelValue;
+
+        private float currentLevelValue;
 
         SavedState(final Parcelable superState) {
             super(superState);
@@ -661,13 +661,17 @@ public class RainbowView extends FrameLayout {
 
         public static final Parcelable.Creator<SavedState> CREATOR
                 = new Parcelable.Creator<SavedState>() {
+
+            @Override
             public SavedState createFromParcel(final Parcel in) {
                 return new SavedState(in);
             }
 
+            @Override
             public SavedState[] newArray(final int size) {
                 return new SavedState[size];
             }
         };
     }
+
 }
