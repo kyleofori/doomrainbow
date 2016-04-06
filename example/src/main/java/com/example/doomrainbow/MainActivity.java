@@ -13,31 +13,52 @@ import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity  {
 
-    private RainbowView rainbowView;
+    private RainbowView firstView, secondView, thirdView;
     private Func1<Integer, Integer> colorFunction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rainbowView = (RainbowView) findViewById(R.id.rainbow_view);
+        firstView = (RainbowView) findViewById(R.id.rainbow_view);
+        secondView = (RainbowView) findViewById(R.id.rainbow_view1);
+        thirdView = (RainbowView) findViewById(R.id.rainbow_view2);
         colorFunction = new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer integer) {
                 return Color.argb(80, 2 * integer, 0, integer);
             }
         };
-        rainbowView.setMinLabel("0");
-        rainbowView.setMaxLabel("100");
-        rainbowView.setCurrentLevelArcPaintColorFunction(rainbowView.getCurrentLevelValue(), colorFunction);
-        rainbowView.setChildViewAspectRatio(0.5f);
-        rainbowView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
-        rainbowView.setOnClickListener(new View.OnClickListener() {
+        initFirstView();
+        initSecondView();
+        initThirdView();
+    }
+
+    private void initFirstView() {
+        firstView.setMinLabel("0");
+        firstView.setMaxLabel("100");
+        firstView.setCurrentLevelArcPaintColorFunction(firstView.getCurrentLevelValue(), colorFunction);
+        firstView.setChildViewAspectRatio(0.5f);
+        firstView.setGoalIndicatorType(RainbowView.IndicatorType.ARC);
+        firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 increaseCurrentLevel();
             }
         });
+    }
+
+    private void initSecondView() {
+        secondView.setBackgroundArcPaintColor(Color.YELLOW);
+        secondView.setGoalIndicatorType(RainbowView.IndicatorType.CIRCLE);
+        secondView.setGoalPaintColor(Color.BLACK);
+        secondView.setArcPaintStrokeWidth(50);
+    }
+
+    private void initThirdView() {
+        thirdView.setBackgroundArcPaintColor(Color.BLACK);
+        thirdView.setMinLabel("E");
+        thirdView.setMaxLabel("F");
     }
 
     @Override
@@ -63,22 +84,22 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void increaseCurrentLevel() {
-        float value = rainbowView.getCurrentLevelValue();
-        if(rainbowView.getGoalValue() >= value + 8) {
-            rainbowView.setCurrentLevelValue(value + 8);
+        float value = firstView.getCurrentLevelValue();
+        if(firstView.getGoalValue() >= value + 8) {
+            firstView.setCurrentLevelValue(value + 8);
         } else {
-            rainbowView.setCurrentLevelValue(rainbowView.getGoalValue());
+            firstView.setCurrentLevelValue(firstView.getGoalValue());
         }
-        rainbowView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
+        firstView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
     }
 
     private void decreaseCurrentLevel() {
-        float value = rainbowView.getCurrentLevelValue();
-        if(value - 30 > rainbowView.getBackgroundStartAngle()) {
-            rainbowView.setCurrentLevelValue(value - 30);
+        float value = firstView.getCurrentLevelValue();
+        if(value - 30 > firstView.getBackgroundStartAngle()) {
+            firstView.setCurrentLevelValue(value - 30);
         } else {
-            rainbowView.setCurrentLevelValue(rainbowView.getBackgroundStartAngle());
+            firstView.setCurrentLevelValue(firstView.getBackgroundStartAngle());
         }
-        rainbowView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
+        firstView.setCurrentLevelArcPaintColorFunction(value, colorFunction);
     }
 }

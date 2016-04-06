@@ -34,6 +34,7 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
     private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
     private static final float DEFAULT_BACKGROUND_EXTREME_LABEL_PADDING = 15;
+    private static final float DEFAULT_RADIUS_COEFFICIENT = .85f;
     private static final float DEFAULT_GOAL_VALUE = 90;
     private static final float DEFAULT_GOAL_ARC_LENGTH = 4;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
@@ -42,9 +43,9 @@ public class RainbowView extends FrameLayout {
     private static final int DEFAULT_MAX_VALUE = 100;
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
     private static final int DEFAULT_ARC_STROKE_WIDTH = 20;
-    private static final float DEFAULT_CURRENT_LEVEL_TEXT_SIZE = 20;
-    private static final float DEFAULT_EXTREME_LABEL_TEXT_SIZE = 20;
-    private static final float LEVEL_TEXT_RADIUS_SCALE_FACTOR = 1.25f;
+    private static final float DEFAULT_CURRENT_LEVEL_TEXT_SIZE = 40;
+    private static final float DEFAULT_EXTREME_LABEL_TEXT_SIZE = 60;
+    private static final float LEVEL_TEXT_RADIUS_SCALE_FACTOR = 1.10f;
 
 
     static {
@@ -305,9 +306,9 @@ public class RainbowView extends FrameLayout {
         viewHeightHalf = getMeasuredHeight() / 2;
 
         if(viewHeightHalf > viewWidthHalf) {
-            radius = viewWidthHalf - 70;
+            radius = viewWidthHalf * DEFAULT_RADIUS_COEFFICIENT;
         } else {
-            radius = viewHeightHalf - 70;
+            radius = viewHeightHalf * DEFAULT_RADIUS_COEFFICIENT;
         }
 
         for (int i = 0; i < getChildCount(); i++) {
@@ -350,6 +351,12 @@ public class RainbowView extends FrameLayout {
             throw new IllegalStateException("This view must have exactly one child.");
         } else {
             getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        }
+
+        int rainbowViewHeight = 647;
+        int rainbowViewQuantity = 3;
+        if(heightMeasureSpec == 0) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(rainbowViewHeight * rainbowViewQuantity, MeasureSpec.AT_MOST);
         }
 
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
