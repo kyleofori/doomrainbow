@@ -39,8 +39,6 @@ public class RainbowView extends FrameLayout {
     private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
     private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
 
-    // todo: what is this?
-    private static final float DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP = 15;
     private static final float DEFAULT_RADIUS_COEFFICIENT = .75f;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
@@ -459,7 +457,7 @@ public class RainbowView extends FrameLayout {
         this.animateChangesInCurrentLevel = animateChangesInCurrentLevel;
     }
 
-    private void setDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
+    private void setShouldDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
         this.displayCurrentLevelLabel = displayCurrentLevelLabel;
     }
 
@@ -555,8 +553,7 @@ public class RainbowView extends FrameLayout {
 
         if(minimumValueLabel != null) {
             final float minValRadiusCosCoefficient
-                    = AngleUtils.getRadiusCosineCoefficient(
-                            minimumBackgroundArcAngle - DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP);
+                    = AngleUtils.getRadiusCosineCoefficient(minimumBackgroundArcAngle);
 
             final float xCoord = floatViewWidthHalf + minValRadiusCosCoefficient * radius;
             drawValue(canvas, minimumValueLabel, xCoord, yCoord);
@@ -564,8 +561,7 @@ public class RainbowView extends FrameLayout {
 
         if(maximumValueLabel != null) {
             final float maxValRadiusCosCoefficient
-                    = AngleUtils.getRadiusCosineCoefficient(
-                            maximumBackgroundArcAngle + DEFAULT_EXTREME_VALUE_LABEL_PADDING_DP);
+                    = AngleUtils.getRadiusCosineCoefficient(maximumBackgroundArcAngle);
 
             final float xCoord = floatViewWidthHalf - maxValRadiusCosCoefficient * radius;
             drawValue(canvas, maximumValueLabel, xCoord, yCoord);
