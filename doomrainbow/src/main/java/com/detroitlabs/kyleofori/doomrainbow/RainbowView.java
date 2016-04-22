@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorInt;
@@ -358,6 +359,13 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
+    public void setCurrentValueLabelTypeface(@NonNull final Typeface typeface){
+        final Paint newPaint = new Paint(getCurrentLevelTextPaint());
+        newPaint.setTypeface(typeface);
+        customCurrentValueLabelPaint = newPaint;
+        invalidate();
+    }
+
     public void setCurrentValueLabelTextColor(@ColorInt final int textColor) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setColor(textColor);
@@ -369,6 +377,13 @@ public class RainbowView extends FrameLayout {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setTextSize(textSizePx);
         customCurrentValueLabelPaint = newPaint;
+        invalidate();
+    }
+
+    public void setExtremeValueLabelTypeface(@NonNull final Typeface typeface){
+        final Paint newPaint = new Paint(getExtremeLabelTextPaint());
+        newPaint.setTypeface(typeface);
+        customExtremeValueLabelPaint = newPaint;
         invalidate();
     }
 
