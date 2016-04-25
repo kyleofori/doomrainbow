@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity  {
         firstView.setRepresentedRange(0, 100, true);
         firstView.setGoalValue(72);
         firstView.setCurrentValue(64);
-        firstView.setChildViewAspectRatio(0.5f);
+        firstView.setChildViewAspectRatio(1f);
+        thirdView.setMinimumValueLabel("E");
+        thirdView.setMaximumValueLabel("F");
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -41,6 +43,11 @@ public class MainActivity extends AppCompatActivity  {
     private void initSecondView() {
         secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorColor(Color.BLACK);
+        secondView.setRangeLabelAngularOffset(-23.5f);
+        secondView.setRangeLabelRadialPaddingDp(-24);
+        secondView.alignRangeLabelTextInward();
+        secondView.setMinimumValueLabel("MIN");
+        secondView.setMaximumValueLabel("MAX");
         secondView.setArcWidthDp(24);
     }
 
@@ -48,6 +55,7 @@ public class MainActivity extends AppCompatActivity  {
         thirdView.setBackgroundArcColor(Color.BLACK);
         thirdView.setMinimumValueLabel("E");
         thirdView.setMaximumValueLabel("F");
+        thirdView.setRangeLabelTextSizeSp(32);
     }
 
 }
