@@ -537,7 +537,7 @@ public class RainbowView extends FrameLayout {
         this.animateChangesInCurrentLevel = animateChangesInCurrentLevel;
     }
 
-    private void setDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
+    private void setShouldDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
         this.displayCurrentLevelLabel = displayCurrentLevelLabel;
     }
 
