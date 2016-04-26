@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity  {
         firstView.setGoalValue(72);
         firstView.setCurrentValue(64);
         firstView.setChildViewAspectRatio(1f);
-        thirdView.setMinimumValueLabel("E");
-        thirdView.setMaximumValueLabel("F");
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
