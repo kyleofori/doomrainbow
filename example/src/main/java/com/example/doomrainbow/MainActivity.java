@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
+import com.detroitlabs.kyleofori.doomrainbow.RangeLabelAlignment;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity  {
         secondView.setGoalIndicatorColor(Color.BLACK);
         secondView.setRangeLabelAngularOffset(-23.5f);
         secondView.setRangeLabelRadialPaddingDp(-24);
-        secondView.alignRangeLabelTextInward();
+        secondView.alignRangeLabelText(RangeLabelAlignment.INWARD);
         secondView.setMinimumValueLabel("MIN");
         secondView.setMaximumValueLabel("MAX");
         secondView.setArcWidthDp(24);
