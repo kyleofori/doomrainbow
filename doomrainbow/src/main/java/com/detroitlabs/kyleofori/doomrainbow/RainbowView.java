@@ -427,35 +427,28 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void alignRangeLabelTextInward() {
-        final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
-        newMinPaint.setTextAlign(Paint.Align.LEFT);
-        customMinimumLabelPaint = newMinPaint;
-
-        final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
-        newMaxPaint.setTextAlign(Paint.Align.RIGHT);
-        customMaximumLabelPaint = newMaxPaint;
-        invalidate();
+    public void alignRangeLabelText(final RangeLabelAlignment rangeLabelAlignment) {
+        switch (rangeLabelAlignment) {
+            case INWARD:
+                alignRangeLabelText(Paint.Align.LEFT, Paint.Align.RIGHT);
+                break;
+            case OUTWARD:
+                alignRangeLabelText(Paint.Align.RIGHT, Paint.Align.LEFT);
+                break;
+            case CENTERED:
+            default:
+                alignRangeLabelText(Paint.Align.CENTER, Paint.Align.CENTER);
+                break;
+        }
     }
 
-    public void alignRangeLabelTextOutward() {
+    private void alignRangeLabelText(final Paint.Align minAlign, final Paint.Align maxAlign) {
         final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
-        newMinPaint.setTextAlign(Paint.Align.RIGHT);
+        newMinPaint.setTextAlign(minAlign);
         customMinimumLabelPaint = newMinPaint;
 
         final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
-        newMaxPaint.setTextAlign(Paint.Align.LEFT);
-        customMaximumLabelPaint = newMaxPaint;
-        invalidate();
-    }
-
-    public void alignRangeLabelTextCentered() {
-        final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
-        newMinPaint.setTextAlign(Paint.Align.CENTER);
-        customMinimumLabelPaint = newMinPaint;
-
-        final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
-        newMaxPaint.setTextAlign(Paint.Align.CENTER);
+        newMaxPaint.setTextAlign(maxAlign);
         customMaximumLabelPaint = newMaxPaint;
         invalidate();
     }
