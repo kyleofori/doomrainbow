@@ -33,22 +33,22 @@ public class RainbowView extends FrameLayout {
     private static final Paint BASE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final Paint DEFAULT_BACKGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_CURRENT_VALUE_LABEL_PAINT = new Paint(BASE_PAINT);
-    private static final Paint DEFAULT_MINIMUM_LABEL_PAINT = new Paint(BASE_PAINT);
-    private static final Paint DEFAULT_MAXIMUM_LABEL_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_START_LABEL_PAINT = new Paint(BASE_PAINT);
+    private static final Paint DEFAULT_END_LABEL_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_GOAL_INDICATOR_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_FOREGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
-    private static final float DEFAULT_BACKGROUND_START_ANGLE = -135;
-    private static final float DEFAULT_BACKGROUND_END_ANGLE = 135;
+    private static final float DEFAULT_START_ANGLE = 135;
+    private static final float DEFAULT_SWEEP_ANGLE = 270;
 
     private static final float DEFAULT_RANGE_LABEL_ANGULAR_OFFSET = 15;
     private static final float DEFAULT_RANGE_LABEL_RADIAL_PADDING_DP = 0;
     private static final float DEFAULT_RADIUS_COEFFICIENT = .75f;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
-    private static final int DEFAULT_MINIMUM_VALUE = 0;
+    private static final int DEFAULT_START_VALUE = 0;
     private static final float DEFAULT_GOAL_VALUE = 90;
-    private static final int DEFAULT_MAXIMUM_VALUE = 100;
+    private static final int DEFAULT_END_VALUE = 100;
     private static final int DEFAULT_ARC_STROKE_WIDTH_DP = 16;
     private static final float DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE_SP = 14;
     private static final float DEFAULT_RANGE_LABEL_TEXT_SIZE_SP = 14;
@@ -73,18 +73,18 @@ public class RainbowView extends FrameLayout {
     }
 
     private static void initDefaultRangeLabelPaint() {
-        initDefaultMinimumLabelPaint();
-        initDefaultMaximumLabelPaint();
+        initDefaultStartLabelPaint();
+        initDefaultEndLabelPaint();
     }
 
-    private static void initDefaultMinimumLabelPaint() {
-        DEFAULT_MINIMUM_LABEL_PAINT.setColor(Color.BLACK);
-        DEFAULT_MINIMUM_LABEL_PAINT.setTextAlign(Paint.Align.CENTER);
+    private static void initDefaultStartLabelPaint() {
+        DEFAULT_START_LABEL_PAINT.setColor(Color.BLACK);
+        DEFAULT_START_LABEL_PAINT.setTextAlign(Paint.Align.CENTER);
     }
 
-    private static void initDefaultMaximumLabelPaint() {
-        DEFAULT_MAXIMUM_LABEL_PAINT.setColor(Color.BLACK);
-        DEFAULT_MAXIMUM_LABEL_PAINT.setTextAlign(Paint.Align.CENTER);
+    private static void initDefaultEndLabelPaint() {
+        DEFAULT_END_LABEL_PAINT.setColor(Color.BLACK);
+        DEFAULT_END_LABEL_PAINT.setTextAlign(Paint.Align.CENTER);
     }
 
     private static void initDefaultGoalIndicatorPaint() {
@@ -104,19 +104,20 @@ public class RainbowView extends FrameLayout {
     @Nullable
     private Paint customCurrentValueLabelPaint;
     @Nullable
-    private Paint customMinimumLabelPaint;
+    private Paint customStartLabelPaint;
     @Nullable
-    private Paint customMaximumLabelPaint;
+    private Paint customEndLabelPaint;
     @Nullable
     private Paint customGoalIndicatorPaint;
     @Nullable
     private Paint customForegroundArcPaint;
 
-    private int minimumValue, maximumValue;
+    private int startValue, endValue;
     private float currentValue;
     private float rangeLabelAngularOffset;
     private float rangeLabelRadialPadding;
-    private float minimumBackgroundArcAngle, maximumBackgroundArcAngle;
+    private float startAngle;
+    private float sweepAngle;
     private float radius;
     private float internalRadius;
     private float viewWidthHalf;
@@ -126,7 +127,7 @@ public class RainbowView extends FrameLayout {
     private boolean displayCurrentLevelLabel;
     private long animationDuration = DEFAULT_ANIMATION_DURATION_MS;
 
-    private String minimumValueLabel, maximumValueLabel;
+    private String startLabel, endLabel;
     private RectF doomRainbowRectF;
     private Rect childViewRect;
     private ValueAnimator animation;
@@ -164,21 +165,21 @@ public class RainbowView extends FrameLayout {
         DEFAULT_FOREGROUND_ARC_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
 
         DEFAULT_CURRENT_VALUE_LABEL_PAINT.setTextSize(spToPx(DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE_SP));
-        DEFAULT_MINIMUM_LABEL_PAINT.setTextSize(spToPx(DEFAULT_RANGE_LABEL_TEXT_SIZE_SP));
-        DEFAULT_MAXIMUM_LABEL_PAINT.setTextSize(spToPx(DEFAULT_RANGE_LABEL_TEXT_SIZE_SP));
+        DEFAULT_START_LABEL_PAINT.setTextSize(spToPx(DEFAULT_RANGE_LABEL_TEXT_SIZE_SP));
+        DEFAULT_END_LABEL_PAINT.setTextSize(spToPx(DEFAULT_RANGE_LABEL_TEXT_SIZE_SP));
 
         setSaveEnabled(true);
         setWillNotDraw(false);
         doomRainbowRectF = new RectF();
         childViewRect = new Rect();
-        minimumValue = DEFAULT_MINIMUM_VALUE;
-        maximumValue = DEFAULT_MAXIMUM_VALUE;
-        setMinimumBackgroundArcAngle(DEFAULT_BACKGROUND_START_ANGLE);
-        setMaximumBackgroundArcAngle(DEFAULT_BACKGROUND_END_ANGLE);
+        startValue = DEFAULT_START_VALUE;
+        endValue = DEFAULT_END_VALUE;
+        setStartAngle(DEFAULT_START_ANGLE);
+        setSweepAngle(DEFAULT_SWEEP_ANGLE);
         setGoalValue(DEFAULT_GOAL_VALUE);
         setRangeLabelAngularOffset(DEFAULT_RANGE_LABEL_ANGULAR_OFFSET);
         setRangeLabelRadialPaddingDp(DEFAULT_RANGE_LABEL_RADIAL_PADDING_DP);
-        currentValue = minimumValue;
+        currentValue = startValue;
         resetValueToDraw();
         reanimate();
     }
@@ -257,9 +258,9 @@ public class RainbowView extends FrameLayout {
                 viewWidthHalf + radius,
                 viewHeightHalf + radius);
 
-        drawShiftedArc(canvas, doomRainbowRectF, minimumValue, maximumValue, getBackgroundArcPaint());
+        drawArcFromValues(canvas, doomRainbowRectF, startValue, endValue, getBackgroundArcPaint());
 
-        drawShiftedArc(canvas, doomRainbowRectF, minimumValue, valueToDraw, getCurrentLevelArcPaint());
+        drawArcFromValues(canvas, doomRainbowRectF, startValue, valueToDraw, getCurrentLevelArcPaint());
 
         drawCurrentLevelTextIfPresent(canvas);
 
@@ -370,7 +371,7 @@ public class RainbowView extends FrameLayout {
     }
 
     /**
-     * User should pass in a function that maps from the minimum and maximum value of the rainbowView
+     * User should pass in a function that maps from the start and end value of the rainbowView
      * to the color code.
      */
     public void setCurrentLevelArcPaintColorFunction(
@@ -406,24 +407,24 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setRangeLabelTextColor(@ColorInt final int color) {
-        final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
+        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
         newMinPaint.setColor(color);
-        customMinimumLabelPaint = newMinPaint;
+        customStartLabelPaint = newMinPaint;
 
-        final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
+        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
         newMaxPaint.setColor(color);
-        customMaximumLabelPaint = newMaxPaint;
+        customEndLabelPaint = newMaxPaint;
         invalidate();
     }
 
     public void setRangeLabelTypeface(@NonNull final Typeface typeface){
-        final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
+        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
         newMinPaint.setTypeface(typeface);
-        customMinimumLabelPaint = newMinPaint;
+        customStartLabelPaint = newMinPaint;
 
-        final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
+        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
         newMaxPaint.setTypeface(typeface);
-        customMaximumLabelPaint = newMaxPaint;
+        customEndLabelPaint = newMaxPaint;
         invalidate();
     }
 
@@ -443,13 +444,13 @@ public class RainbowView extends FrameLayout {
     }
 
     private void alignRangeLabelText(final Paint.Align minAlign, final Paint.Align maxAlign) {
-        final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
+        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
         newMinPaint.setTextAlign(minAlign);
-        customMinimumLabelPaint = newMinPaint;
+        customStartLabelPaint = newMinPaint;
 
-        final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
+        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
         newMaxPaint.setTextAlign(maxAlign);
-        customMaximumLabelPaint = newMaxPaint;
+        customEndLabelPaint = newMaxPaint;
         invalidate();
     }
 
@@ -466,13 +467,13 @@ public class RainbowView extends FrameLayout {
     public void setRangeLabelTextSizeSp(final float textSizeSp) {
         final float textSizePx = spToPx(textSizeSp);
 
-        final Paint newMinPaint = new Paint(getMinimumLabelTextPaint());
+        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
         newMinPaint.setTextSize(textSizePx);
-        customMinimumLabelPaint = newMinPaint;
+        customStartLabelPaint = newMinPaint;
 
-        final Paint newMaxPaint = new Paint(getMaximumLabelTextPaint());
+        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
         newMaxPaint.setTextSize(textSizePx);
-        customMaximumLabelPaint = newMaxPaint;
+        customEndLabelPaint = newMaxPaint;
         invalidate();
     }
 
@@ -488,16 +489,16 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setRepresentedRange(
-            final int minimumValue,
-            final int maximumValue,
+            final int startValue,
+            final int endValue,
             final boolean updateRangeLabels) {
 
-        this.minimumValue = minimumValue;
-        this.maximumValue = maximumValue;
+        this.startValue = startValue;
+        this.endValue = endValue;
 
         if (updateRangeLabels) {
-            minimumValueLabel = Integer.toString(minimumValue);
-            maximumValueLabel = Integer.toString(maximumValue);
+            startLabel = Integer.toString(startValue);
+            endLabel = Integer.toString(endValue);
         }
 
         invalidate();
@@ -506,7 +507,7 @@ public class RainbowView extends FrameLayout {
     public void setCurrentValue(final float currentValue) {
         final float previousValue = this.currentValue;
 
-        this.currentValue = min(max(minimumValue, currentValue), maximumValue);
+        this.currentValue = min(max(startValue, currentValue), endValue);
 
         if (animation != null) {
             animation.cancel();
@@ -531,13 +532,13 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setMaximumValueLabel(final String maximumValueLabel) {
-        this.maximumValueLabel = maximumValueLabel;
+    public void setEndLabel(final String endLabel) {
+        this.endLabel = endLabel;
         invalidate();
     }
 
-    public void setMinimumValueLabel(final String minimumValueLabel) {
-        this.minimumValueLabel = minimumValueLabel;
+    public void setStartLabel(final String startLabel) {
+        this.startLabel = startLabel;
         invalidate();
     }
 
@@ -558,13 +559,13 @@ public class RainbowView extends FrameLayout {
         requestLayout();
     }
 
-    public void setMinimumBackgroundArcAngle(final float minimumBackgroundArcAngle) {
-        this.minimumBackgroundArcAngle = minimumBackgroundArcAngle;
+    public void setStartAngle(final float startAngle) {
+        this.startAngle = startAngle;
         invalidate();
     }
 
-    public void setMaximumBackgroundArcAngle(final float backgroundEndAngle) {
-        this.maximumBackgroundArcAngle = backgroundEndAngle;
+    public void setSweepAngle(final float sweepAngle) {
+        this.sweepAngle = sweepAngle;
         invalidate();
     }
 
@@ -581,13 +582,13 @@ public class RainbowView extends FrameLayout {
     }
 
     @NonNull
-    private Paint getMinimumLabelTextPaint() {
-        return getPaint(customMinimumLabelPaint, DEFAULT_MINIMUM_LABEL_PAINT);
+    private Paint getStartLabelTextPaint() {
+        return getPaint(customStartLabelPaint, DEFAULT_START_LABEL_PAINT);
     }
 
     @NonNull
-    private Paint getMaximumLabelTextPaint() {
-        return getPaint(customMaximumLabelPaint, DEFAULT_MAXIMUM_LABEL_PAINT);
+    private Paint getEndLabelTextPaint() {
+        return getPaint(customEndLabelPaint, DEFAULT_END_LABEL_PAINT);
     }
 
     @NonNull
@@ -607,12 +608,14 @@ public class RainbowView extends FrameLayout {
 
     private void drawCurrentLevelTextIfPresent(final Canvas canvas) {
         if (displayCurrentLevelLabel) {
-            final double currentLevelAngle = AngleUtils.convertFromValueToAngle(
+            final double currentLevelAngle = AngleUtils.getInteriorAngleFromValue(
                     currentValue,
-                    getBackgroundArcAngleRangeLength(),
-                    getRepresentedRangeLength());
+                    startValue,
+                    endValue,
+                    startAngle,
+                    sweepAngle);
 
-            final double angleInRadians = Math.toRadians(currentLevelAngle - 90);
+            final double angleInRadians = Math.toRadians(currentLevelAngle);
 
             canvas.drawText(
                     String.valueOf(Math.round(currentValue)),
@@ -623,73 +626,78 @@ public class RainbowView extends FrameLayout {
         }
     }
 
-    private void drawShiftedArc(
+    private void drawArcFromValues(
             final Canvas canvas,
             final RectF rectF,
             final float startValue,
             final float endValue,
             final Paint paint) {
 
-        final float startAngle = AngleUtils.convertFromValueToAngle(
+        final float startAngle = AngleUtils.getInteriorAngleFromValue(
                 startValue,
-                getBackgroundArcAngleRangeLength(),
-                getRepresentedRangeLength());
+                this.startValue,
+                this.endValue,
+                this.startAngle,
+                this.sweepAngle);
 
-        final float endAngle = AngleUtils.convertFromValueToAngle(
+        final float endAngle = AngleUtils.getInteriorAngleFromValue(
                 endValue,
-                getBackgroundArcAngleRangeLength(),
-                getRepresentedRangeLength());
+                this.startValue,
+                this.endValue,
+                this.startAngle,
+                this.sweepAngle);
 
-        canvas.drawArc(rectF, startAngle - 90, (endAngle - startAngle), false, paint);
+        canvas.drawArc(rectF, startAngle, (endAngle - startAngle), false, paint);
     }
-
 
     private void drawRangeLabelsIfPresent(final Canvas canvas) {
-        if (minimumValueLabel != null) {
-            drawMinimumLabel(canvas);
+        if (startLabel != null) {
+            drawStartLabel(canvas);
         }
-        if (maximumValueLabel != null) {
-            drawMaximumLabel(canvas);
+        if (endLabel != null) {
+            drawEndLabel(canvas);
         }
     }
 
-    private void drawMinimumLabel(final Canvas canvas) {
+    private void drawStartLabel(final Canvas canvas) {
         final float rangeLabelRadius = internalRadius + rangeLabelRadialPadding;
         final Rect minLabelTextBounds = new Rect();
-        getMinimumLabelTextPaint().getTextBounds(minimumValueLabel, 0, minimumValueLabel.length(), minLabelTextBounds);
+        getStartLabelTextPaint().getTextBounds(startLabel, 0, startLabel.length(), minLabelTextBounds);
 
         final float minLabelYCoord = viewHeightHalf
-                - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(minimumBackgroundArcAngle - rangeLabelAngularOffset))
+                - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(startAngle - rangeLabelAngularOffset))
                 + minLabelTextBounds.height();
 
         final float minLabelXCoord = viewWidthHalf
-                + (AngleUtils.getRadiusCosineCoefficient(minimumBackgroundArcAngle + rangeLabelAngularOffset) * rangeLabelRadius);
+                + (AngleUtils.getRadiusCosineCoefficient(startAngle + rangeLabelAngularOffset) * rangeLabelRadius);
 
-        canvas.drawText(minimumValueLabel, minLabelXCoord, minLabelYCoord, getMinimumLabelTextPaint());
+        canvas.drawText(startLabel, minLabelXCoord, minLabelYCoord, getStartLabelTextPaint());
     }
 
-    private void drawMaximumLabel(final Canvas canvas) {
+    private void drawEndLabel(final Canvas canvas) {
         final float rangeLabelRadius = internalRadius + rangeLabelRadialPadding;
         final Rect maxLabelTextBounds = new Rect();
-        getMaximumLabelTextPaint().getTextBounds(maximumValueLabel, 0, maximumValueLabel.length(), maxLabelTextBounds);
+        getEndLabelTextPaint().getTextBounds(endLabel, 0, endLabel.length(), maxLabelTextBounds);
 
         final float maxLabelYCoord = viewHeightHalf
-                - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(maximumBackgroundArcAngle + rangeLabelAngularOffset))
+                - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(startAngle + sweepAngle + rangeLabelAngularOffset))
                 + maxLabelTextBounds.height();
 
         final float maxLabelXCoord = viewWidthHalf
-                - (AngleUtils.getRadiusCosineCoefficient(maximumBackgroundArcAngle - rangeLabelAngularOffset) * rangeLabelRadius);
+                - (AngleUtils.getRadiusCosineCoefficient(startAngle + sweepAngle - rangeLabelAngularOffset) * rangeLabelRadius);
 
-        canvas.drawText(maximumValueLabel, maxLabelXCoord, maxLabelYCoord, getMaximumLabelTextPaint());
+        canvas.drawText(endLabel, maxLabelXCoord, maxLabelYCoord, getEndLabelTextPaint());
     }
 
     private void drawIndicator(final Canvas canvas) {
-        final float goalAngle = AngleUtils.convertFromValueToAngle(
+        final float goalAngle = AngleUtils.getInteriorAngleFromValue(
                 goalValue,
-                getBackgroundArcAngleRangeLength(),
-                getRepresentedRangeLength());
+                startValue,
+                endValue,
+                this.startAngle,
+                sweepAngle);
 
-        final double goalAngleRadians = Math.toRadians(goalAngle - 90);
+        final double goalAngleRadians = Math.toRadians(goalAngle);
 
         canvas.drawPoint(
                 viewWidthHalf + (float) cos(goalAngleRadians) * radius,
@@ -698,7 +706,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void reanimate() {
-        animateBetweenValues(minimumValue, currentValue);
+        animateBetweenValues(startValue, currentValue);
     }
 
     private void resetValueToDraw() {
@@ -721,14 +729,10 @@ public class RainbowView extends FrameLayout {
     }
 
     private int getRepresentedRangeLength() {
-        return maximumValue - minimumValue;
+        return endValue - startValue;
     }
 
-    private float getBackgroundArcAngleRangeLength() {
-        return maximumBackgroundArcAngle - minimumBackgroundArcAngle;
-    }
-
-    private float spToPx(final float sp) {
+     private float spToPx(final float sp) {
         return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, sp, getResources().getDisplayMetrics());
     }

@@ -45,15 +45,15 @@ public class MainActivity extends AppCompatActivity  {
         secondView.setRangeLabelAngularOffset(-23.5f);
         secondView.setRangeLabelRadialPaddingDp(-24);
         secondView.alignRangeLabelText(RangeLabelAlignment.INWARD);
-        secondView.setMinimumValueLabel("MIN");
-        secondView.setMaximumValueLabel("MAX");
+        secondView.setStartLabel("MIN");
+        secondView.setEndLabel("MAX");
         secondView.setArcWidthDp(24);
     }
 
     private void initThirdView() {
         thirdView.setBackgroundArcColor(Color.BLACK);
-        thirdView.setMinimumValueLabel("E");
-        thirdView.setMaximumValueLabel("F");
+        thirdView.setStartLabel("E");
+        thirdView.setEndLabel("F");
         thirdView.setRangeLabelTextSizeSp(32);
     }
 
