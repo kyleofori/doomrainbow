@@ -565,7 +565,13 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setSweepAngle(final float sweepAngle) {
-        this.sweepAngle = sweepAngle;
+        if (sweepAngle > 360){
+            this.sweepAngle = 360;
+        } else if (sweepAngle < -360) {
+            this.sweepAngle = -360;
+        } else {
+            this.sweepAngle = sweepAngle;
+        }
         invalidate();
     }
 
