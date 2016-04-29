@@ -407,24 +407,24 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setRangeLabelTextColor(@ColorInt final int color) {
-        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
-        newMinPaint.setColor(color);
-        customStartLabelPaint = newMinPaint;
+        final Paint newStartPaint = new Paint(getStartLabelTextPaint());
+        newStartPaint.setColor(color);
+        customStartLabelPaint = newStartPaint;
 
-        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
-        newMaxPaint.setColor(color);
-        customEndLabelPaint = newMaxPaint;
+        final Paint newEndPaint = new Paint(getEndLabelTextPaint());
+        newEndPaint.setColor(color);
+        customEndLabelPaint = newEndPaint;
         invalidate();
     }
 
     public void setRangeLabelTypeface(@NonNull final Typeface typeface){
-        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
-        newMinPaint.setTypeface(typeface);
-        customStartLabelPaint = newMinPaint;
+        final Paint newStartPaint = new Paint(getStartLabelTextPaint());
+        newStartPaint.setTypeface(typeface);
+        customStartLabelPaint = newStartPaint;
 
-        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
-        newMaxPaint.setTypeface(typeface);
-        customEndLabelPaint = newMaxPaint;
+        final Paint newEndPaint = new Paint(getEndLabelTextPaint());
+        newEndPaint.setTypeface(typeface);
+        customEndLabelPaint = newEndPaint;
         invalidate();
     }
 
@@ -443,14 +443,14 @@ public class RainbowView extends FrameLayout {
         }
     }
 
-    private void alignRangeLabelText(final Paint.Align minAlign, final Paint.Align maxAlign) {
-        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
-        newMinPaint.setTextAlign(minAlign);
-        customStartLabelPaint = newMinPaint;
+    private void alignRangeLabelText(final Paint.Align startAlign, final Paint.Align endAlign) {
+        final Paint newStartPaint = new Paint(getStartLabelTextPaint());
+        newStartPaint.setTextAlign(startAlign);
+        customStartLabelPaint = newStartPaint;
 
-        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
-        newMaxPaint.setTextAlign(maxAlign);
-        customEndLabelPaint = newMaxPaint;
+        final Paint newEndPaint = new Paint(getEndLabelTextPaint());
+        newEndPaint.setTextAlign(endAlign);
+        customEndLabelPaint = newEndPaint;
         invalidate();
     }
 
@@ -467,13 +467,13 @@ public class RainbowView extends FrameLayout {
     public void setRangeLabelTextSizeSp(final float textSizeSp) {
         final float textSizePx = spToPx(textSizeSp);
 
-        final Paint newMinPaint = new Paint(getStartLabelTextPaint());
-        newMinPaint.setTextSize(textSizePx);
-        customStartLabelPaint = newMinPaint;
+        final Paint newStartPaint = new Paint(getStartLabelTextPaint());
+        newStartPaint.setTextSize(textSizePx);
+        customStartLabelPaint = newStartPaint;
 
-        final Paint newMaxPaint = new Paint(getEndLabelTextPaint());
-        newMaxPaint.setTextSize(textSizePx);
-        customEndLabelPaint = newMaxPaint;
+        final Paint newEndPaint = new Paint(getEndLabelTextPaint());
+        newEndPaint.setTextSize(textSizePx);
+        customEndLabelPaint = newEndPaint;
         invalidate();
     }
 
@@ -667,32 +667,32 @@ public class RainbowView extends FrameLayout {
 
     private void drawStartLabel(final Canvas canvas) {
         final float rangeLabelRadius = internalRadius + rangeLabelRadialPadding;
-        final Rect minLabelTextBounds = new Rect();
-        getStartLabelTextPaint().getTextBounds(startLabel, 0, startLabel.length(), minLabelTextBounds);
+        final Rect startLabelTextBounds = new Rect();
+        getStartLabelTextPaint().getTextBounds(startLabel, 0, startLabel.length(), startLabelTextBounds);
 
-        final float minLabelYCoord = viewHeightHalf
+        final float startLabelYCoord = viewHeightHalf
                 - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(startAngle - rangeLabelAngularOffset))
-                + minLabelTextBounds.height();
+                + startLabelTextBounds.height();
 
-        final float minLabelXCoord = viewWidthHalf
+        final float startLabelXCoord = viewWidthHalf
                 + (AngleUtils.getRadiusCosineCoefficient(startAngle + rangeLabelAngularOffset) * rangeLabelRadius);
 
-        canvas.drawText(startLabel, minLabelXCoord, minLabelYCoord, getStartLabelTextPaint());
+        canvas.drawText(startLabel, startLabelXCoord, startLabelYCoord, getStartLabelTextPaint());
     }
 
     private void drawEndLabel(final Canvas canvas) {
         final float rangeLabelRadius = internalRadius + rangeLabelRadialPadding;
-        final Rect maxLabelTextBounds = new Rect();
-        getEndLabelTextPaint().getTextBounds(endLabel, 0, endLabel.length(), maxLabelTextBounds);
+        final Rect endLabelTextBounds = new Rect();
+        getEndLabelTextPaint().getTextBounds(endLabel, 0, endLabel.length(), endLabelTextBounds);
 
-        final float maxLabelYCoord = viewHeightHalf
+        final float endLabelYCoord = viewHeightHalf
                 - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(startAngle + sweepAngle + rangeLabelAngularOffset))
-                + maxLabelTextBounds.height();
+                + endLabelTextBounds.height();
 
-        final float maxLabelXCoord = viewWidthHalf
+        final float endLabelXCoord = viewWidthHalf
                 - (AngleUtils.getRadiusCosineCoefficient(startAngle + sweepAngle - rangeLabelAngularOffset) * rangeLabelRadius);
 
-        canvas.drawText(endLabel, maxLabelXCoord, maxLabelYCoord, getEndLabelTextPaint());
+        canvas.drawText(endLabel, endLabelXCoord, endLabelYCoord, getEndLabelTextPaint());
     }
 
     private void drawIndicator(final Canvas canvas) {
