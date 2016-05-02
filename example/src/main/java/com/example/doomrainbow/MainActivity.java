@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity  {
         secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorColor(Color.BLACK);
         secondView.setRangeLabelAngularOffset(-23.5f);
-        secondView.setRangeLabelRadialPaddingDp(-24);
+        secondView.setRangeLabelRadialPaddingDp(-32);
         secondView.alignRangeLabelText(RangeLabelAlignment.INWARD);
         secondView.setStartLabel("MIN");
         secondView.setEndLabel("MAX");
@@ -52,6 +52,10 @@ public class MainActivity extends AppCompatActivity  {
 
     private void initThirdView() {
         thirdView.setBackgroundArcColor(Color.BLACK);
+        thirdView.setStartAngle(180);
+        thirdView.setSweepAngle(-270);
+        thirdView.setCurrentValue(68);
+        thirdView.clearGoalValue();
         thirdView.setStartLabel("E");
         thirdView.setEndLabel("F");
         thirdView.setRangeLabelTextSizeSp(32);

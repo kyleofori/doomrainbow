@@ -666,31 +666,41 @@ public class RainbowView extends FrameLayout {
     }
 
     private void drawStartLabel(final Canvas canvas) {
-        final float rangeLabelRadius = internalRadius + rangeLabelRadialPadding;
         final Rect startLabelTextBounds = new Rect();
         getStartLabelTextPaint().getTextBounds(startLabel, 0, startLabel.length(), startLabelTextBounds);
 
-        final float startLabelYCoord = viewHeightHalf
-                - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(startAngle - rangeLabelAngularOffset))
-                + startLabelTextBounds.height();
+        final float halfStartLabelHeight = startLabelTextBounds.height()/2;
+        final float startLabelRadius = radius + rangeLabelRadialPadding;
+        float startLabelAngle;
 
-        final float startLabelXCoord = viewWidthHalf
-                + (AngleUtils.getRadiusCosineCoefficient(startAngle + rangeLabelAngularOffset) * rangeLabelRadius);
+        if (sweepAngle >= 0) {
+            startLabelAngle = startAngle - rangeLabelAngularOffset;
+        } else {
+            startLabelAngle = startAngle + rangeLabelAngularOffset;
+        }
+
+        final float startLabelXCoord =(float)(doomRainbowRectF.centerX() + startLabelRadius * Math.cos(Math.toRadians(startLabelAngle)));
+        final float startLabelYCoord =(float)(doomRainbowRectF.centerY() + startLabelRadius * Math.sin(Math.toRadians(startLabelAngle)) + halfStartLabelHeight);
 
         canvas.drawText(startLabel, startLabelXCoord, startLabelYCoord, getStartLabelTextPaint());
     }
 
     private void drawEndLabel(final Canvas canvas) {
-        final float rangeLabelRadius = internalRadius + rangeLabelRadialPadding;
         final Rect endLabelTextBounds = new Rect();
         getEndLabelTextPaint().getTextBounds(endLabel, 0, endLabel.length(), endLabelTextBounds);
 
-        final float endLabelYCoord = viewHeightHalf
-                - (rangeLabelRadius * AngleUtils.getRadiusCosineCoefficient(startAngle + sweepAngle + rangeLabelAngularOffset))
-                + endLabelTextBounds.height();
+        final float halfEndLabelHeight = endLabelTextBounds.height()/2;
+        final float endLabelRadius = radius + rangeLabelRadialPadding;
+        float endLabelAngle;
 
-        final float endLabelXCoord = viewWidthHalf
-                - (AngleUtils.getRadiusCosineCoefficient(startAngle + sweepAngle - rangeLabelAngularOffset) * rangeLabelRadius);
+        if (sweepAngle >= 0) {
+            endLabelAngle = startAngle + sweepAngle + rangeLabelAngularOffset;
+        } else {
+            endLabelAngle = startAngle + sweepAngle - rangeLabelAngularOffset;
+        }
+
+        final float endLabelXCoord =(float)(doomRainbowRectF.centerX() + endLabelRadius * Math.cos(Math.toRadians(endLabelAngle)));
+        final float endLabelYCoord =(float)(doomRainbowRectF.centerY() + endLabelRadius * Math.sin(Math.toRadians(endLabelAngle)) + halfEndLabelHeight);
 
         canvas.drawText(endLabel, endLabelXCoord, endLabelYCoord, getEndLabelTextPaint());
     }
