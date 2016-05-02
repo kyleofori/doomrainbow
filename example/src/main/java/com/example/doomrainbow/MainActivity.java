@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
+import com.detroitlabs.kyleofori.doomrainbow.RangeLabelAlignment;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initFirstView() {
-        firstView.setArcRadialPaddingDp(16);
+        firstView.setArcRadialPaddingDp(64);
         firstView.setRepresentedRange(0, 100, true);
         firstView.setGoalValue(72);
         firstView.setCurrentValue(64);
@@ -41,26 +42,28 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initSecondView() {
-        secondView.setArcRadialPaddingDp(48);
+        secondView.setArcRadialPaddingDp(32);
+        secondView.setArcStrokeWidthDp(24);
         secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorColor(Color.BLACK);
-        secondView.setRangeLabelAngularOffset(-23.5f);
-        secondView.setRangeLabelRadialPaddingDp(-24);
-        secondView.alignRangeLabelTextInward();
-        secondView.setMinimumValueLabel("MIN");
-        secondView.setMaximumValueLabel("MAX");
         secondView.setRangeLabelTextColor(Color.YELLOW);
-        secondView.setArcStrokeWidthDp(24);
+        secondView.setRangeLabelAngularOffset(-23.5f);
+        secondView.setRangeLabelRadialPaddingDp(-32);
+        secondView.alignRangeLabelText(RangeLabelAlignment.INWARD);
+        secondView.setStartLabel("MIN");
+        secondView.setEndLabel("MAX");
     }
 
     private void initThirdView() {
-        thirdView.setArcRadialPaddingDp(16);
+        thirdView.setArcRadialPaddingDp(64);
         thirdView.setBackgroundArcColor(Color.BLACK);
-        thirdView.setMinimumValueLabel("E");
-        thirdView.setMaximumValueLabel("F");
         thirdView.setRepresentedRange(0, 200, false);
         thirdView.setCurrentValue(150);
-        thirdView.setRangeLabelTextSizeSp(32);
+        thirdView.setStartAngle(180);
+        thirdView.setSweepAngle(-270);
+        thirdView.setStartLabel("E");
+        thirdView.setEndLabel("F");
+        thirdView.setRangeLabelTextSizeSp(28);
     }
 
 }

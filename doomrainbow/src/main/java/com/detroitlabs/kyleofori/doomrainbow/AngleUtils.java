@@ -7,12 +7,35 @@ public final class AngleUtils {
         return (float) Math.cos(valuePositionInRadians);
     }
 
-    public static float convertFromValueToAngle(
+    public static float getInteriorAngleFromValue(
             final float value,
-            final float distanceBetweenExtremeAngles,
-            final float distanceBetweenExtremeValues) {
+            final float exteriorStartValue,
+            final float exteriorEndValue,
+            final float exteriorStartAngle,
+            final float exteriorSweepAngle) {
 
-        return value * distanceBetweenExtremeAngles / distanceBetweenExtremeValues - distanceBetweenExtremeAngles/2;
+        if (exteriorStartValue < exteriorEndValue) {
+            if(value <= exteriorStartValue) {
+                return exteriorStartAngle;
+            } else if (value >= exteriorEndValue) {
+                return exteriorStartAngle + exteriorSweepAngle;
+            } else {
+                final float exteriorValueRange = Math.abs(exteriorEndValue - exteriorStartValue);
+                final float valueDifference = Math.abs(Math.max(value, exteriorStartValue) - Math.min(value, exteriorStartValue));
+                return ((valueDifference/exteriorValueRange) * exteriorSweepAngle) + exteriorStartAngle;
+            }
+        } else {
+            if(value >= exteriorStartValue) {
+                return exteriorStartAngle;
+            } else if (value <= exteriorEndValue) {
+                return exteriorStartAngle + exteriorSweepAngle;
+            } else {
+                final float exteriorValueRange = Math.abs(exteriorEndValue - exteriorStartValue);
+                final float valueDifference = Math.abs(Math.max(value, exteriorStartValue) - Math.min(value, exteriorStartValue));
+                return ((valueDifference/exteriorValueRange) * exteriorSweepAngle) + exteriorStartAngle;
+            }
+        }
+
     }
 
     private AngleUtils() {
