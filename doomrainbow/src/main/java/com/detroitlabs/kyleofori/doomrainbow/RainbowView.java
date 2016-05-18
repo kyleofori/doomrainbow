@@ -614,12 +614,7 @@ public class RainbowView extends FrameLayout {
 
     private void drawCurrentLevelTextIfPresent(final Canvas canvas) {
         if (displayCurrentLevelLabel) {
-            final double currentLevelAngle = AngleUtils.getInteriorAngleFromValue(
-                    currentValue,
-                    startValue,
-                    endValue,
-                    startAngle,
-                    sweepAngle);
+            final double currentLevelAngle = getInteriorAngleOfValue(currentValue);
 
             final double angleInRadians = Math.toRadians(currentLevelAngle);
 
@@ -632,6 +627,35 @@ public class RainbowView extends FrameLayout {
         }
     }
 
+    public float getInteriorAngleOfValue (final float value) {
+        final float exteriorValueRange = Math.abs(endValue - startValue);
+
+        if(valueExceedsStartValueBounds(value) || exteriorValueRange == 0) {
+            return startAngle;
+        } else if (valueExceedsEndValueBounds(value)) {
+            return startAngle + sweepAngle;
+        } else {
+            final float valueDifference = Math.abs(Math.max(value, startValue) - Math.min(value, startValue));
+            return ((valueDifference/exteriorValueRange) * sweepAngle) + startAngle;
+        }
+    }
+    
+    public boolean valueExceedsStartValueBounds (final float value) {
+        if (startValue < endValue) {
+            return value < startValue;
+        } else {
+            return value > startValue;
+        }
+    }
+    
+    public boolean valueExceedsEndValueBounds (final float value) {
+        if (startValue < endValue) {
+            return value > endValue;
+        } else {
+            return value < endValue;
+        }
+    }
+
     private void drawArcFromValues(
             final Canvas canvas,
             final RectF rectF,
@@ -639,19 +663,9 @@ public class RainbowView extends FrameLayout {
             final float endValue,
             final Paint paint) {
 
-        final float startAngle = AngleUtils.getInteriorAngleFromValue(
-                startValue,
-                this.startValue,
-                this.endValue,
-                this.startAngle,
-                this.sweepAngle);
+        final float startAngle = getInteriorAngleOfValue(startValue);
 
-        final float endAngle = AngleUtils.getInteriorAngleFromValue(
-                endValue,
-                this.startValue,
-                this.endValue,
-                this.startAngle,
-                this.sweepAngle);
+        final float endAngle = getInteriorAngleOfValue(endValue);
 
         canvas.drawArc(rectF, startAngle, (endAngle - startAngle), false, paint);
     }
@@ -706,12 +720,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void drawIndicator(final Canvas canvas) {
-        final float goalAngle = AngleUtils.getInteriorAngleFromValue(
-                goalValue,
-                startValue,
-                endValue,
-                this.startAngle,
-                sweepAngle);
+        final float goalAngle = getInteriorAngleOfValue(goalValue);
 
         final double goalAngleRadians = Math.toRadians(goalAngle);
 
