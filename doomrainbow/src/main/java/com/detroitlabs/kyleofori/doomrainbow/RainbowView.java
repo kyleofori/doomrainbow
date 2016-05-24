@@ -38,16 +38,16 @@ public class RainbowView extends FrameLayout {
     private static final Paint DEFAULT_GOAL_INDICATOR_PAINT = new Paint(BASE_PAINT);
     private static final Paint DEFAULT_FOREGROUND_ARC_PAINT = new Paint(BASE_PAINT);
     private static final Paint.Cap DEFAULT_ARC_STROKE_CAP = Paint.Cap.ROUND;
+
     private static final float DEFAULT_START_ANGLE = 135;
     private static final float DEFAULT_SWEEP_ANGLE = 270;
-
+    private static final float DEFAULT_ARC_RADIAL_PADDING_DP = 0;
     private static final float DEFAULT_RANGE_LABEL_ANGULAR_OFFSET = 15;
     private static final float DEFAULT_RANGE_LABEL_RADIAL_PADDING_DP = 0;
-    private static final float DEFAULT_RADIUS_COEFFICIENT = .75f;
     private static final float DEFAULT_CHILD_VIEW_ASPECT_RATIO = 2f;
     private static final long DEFAULT_ANIMATION_DURATION_MS = 2000;
+
     private static final int DEFAULT_START_VALUE = 0;
-    private static final float DEFAULT_GOAL_VALUE = 90;
     private static final int DEFAULT_END_VALUE = 100;
     private static final int DEFAULT_ARC_STROKE_WIDTH_DP = 16;
     private static final float DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE_SP = 14;
@@ -116,9 +116,11 @@ public class RainbowView extends FrameLayout {
     private float currentValue;
     private float rangeLabelAngularOffset;
     private float rangeLabelRadialPadding;
+    private float arcStrokeWidth;
     private float startAngle;
     private float sweepAngle;
     private float radius;
+    private float arcRadialPadding;
     private float internalRadius;
     private float viewWidthHalf;
     private float viewHeightHalf;
@@ -160,9 +162,7 @@ public class RainbowView extends FrameLayout {
     }
 
     private void init() {
-        DEFAULT_BACKGROUND_ARC_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
-        DEFAULT_GOAL_INDICATOR_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
-        DEFAULT_FOREGROUND_ARC_PAINT.setStrokeWidth(dpToPx(DEFAULT_ARC_STROKE_WIDTH_DP));
+        setArcStrokeWidthDp(DEFAULT_ARC_STROKE_WIDTH_DP);
 
         DEFAULT_CURRENT_VALUE_LABEL_PAINT.setTextSize(spToPx(DEFAULT_CURRENT_VALUE_LABEL_TEXT_SIZE_SP));
         DEFAULT_START_LABEL_PAINT.setTextSize(spToPx(DEFAULT_RANGE_LABEL_TEXT_SIZE_SP));
@@ -176,9 +176,9 @@ public class RainbowView extends FrameLayout {
         endValue = DEFAULT_END_VALUE;
         setStartAngle(DEFAULT_START_ANGLE);
         setSweepAngle(DEFAULT_SWEEP_ANGLE);
-        setGoalValue(DEFAULT_GOAL_VALUE);
         setRangeLabelAngularOffset(DEFAULT_RANGE_LABEL_ANGULAR_OFFSET);
         setRangeLabelRadialPaddingDp(DEFAULT_RANGE_LABEL_RADIAL_PADDING_DP);
+        setArcRadialPaddingDp(DEFAULT_ARC_RADIAL_PADDING_DP);
         currentValue = startValue;
         resetValueToDraw();
         reanimate();
@@ -234,9 +234,9 @@ public class RainbowView extends FrameLayout {
         viewHeightHalf = getMeasuredHeight() / 2;
 
         if (viewHeightHalf > viewWidthHalf) {
-            radius = viewWidthHalf * DEFAULT_RADIUS_COEFFICIENT;
+            radius = viewWidthHalf - arcRadialPadding - (arcStrokeWidth/2);
         } else {
-            radius = viewHeightHalf * DEFAULT_RADIUS_COEFFICIENT;
+            radius = viewHeightHalf - arcRadialPadding - (arcStrokeWidth/2);
         }
 
         for (int i = 0; i < getChildCount(); i++) {
@@ -326,6 +326,11 @@ public class RainbowView extends FrameLayout {
 
     // Public API
 
+
+    public void setArcRadialPaddingDp(final float arcRadialPaddingDp) {
+        this.arcRadialPadding = dpToPx(arcRadialPaddingDp);
+    }
+
     public void setArcCapStyle(final Paint.Cap strokeCap) {
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
         newBackgroundPaint.setStrokeCap(strokeCap);
@@ -339,19 +344,19 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setArcWidthDp(final float arcWidthDp) {
-        final float arcWidthPx = dpToPx(arcWidthDp);
+    public void setArcStrokeWidthDp(final float arcStrokeWidthDp) {
+        arcStrokeWidth = dpToPx(arcStrokeWidthDp);
 
         final Paint newBackgroundPaint = new Paint(getBackgroundArcPaint());
-        newBackgroundPaint.setStrokeWidth(arcWidthPx);
+        newBackgroundPaint.setStrokeWidth(arcStrokeWidth);
         customBackgroundArcPaint = newBackgroundPaint;
 
         final Paint newCurrentLevelPaint = new Paint(getCurrentLevelArcPaint());
-        newCurrentLevelPaint.setStrokeWidth(arcWidthPx);
+        newCurrentLevelPaint.setStrokeWidth(arcStrokeWidth);
         customForegroundArcPaint = newCurrentLevelPaint;
 
         final Paint newGoalPaint = new Paint(getGoalPaint());
-        newGoalPaint.setStrokeWidth(arcWidthPx);
+        newGoalPaint.setStrokeWidth(arcStrokeWidth);
         customGoalIndicatorPaint = newGoalPaint;
 
         invalidate();
@@ -551,7 +556,7 @@ public class RainbowView extends FrameLayout {
         this.animateChangesInCurrentLevel = animateChangesInCurrentLevel;
     }
 
-    private void setShouldDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
+    public void setShouldDisplayCurrentLevelLabel(final boolean displayCurrentLevelLabel) {
         this.displayCurrentLevelLabel = displayCurrentLevelLabel;
     }
 
@@ -561,7 +566,7 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setStartAngle(final float startAngle) {
-        this.startAngle = startAngle;
+        this.startAngle = startAngle % 360;
         invalidate();
     }
 

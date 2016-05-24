@@ -27,10 +27,12 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initFirstView() {
+        firstView.setArcRadialPaddingDp(64);
         firstView.setRepresentedRange(0, 100, true);
         firstView.setGoalValue(72);
         firstView.setCurrentValue(64);
         firstView.setChildViewAspectRatio(1f);
+        firstView.setRangeLabelTextColor(Color.parseColor("#1EB2E9"));
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -40,25 +42,28 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void initSecondView() {
+        secondView.setArcRadialPaddingDp(32);
+        secondView.setArcStrokeWidthDp(24);
         secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorColor(Color.BLACK);
+        secondView.setRangeLabelTextColor(Color.YELLOW);
         secondView.setRangeLabelAngularOffset(-23.5f);
         secondView.setRangeLabelRadialPaddingDp(-32);
         secondView.alignRangeLabelText(RangeLabelAlignment.INWARD);
         secondView.setStartLabel("MIN");
         secondView.setEndLabel("MAX");
-        secondView.setArcWidthDp(24);
     }
 
     private void initThirdView() {
+        thirdView.setArcRadialPaddingDp(64);
         thirdView.setBackgroundArcColor(Color.BLACK);
+        thirdView.setRepresentedRange(0, 200, false);
+        thirdView.setCurrentValue(150);
         thirdView.setStartAngle(180);
         thirdView.setSweepAngle(-270);
-        thirdView.setCurrentValue(68);
-        thirdView.clearGoalValue();
         thirdView.setStartLabel("E");
         thirdView.setEndLabel("F");
-        thirdView.setRangeLabelTextSizeSp(32);
+        thirdView.setRangeLabelTextSizeSp(28);
     }
 
 }
