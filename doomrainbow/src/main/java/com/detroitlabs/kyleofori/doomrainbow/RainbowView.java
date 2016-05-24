@@ -285,6 +285,7 @@ public class RainbowView extends FrameLayout {
         super.onRestoreInstanceState(ss.getSuperState());
         currentValue = ss.currentLevelValue;
         resetValueToDraw();
+        reanimate();
     }
 
     @Override
@@ -762,7 +763,7 @@ public class RainbowView extends FrameLayout {
         return endValue - startValue;
     }
 
-     private float spToPx(final float sp) {
+    private float spToPx(final float sp) {
         return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, sp, getResources().getDisplayMetrics());
     }
