@@ -6,30 +6,24 @@
     android:background="#F0F4F5">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.detroitlabs.kyleofori.doomrainbow.RainbowView
             android:id="@+id/rainbow_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </com.detroitlabs.kyleofori.doomrainbow.RainbowView>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <com.detroitlabs.kyleofori.doomrainbow.RainbowView
             android:id="@+id/rainbow_view1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <com.detroitlabs.kyleofori.doomrainbow.RainbowView
             android:id="@+id/rainbow_view2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 

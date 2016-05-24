@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.detroitlabs.kyleofori.doomrainbow.RainbowView;
+import com.detroitlabs.kyleofori.doomrainbow.RangeLabelAlignment;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity  {
         firstView.setRepresentedRange(0, 100, true);
         firstView.setGoalValue(72);
         firstView.setCurrentValue(64);
-        firstView.setChildViewAspectRatio(0.5f);
+        firstView.setChildViewAspectRatio(1f);
         firstView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -41,13 +42,23 @@ public class MainActivity extends AppCompatActivity  {
     private void initSecondView() {
         secondView.setBackgroundArcColor(Color.YELLOW);
         secondView.setGoalIndicatorColor(Color.BLACK);
+        secondView.setRangeLabelAngularOffset(-23.5f);
+        secondView.setRangeLabelRadialPaddingDp(-32);
+        secondView.alignRangeLabelText(RangeLabelAlignment.INWARD);
+        secondView.setStartLabel("MIN");
+        secondView.setEndLabel("MAX");
         secondView.setArcWidthDp(24);
     }
 
     private void initThirdView() {
         thirdView.setBackgroundArcColor(Color.BLACK);
-        thirdView.setMinimumValueLabel("E");
-        thirdView.setMaximumValueLabel("F");
+        thirdView.setStartAngle(180);
+        thirdView.setSweepAngle(-270);
+        thirdView.setCurrentValue(68);
+        thirdView.clearGoalValue();
+        thirdView.setStartLabel("E");
+        thirdView.setEndLabel("F");
+        thirdView.setRangeLabelTextSizeSp(32);
     }
 
 }
