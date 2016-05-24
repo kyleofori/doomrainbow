@@ -757,7 +757,7 @@ public class RainbowView extends FrameLayout {
         return endValue - startValue;
     }
 
-     private float spToPx(final float sp) {
+    private float spToPx(final float sp) {
         return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, sp, getResources().getDisplayMetrics());
     }
