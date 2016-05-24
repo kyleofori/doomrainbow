@@ -565,7 +565,7 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setStartAngle(final float startAngle) {
-        this.startAngle = startAngle;
+        this.startAngle = startAngle % 360;
         invalidate();
     }
 
