@@ -285,6 +285,7 @@ public class RainbowView extends FrameLayout {
         super.onRestoreInstanceState(ss.getSuperState());
         currentValue = ss.currentLevelValue;
         resetValueToDraw();
+        reanimate();
     }
 
     @Override
