@@ -13,18 +13,18 @@
         <com.detroitlabs.kyleofori.doomrainbow.RainbowView
             android:id="@+id/rainbow_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="400dp"/>
 
         <com.detroitlabs.kyleofori.doomrainbow.RainbowView
             android:id="@+id/rainbow_view1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="400dp"
             android:background="@android:color/darker_gray"/>
 
         <com.detroitlabs.kyleofori.doomrainbow.RainbowView
             android:id="@+id/rainbow_view2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="400dp"/>
 
     </LinearLayout>
 
