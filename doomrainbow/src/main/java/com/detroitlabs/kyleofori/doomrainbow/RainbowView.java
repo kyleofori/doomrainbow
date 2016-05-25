@@ -190,12 +190,26 @@ public class RainbowView extends FrameLayout {
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        final int measuredWidth = getMeasuredWidth();
-
         //noinspection SuspiciousNameCombination
-        setMeasuredDimension(measuredWidth, measuredWidth);
+        setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight());
+
+        viewWidthHalf = getMeasuredWidth() / 2;
+        viewHeightHalf = getMeasuredHeight() / 2;
+
+        if (getMeasuredHeight() > getMeasuredWidth()) {
+            radius = viewWidthHalf - arcRadialPadding - (arcStrokeWidth / 2);
+        } else {
+            radius = viewHeightHalf - arcRadialPadding - (arcStrokeWidth / 2);
+        }
 
         internalRadius = radius - getBackgroundArcPaint().getStrokeWidth() / 2;
+
+        if (getChildCount() > 0) {
+            measureChild();
+        }
+    }
+
+    private void measureChild() {
         final double childViewHeight = (2 * internalRadius) / sqrt(1 + pow(lambda, 2));
         final double childViewWidth = lambda * childViewHeight;
 
@@ -215,10 +229,7 @@ public class RainbowView extends FrameLayout {
                 childViewRect.width(),
                 MeasureSpec.EXACTLY
         );
-
-        if (getChildCount() > 0) {
-            getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
-        }
+        getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
     }
 
     @Override
@@ -230,14 +241,6 @@ public class RainbowView extends FrameLayout {
             final int bottom) {
 
         super.onLayout(changed, left, top, right, bottom);
-        viewWidthHalf = getMeasuredWidth() / 2;
-        viewHeightHalf = getMeasuredHeight() / 2;
-
-        if (viewHeightHalf > viewWidthHalf) {
-            radius = viewWidthHalf - arcRadialPadding - (arcStrokeWidth/2);
-        } else {
-            radius = viewHeightHalf - arcRadialPadding - (arcStrokeWidth/2);
-        }
 
         for (int i = 0; i < getChildCount(); i++) {
             final View child = getChildAt(i);
@@ -390,7 +393,7 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setCurrentValueLabelTypeface(@NonNull final Typeface typeface){
+    public void setCurrentValueLabelTypeface(@NonNull final Typeface typeface) {
         final Paint newPaint = new Paint(getCurrentLevelTextPaint());
         newPaint.setTypeface(typeface);
         customCurrentValueLabelPaint = newPaint;
@@ -423,7 +426,7 @@ public class RainbowView extends FrameLayout {
         invalidate();
     }
 
-    public void setRangeLabelTypeface(@NonNull final Typeface typeface){
+    public void setRangeLabelTypeface(@NonNull final Typeface typeface) {
         final Paint newStartPaint = new Paint(getStartLabelTextPaint());
         newStartPaint.setTypeface(typeface);
         customStartLabelPaint = newStartPaint;
@@ -571,7 +574,7 @@ public class RainbowView extends FrameLayout {
     }
 
     public void setSweepAngle(final float sweepAngle) {
-        if (sweepAngle > 360){
+        if (sweepAngle > 360) {
             this.sweepAngle = 360;
         } else if (sweepAngle < -360) {
             this.sweepAngle = -360;
@@ -633,28 +636,28 @@ public class RainbowView extends FrameLayout {
         }
     }
 
-    public float getInteriorAngleOfValue (final float value) {
+    public float getInteriorAngleOfValue(final float value) {
         final float exteriorValueRange = Math.abs(endValue - startValue);
 
-        if(valueExceedsStartValueBounds(value) || exteriorValueRange == 0) {
+        if (valueExceedsStartValueBounds(value) || exteriorValueRange == 0) {
             return startAngle;
         } else if (valueExceedsEndValueBounds(value)) {
             return startAngle + sweepAngle;
         } else {
             final float valueDifference = Math.abs(Math.max(value, startValue) - Math.min(value, startValue));
-            return ((valueDifference/exteriorValueRange) * sweepAngle) + startAngle;
+            return ((valueDifference / exteriorValueRange) * sweepAngle) + startAngle;
         }
     }
-    
-    public boolean valueExceedsStartValueBounds (final float value) {
+
+    public boolean valueExceedsStartValueBounds(final float value) {
         if (startValue < endValue) {
             return value < startValue;
         } else {
             return value > startValue;
         }
     }
-    
-    public boolean valueExceedsEndValueBounds (final float value) {
+
+    public boolean valueExceedsEndValueBounds(final float value) {
         if (startValue < endValue) {
             return value > endValue;
         } else {
@@ -689,7 +692,7 @@ public class RainbowView extends FrameLayout {
         final Rect startLabelTextBounds = new Rect();
         getStartLabelTextPaint().getTextBounds(startLabel, 0, startLabel.length(), startLabelTextBounds);
 
-        final float halfStartLabelHeight = startLabelTextBounds.height()/2;
+        final float halfStartLabelHeight = startLabelTextBounds.height() / 2;
         final float startLabelRadius = radius + rangeLabelRadialPadding;
         float startLabelAngle;
 
@@ -699,8 +702,8 @@ public class RainbowView extends FrameLayout {
             startLabelAngle = startAngle + rangeLabelAngularOffset;
         }
 
-        final float startLabelXCoord =(float)(doomRainbowRectF.centerX() + startLabelRadius * Math.cos(Math.toRadians(startLabelAngle)));
-        final float startLabelYCoord =(float)(doomRainbowRectF.centerY() + startLabelRadius * Math.sin(Math.toRadians(startLabelAngle)) + halfStartLabelHeight);
+        final float startLabelXCoord = (float) (doomRainbowRectF.centerX() + startLabelRadius * Math.cos(Math.toRadians(startLabelAngle)));
+        final float startLabelYCoord = (float) (doomRainbowRectF.centerY() + startLabelRadius * Math.sin(Math.toRadians(startLabelAngle)) + halfStartLabelHeight);
 
         canvas.drawText(startLabel, startLabelXCoord, startLabelYCoord, getStartLabelTextPaint());
     }
@@ -709,7 +712,7 @@ public class RainbowView extends FrameLayout {
         final Rect endLabelTextBounds = new Rect();
         getEndLabelTextPaint().getTextBounds(endLabel, 0, endLabel.length(), endLabelTextBounds);
 
-        final float halfEndLabelHeight = endLabelTextBounds.height()/2;
+        final float halfEndLabelHeight = endLabelTextBounds.height() / 2;
         final float endLabelRadius = radius + rangeLabelRadialPadding;
         float endLabelAngle;
 
@@ -719,8 +722,8 @@ public class RainbowView extends FrameLayout {
             endLabelAngle = startAngle + sweepAngle - rangeLabelAngularOffset;
         }
 
-        final float endLabelXCoord =(float)(doomRainbowRectF.centerX() + endLabelRadius * Math.cos(Math.toRadians(endLabelAngle)));
-        final float endLabelYCoord =(float)(doomRainbowRectF.centerY() + endLabelRadius * Math.sin(Math.toRadians(endLabelAngle)) + halfEndLabelHeight);
+        final float endLabelXCoord = (float) (doomRainbowRectF.centerX() + endLabelRadius * Math.cos(Math.toRadians(endLabelAngle)));
+        final float endLabelYCoord = (float) (doomRainbowRectF.centerY() + endLabelRadius * Math.sin(Math.toRadians(endLabelAngle)) + halfEndLabelHeight);
 
         canvas.drawText(endLabel, endLabelXCoord, endLabelYCoord, getEndLabelTextPaint());
     }
